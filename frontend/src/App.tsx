@@ -18,15 +18,15 @@ class App extends Component<IMainProps, IMainState> {
   }
 
   componentDidMount() {
-    let width: number = 450;
-    let height: number = 300;
+    let width: number = 800;
+    let height: number = 500;
 
     let stage = new PIXI.Container();
     let render = PIXI.autoDetectRenderer(width, height, {
       antialias: true,
-      resolution: 1,
+      resolution: 2,
       transparent: true,
-      forceFXAA: true
+      autoResize: true
     });
 
     let color = (function() {
@@ -41,13 +41,14 @@ class App extends Component<IMainProps, IMainState> {
       .force('center', d3.forceCenter(width / 2, height / 2));
 
     let links = new PIXI.Graphics();
+
     stage.addChild(links);
 
     testData.nodes.forEach((node: d3Node) => {
       node.gfx = new PIXI.Graphics();
       node.gfx.lineStyle(1.5, 0xffffff);
       node.gfx.beginFill(color(node.group));
-      node.gfx.drawCircle(0, 0, 5);
+      node.gfx.drawCircle(0, 0, 10);
       stage.addChild(node.gfx);
     });
 
@@ -69,14 +70,12 @@ class App extends Component<IMainProps, IMainState> {
         links.moveTo(source.x, source.y).lineTo(target.x, target.y);
       });
       links.endFill();
-
       render.render(stage);
     }
 
     simulation
       .force<d3force.ForceLink<any, d3Link>>('link')!
       .links(testData.links);
-
     render.render(stage);
     console.log(simulation);
 

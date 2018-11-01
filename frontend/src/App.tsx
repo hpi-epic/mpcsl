@@ -18,17 +18,15 @@ class App extends Component<IMainProps, IMainState> {
   }
 
   componentDidMount() {
-    let width: number = 960;
-    let height: number = 600;
+    let width: number = 450;
+    let height: number = 300;
 
     let stage = new PIXI.Container();
-    let render = new PIXI.Application({
-      width,
-      height,
+    let render = PIXI.autoDetectRenderer(width, height, {
       antialias: true,
-      transparent: false,
       resolution: 1,
-      backgroundColor: 0xfffffff
+      transparent: true,
+      forceFXAA: true
     });
 
     let color = (function() {
@@ -53,7 +51,6 @@ class App extends Component<IMainProps, IMainState> {
       stage.addChild(node.gfx);
     });
 
-
     simulation.nodes(testData.nodes).on('tick', ticked);
 
     function ticked() {
@@ -72,13 +69,44 @@ class App extends Component<IMainProps, IMainState> {
         links.moveTo(source.x, source.y).lineTo(target.x, target.y);
       });
       links.endFill();
-    };
+
+      render.render(stage);
+    }
 
     simulation
       .force<d3force.ForceLink<any, d3Link>>('link')!
       .links(testData.links);
 
+    render.render(stage);
+    console.log(simulation);
+
     this.graphCanvas!.appendChild(render.view);
+
+    d3.select(render.view).call(
+      d3
+        .drag()
+        .container(render.view)
+        // @ts-ignore
+        .subject(() => simulation.find(d3.event.x, d3.event.y))
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended)
+    );
+
+    function dragstarted() {
+      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+      d3.event.subject.fx = d3.event.subject.x;
+      d3.event.subject.fy = d3.event.subject.y;
+    }
+    function dragged() {
+      d3.event.subject.fx = d3.event.x;
+      d3.event.subject.fy = d3.event.y;
+    }
+    function dragended() {
+      if (!d3.event.active) simulation.alphaTarget(0);
+      d3.event.subject.fx = null;
+      d3.event.subject.fy = null;
+    }
   }
 
   render() {

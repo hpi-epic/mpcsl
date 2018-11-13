@@ -6,7 +6,6 @@
     ],
     "jsRules": {},
     "rules": {
-        "no-submodule-imports": false
     },
     "rulesDirectory": []
 }

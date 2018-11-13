@@ -1,1 +1,8 @@
-language: python3
+language: python
+python:
+  - "3.6"
+install: 
+  - pip install -r requirements.txt
+script:
+  - flake8 --format junit-xml --output-file=.circleci/test-reports/flake8/flake8.xml
+  - pytest --junitxml=.circleci/test-reports/pytest/pytest.xml

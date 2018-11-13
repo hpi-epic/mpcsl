@@ -1,0 +1,10 @@
+version: '3'
+services:
+  backend:
+    build: .
+    ports:
+     - "5000:5000"
+  db:
+    image: postgres:latest
+    volumes:
+      - /var/lib/postgresql/data

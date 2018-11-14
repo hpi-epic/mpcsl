@@ -1,4 +1,4 @@
-from backend.src.resources.hello import HelloWorld
+from .resources.hello import HelloWorld
 
 
 def set_up_routes(api):

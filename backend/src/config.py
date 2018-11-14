@@ -13,6 +13,11 @@ DB_PASSWORD = os.environ.get('DB_PASSWORD', 'postgres')
 
 SQLALCHEMY_DATABASE_URI = os.environ.get(
     'SQLALCHEMY_DATABASE_URI',
-    DB_TYPE + '://' + DB_USER + ':' + DB_PASSWORD + '@' + DB_HOST + '/' + DB_DATABASE
+    DB_TYPE + '://' + DB_USER + ':' + DB_PASSWORD + '@' +
+    DB_HOST + '/' + DB_DATABASE
 )
-SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS', 'false').lower() == 'true'
+
+SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get(
+    'SQLALCHEMY_TRACK_MODIFICATIONS',
+    'false'
+).lower() == 'true'

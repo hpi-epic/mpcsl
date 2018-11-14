@@ -1,7 +1,7 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 
+from backend.src.db import db
 from backend.src.routes import set_up_routes
 
 
@@ -12,7 +12,10 @@ class AppFactory(object):
         self.api = None
 
     def set_up_db(self):
-        self.db = SQLAlchemy(self.app)
+        self.db = db
+        self.db.init_app(self.app)
+        with self.app.app_context():
+            self.db.create_all()
 
     def set_up_app(self):
         self.app = Flask(__name__)

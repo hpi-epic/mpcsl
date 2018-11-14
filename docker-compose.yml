@@ -19,3 +19,13 @@ services:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: 'postgres'
+  db-ui:
+    image: sosedoff/pgweb
+    ports:
+      - "8081:8081"
+    links:
+      - database
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@database:5432/postgres?sslmode=disable
+    depends_on:
+      - database

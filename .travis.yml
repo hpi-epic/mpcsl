@@ -3,6 +3,7 @@ language: python
 services:
   - docker
 install:
+  - cp confdefault/* conf/
   - docker-compose build
 script:
   - docker-compose run backend flake8

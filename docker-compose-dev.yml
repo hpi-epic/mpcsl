@@ -4,7 +4,17 @@ services:
     build: .
     ports:
      - "5000:5000"
+    environment:
+      - PGHOST: 'db'
+      - PGDATABASE: 'postgres'
+      - PGUSER: 'postgres'
+      - PGPASSWORD: 'postgres'
   db:
     image: postgres:latest
     volumes:
       - /var/lib/postgresql/data
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: 'postgres'

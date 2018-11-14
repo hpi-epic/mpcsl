@@ -13,6 +13,8 @@ services:
       PGPASSWORD: 'postgres'
     depends_on:
       - database
+    env_file:
+      - conf/backend.env
   database:
     image: postgres:latest
     volumes:

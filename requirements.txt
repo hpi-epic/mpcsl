@@ -1,2 +1,4 @@
 flake8
 flask
+numpy
+pandas

@@ -3,13 +3,15 @@ services:
   backend:
     build: .
     ports:
-     - "5000:5000"
+     - 5000:5000
     environment:
-      - PGHOST: 'db'
-      - PGDATABASE: 'postgres'
-      - PGUSER: 'postgres'
-      - PGPASSWORD: 'postgres'
-  db:
+      PGHOST: 'db'
+      PGDATABASE: 'postgres'
+      PGUSER: 'postgres'
+      PGPASSWORD: 'postgres'
+    depends_on:
+      - database
+  database:
     image: postgres:latest
     volumes:
       - /var/lib/postgresql/data

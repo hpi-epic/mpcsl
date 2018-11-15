@@ -108,6 +108,9 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
+# IntelliJ project settings
+.idea/
+
 # mkdocs documentation
 /site
 
@@ -177,3 +180,5 @@ rsconnect/
 /*_files/
 
 # End of https://www.gitignore.io/api/r,python
+
+conf/

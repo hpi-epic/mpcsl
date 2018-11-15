@@ -1,0 +1,6 @@
+.travis.yml
+.gitignore
+docker-compose-prod.yml
+docker-compose.yml
+README.md
+.git/

@@ -1,4 +1,4 @@
-from src.db import db
+from db import db
 from marshmallow_sqlalchemy import ModelSchema
 from marshmallow import fields
 

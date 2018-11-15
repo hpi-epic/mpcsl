@@ -1,9 +1,7 @@
-from resources import Datasets, HelloWorld, Results
+from .resources import Datasets, HelloWorld, Results
 
 
 def set_up_routes(api):
     api.add_resource(HelloWorld, '/hello')
     api.add_resource(Datasets, '/datasets/<int:dataset_id>')
-    api.add_resource(Results, '/results', resource_class_kwargs={
-        'logger': api.logger
-    })
+    api.add_resource(Results, '/results')

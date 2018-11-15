@@ -1,5 +1,5 @@
-from src.db import db
-from src.models.base import BaseModel, BaseSchema
+from db import db
+from models.base import BaseModel, BaseSchema
 
 
 class Hello(BaseModel):

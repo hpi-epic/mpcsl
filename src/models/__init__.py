@@ -1,4 +1,4 @@
-from hello import Hello, HelloSchema
+from .hello import Hello, HelloSchema
 
 __all__ = [
     'Hello',

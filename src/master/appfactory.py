@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 
-from src.db import db
+from db import db
 from .routes import set_up_routes
 
 
@@ -19,11 +19,13 @@ class AppFactory(object):
 
     def set_up_app(self):
         self.app = Flask(__name__)
-        self.app.config.from_object('src.master.config')
+        self.app.config.from_object('master.config')
 
     def set_up_api(self):
-        self.api = Api(self.app)
+        self.api = Api()
         set_up_routes(self.api)
+        self.api.init_app(self.app)
+        # print(self.api.endpoints)
 
     def up(self):
         self.set_up_app()

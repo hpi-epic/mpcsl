@@ -1,4 +1,5 @@
 from .experiment import Experiment, ExperimentSchema
+from .job import Job, JobSchema
 from .result import Result, ResultSchema
 from .node import Node, NodeSchema
 from .edge import Edge, EdgeSchema
@@ -18,5 +19,7 @@ __all__ = [
     'SepSet',
     'SepSetSchema',
     'Node',
-    'NodeSchema'
+    'NodeSchema',
+    'Job',
+    'JobSchema'
 ]

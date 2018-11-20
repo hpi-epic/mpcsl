@@ -2,7 +2,7 @@ import factory
 from factory.alchemy import SQLAlchemyModelFactory
 
 
-from src.models import BaseModel, Dataset
+from src.models import BaseModel, Dataset, Experiment
 from src.db import db
 
 
@@ -22,3 +22,13 @@ class DatasetFactory(BaseFactory):
 
     name = factory.Faker('word')
     load_query = factory.Faker('file_path')
+
+
+class ExperimentFactory(BaseFactory):
+    class Meta:
+        model = Experiment
+        sqlalchemy_session = db.session
+
+    alpha = factory.Faker('pyfloat')
+    cores = factory.Faker('pyint')
+    dataset = factory.SubFactory(DatasetFactory)

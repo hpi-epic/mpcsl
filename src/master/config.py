@@ -1,7 +1,7 @@
 import os
 
 # App
-APP_HOST = os.environ.get('APP_HOST', '0.0.0.0')
+APP_HOST = os.environ.get('APP_HOST', 'localhost')
 APP_PORT = os.environ.get('APP_PORT', '5000')
 
 if APP_PORT != '80':

@@ -1,4 +1,4 @@
-from datetime.datetime import now
+from datetime import datetime
 
 from flask import current_app, request
 from flask_restful import Resource
@@ -14,7 +14,8 @@ class Results(Resource):
         job = Job.query.get(json['job_id'])
 
         result = Result(experiment=job.experiment, start_time=job.start_time,
-                        end_time=now(), meta_results=json['meta_results'])
+                        end_time=datetime.now(),
+                        meta_results=json['meta_results'])
         db.session.add(result)
 
         node_list = json['node_list']

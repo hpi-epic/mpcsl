@@ -9,7 +9,6 @@ class Experiment(BaseModel):
 
     dataset_id = db.Column(db.Integer, db.ForeignKey('dataset.id'))
     dataset = db.relationship('Dataset')
-    # TODO: Dataset relationship
 
     cores = db.Column(db.Integer)
 

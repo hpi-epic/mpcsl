@@ -7,12 +7,8 @@ from .node import Node, NodeSchema
 from .edge import Edge, EdgeSchema
 from .sepset import SepSet, SepSetSchema
 
-from .hello import Hello, HelloSchema
-
 __all__ = [
     'BaseModel',
-    'Hello',
-    'HelloSchema',
     'DatasetSchema',
     'Dataset',
     'Edge',

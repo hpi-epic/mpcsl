@@ -2,11 +2,11 @@ from src.db import db
 from src.models.base import BaseModel, BaseSchema
 
 
-class DataSet(BaseModel):
+class Dataset(BaseModel):
     query = db.Column(db.String, required=True)
     name = db.Column(db.String, required=True)
 
 
-class DataSetSchema(BaseSchema):
+class DatasetSchema(BaseSchema):
     class Meta:
-        model = DataSet
+        model = Dataset

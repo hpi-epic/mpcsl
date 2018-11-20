@@ -1,6 +1,6 @@
 import json
 
-from test.master.base import BaseTest
+from test.unit.master.base import BaseTest
 
 
 class BaseResourceTest(BaseTest):

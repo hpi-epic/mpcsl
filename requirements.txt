@@ -2,6 +2,8 @@ aniso8601==4.0.1
 atomicwrites==1.2.1
 attrs==18.2.0
 Click==7.0
+factory-boy==2.11.1
+Faker==1.0.0
 flake8==3.6.0
 Flask==1.0.2
 Flask-RESTful==0.3.6
@@ -22,7 +24,9 @@ py==1.7.0
 pycodestyle==2.4.0
 pyflakes==2.0.0
 pytest==3.10.1
+python-dateutil==2.7.5
 pytz==2018.7
 six==1.11.0
 SQLAlchemy==1.2.14
+text-unidecode==1.2
 Werkzeug==0.14.1

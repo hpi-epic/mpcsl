@@ -1,9 +1,9 @@
-from .datasets import Datasets
-from .hello import HelloWorld
+from .datasets import DatasetLoadResource, DatasetListResource, DatasetResource
 from .results import Results
 
 __all__ = [
-    'Datasets',
-    'HelloWorld',
+    'DatasetLoadResource',
+    'DatasetListResource',
+    'DatasetResource',
     'Results'
 ]

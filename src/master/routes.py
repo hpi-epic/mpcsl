@@ -1,4 +1,4 @@
-from .resources import DatasetLoadResource, DatasetListResource, DatasetResource, Results
+from .resources import DatasetLoadResource, DatasetListResource, DatasetResource, ResultListResource
 
 
 def set_up_routes(api):
@@ -6,4 +6,4 @@ def set_up_routes(api):
     api.add_resource(DatasetResource, '/dataset/<int:dataset_id>')
     api.add_resource(DatasetListResource, '/datasets')
 
-    api.add_resource(Results, '/results')
+    api.add_resource(ResultListResource, '/results')

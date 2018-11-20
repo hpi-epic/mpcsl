@@ -21,7 +21,7 @@ option_list_v <- list(
 option_parser <- OptionParser(option_list=option_list_v)
 opt <- parse_args(option_parser)
 
-df_request <- GET(paste0('http://localhost:5000/datasets/', opt$dataset_id))
+df_request <- GET(paste0('http://localhost:5000/dataset/', opt$dataset_id, '/load'))
 df <- read.csv(text=content(df_request, 'text'))
 
 matrix_df <- data.matrix(df)
@@ -38,10 +38,11 @@ for (node in names(edges)){
     }
 }
 result_json <- list(
-    job_id=job_id,
+    job_id=opt$job_id,
     node_list=names(edges),
     edge_list=edge_list,
     meta_results=opt
 )
 
 graph_request <- POST('http://localhost:5000/results', encode='json', body=result_json)
+print(content(graph_request, 'text'))

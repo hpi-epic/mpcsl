@@ -3,11 +3,12 @@ from datetime import datetime
 from flask import current_app, request
 from flask_restful import Resource
 
-from src import db
-from src.models import Job, Result, Node, Edge
+from src.db import db
+from src.master.helpers.io import marshal
+from src.models import Job, Result, ResultSchema, Node, Edge
 
 
-class Results(Resource):
+class ResultListResource(Resource):
 
     def post(self):
         json = request.json
@@ -26,8 +27,8 @@ class Results(Resource):
             db.session.add(node)
 
         edge_list = json['edge_list']
-        for from_node, to_node in edge_list:
-            edge = Edge(from_node=node_mapping[from_node], to_node=node_mapping[to_node],
+        for edge in edge_list:
+            edge = Edge(from_node=node_mapping[edge['from']], to_node=node_mapping[edge['to']],
                         result=result)
             db.session.add(edge)
 
@@ -40,4 +41,4 @@ class Results(Resource):
         db.session.delete(job)
         current_app.logger.info('Result {} created'.format(result.id))
         db.session.commit()
-        return 'OK'
+        return marshal(ResultSchema, result)

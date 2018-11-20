@@ -1,4 +1,4 @@
-from master.appfactory import AppFactory
+from src.master.appfactory import AppFactory
 
 fact = AppFactory()
 

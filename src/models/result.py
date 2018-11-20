@@ -12,5 +12,5 @@ class Result(BaseModel):
 
 
 class ResultSchema(BaseSchema):
-    class Meta:
+    class Meta(BaseSchema.Meta):
         model = Result

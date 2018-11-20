@@ -11,5 +11,5 @@ class Job(BaseModel):
 
 
 class JobSchema(BaseSchema):
-    class Meta:
+    class Meta(BaseSchema.Meta):
         model = Job

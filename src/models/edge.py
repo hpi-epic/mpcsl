@@ -14,5 +14,5 @@ class Edge(BaseModel):
 
 
 class EdgeSchema(BaseSchema):
-    class Meta:
+    class Meta(BaseSchema.Meta):
         model = Edge

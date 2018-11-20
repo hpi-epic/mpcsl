@@ -9,5 +9,5 @@ class Node(BaseModel):
 
 
 class NodeSchema(BaseSchema):
-    class Meta:
+    class Meta(BaseSchema.Meta):
         model = Node

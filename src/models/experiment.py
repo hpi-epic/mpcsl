@@ -14,5 +14,5 @@ class Experiment(BaseModel):
 
 
 class ExperimentSchema(BaseSchema):
-    class Meta:
+    class Meta(BaseSchema.Meta):
         model = Experiment

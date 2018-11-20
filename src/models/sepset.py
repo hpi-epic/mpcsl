@@ -12,5 +12,5 @@ class SepSet(BaseModel):
 
 
 class SepSetSchema(BaseSchema):
-    class Meta:
+    class Meta(BaseSchema.Meta):
         model = SepSet

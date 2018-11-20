@@ -8,6 +8,17 @@ class BaseModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
+    def update(self, data):
+        for key, value in data.items():
+            setattr(self, key, value)
+
 
 class BaseSchema(ModelSchema):
     id = fields.Integer(dump_only=True)
+
+    class Meta:
+        sqla_session = db.session
+
+    def make_instance(self, data):
+        # Overridden to disable automatic loading by SQLAlchemy-Marshmallow.
+        return data

@@ -13,6 +13,8 @@ marshmallow==2.16.3
 marshmallow-sqlalchemy==0.15.0
 mccabe==0.6.1
 more-itertools==4.3.0
+numpy==1.15.2
+pandas==0.23.4
 pluggy==0.8.0
 psycopg2==2.7.6.1
 psycopg2-binary==2.7.6.1

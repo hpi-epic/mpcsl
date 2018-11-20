@@ -1,7 +1,7 @@
 from flask_restful import Resource
 
 from src.db import db
-from src.models.hello import Hello, HelloSchema
+from src.models import Hello, HelloSchema
 
 
 class HelloWorld(Resource):

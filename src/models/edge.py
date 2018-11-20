@@ -3,7 +3,6 @@ from src.models.base import BaseModel, BaseSchema
 
 
 class Edge(BaseModel):
-
     result_id = db.Column(db.Integer, db.ForeignKey('result.id'))
     result = db.relationship('Result')
 

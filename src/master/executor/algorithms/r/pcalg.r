@@ -33,7 +33,7 @@ from <- c()
 to <- c()
 for (node in names(edges)){
     for (edge in edges[[node]]){
-        from <- c(from, c(colnames(df)[strtoi(node)]))
+        from <- c(from, colnames(df)[strtoi(node)])
         to <- c(to, colnames(df)[strtoi(edge)])
     }
 }

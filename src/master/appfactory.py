@@ -25,7 +25,6 @@ class AppFactory(object):
         self.api = Api()
         set_up_routes(self.api)
         self.api.init_app(self.app)
-        # print(self.api.endpoints)
 
     def up(self):
         self.set_up_app()

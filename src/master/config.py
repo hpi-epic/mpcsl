@@ -4,11 +4,6 @@ import os
 APP_HOST = os.environ.get('APP_HOST', '0.0.0.0')
 APP_PORT = os.environ.get('APP_PORT', '5000')
 
-if APP_PORT != '80':
-    SERVER_NAME = APP_HOST + ':' + APP_PORT
-else:
-    SERVER_NAME = APP_HOST
-
 # Database
 DB_TYPE = os.environ.get('DB_TYPE', 'postgresql')
 DB_HOST = os.environ.get('DB_HOST', 'database')

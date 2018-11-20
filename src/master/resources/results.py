@@ -7,10 +7,9 @@ from flask_restful import Resource
 
 class Results(Resource):
 
-    def __init__(self, **kwargs):
-        self.logger = kwargs['logger']
-
     def post(self):
-        df = pd.read_csv(StringIO(str(request.data)))
-        current_app.logger.info(df)
+        result = '\n'.join(request.json['result'])
+        current_app.logger.info(result)
+        df = pd.read_csv(StringIO(result))
+        # current_app.logger.info(df)
         return 'OK'

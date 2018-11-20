@@ -7,7 +7,8 @@ class Experiment(BaseModel):
 
     independence_test = db.Column(db.String)
 
-    dataset_id = db.Column(db.Integer)
+    dataset_id = db.Column(db.Integer, db.ForeignKey('dataset.id'))
+    dataset = db.relationship('Dataset')
     # TODO: Dataset relationship
 
     cores = db.Column(db.Integer)

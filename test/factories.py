@@ -2,7 +2,7 @@ import factory
 from factory.alchemy import SQLAlchemyModelFactory
 
 
-from src.models import *
+from src.models import BaseModel, Dataset
 from src.db import db
 
 

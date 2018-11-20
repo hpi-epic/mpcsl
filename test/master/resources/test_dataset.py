@@ -2,7 +2,7 @@ from sqlalchemy import inspect
 import factory
 
 from src.db import db
-from src.master.resources.datasets import DatasetLoadResource, DatasetListResource, DatasetResource
+from src.master.resources.datasets import DatasetListResource, DatasetResource
 from src.models import Dataset
 from test.factories import DatasetFactory
 from .base import BaseResourceTest

@@ -27,4 +27,3 @@ def load_data(schema, location='json', *args, **kwargs):
 
 def marshal(schema, object, *args, **kwargs):
     return schema().dump(object, *args, **kwargs).data
-

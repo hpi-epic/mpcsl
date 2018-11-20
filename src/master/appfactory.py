@@ -22,9 +22,8 @@ class AppFactory(object):
         self.app.config.from_object('src.master.config')
 
     def set_up_api(self):
-        self.api = Api()
+        self.api = Api(self.app)
         set_up_routes(self.api)
-        self.api.init_app(self.app)
 
     def up(self):
         self.set_up_app()

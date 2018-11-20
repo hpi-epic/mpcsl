@@ -3,30 +3,35 @@ import pandas as pd
 from flask import Response
 from flask_restful import Resource
 
-
+from src.db import db
 from src.master.helpers.io import load_data, marshal
-from src.models.dataset import Dataset, DatasetSchema
+from src.models import Dataset, DatasetSchema
 
 
 class DatasetResource(Resource):
     def get(self, dataset_id):
-        ds = Dataset.get_or_404(dataset_id)
+        ds = Dataset.query.get_or_404(dataset_id)
 
         return marshal(DatasetSchema, ds)
 
     def put(self, dataset_id):
-        ds = Dataset.get_or_404(dataset_id)
+        ds = Dataset.query.get_or_404(dataset_id)
 
         ds.update(load_data(DatasetSchema))
+
+        db.session.commit()
 
         return marshal(DatasetSchema, ds)
 
     def delete(self, dataset_id):
-        ds = Dataset.get_or_404(dataset_id)
+        ds = Dataset.query.get_or_404(dataset_id)
 
-        self.db.session.delete(ds)
+        data = marshal(DatasetSchema, ds)
+        db.session.delete(ds)
 
-        return marshal(DatasetSchema, ds)
+        db.session.commit()
+
+        return data
 
 
 class DatasetListResource(Resource):
@@ -39,7 +44,9 @@ class DatasetListResource(Resource):
         data = load_data(DatasetSchema)
 
         ds = Dataset(**data)
-        self.db.session.add(ds)
+
+        db.session.add(ds)
+        db.session.commit()
 
         return marshal(DatasetSchema, ds)
 

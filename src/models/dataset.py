@@ -3,10 +3,10 @@ from src.models.base import BaseModel, BaseSchema
 
 
 class Dataset(BaseModel):
-    query = db.Column(db.String, required=True)
-    name = db.Column(db.String, required=True)
+    load_query = db.Column(db.String)
+    name = db.Column(db.String)
 
 
 class DatasetSchema(BaseSchema):
-    class Meta:
+    class Meta(BaseSchema.Meta):
         model = Dataset

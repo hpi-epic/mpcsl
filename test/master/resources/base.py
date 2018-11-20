@@ -19,7 +19,8 @@ class BaseResourceTest(BaseTest):
 
     def call(self, method, args, kwargs):
         if 'json' in kwargs:
-            kwargs['data'] = json.dumps(kwargs['json'])
+            kwargs['content_type'] = 'application/json'
+            kwargs['data'] = json.dumps(kwargs.pop('json')).encode('utf-8')
 
         result = method(*args, **kwargs)
 

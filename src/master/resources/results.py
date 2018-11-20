@@ -4,7 +4,7 @@ from flask import current_app, request
 from flask_restful import Resource
 
 from src import db
-from src.models import Job, Result, Node, Edge, SepSet
+from src.models import Job, Result, Node, Edge
 
 
 class Results(Resource):
@@ -31,11 +31,11 @@ class Results(Resource):
                         result=result)
             db.session.add(edge)
 
-        sepset_list = json['sepset_list']
-        for sepset in sepset_list:
-            sepset = SepSet(nodes=sepset['nodes'], statistic=sepset['statistic'],
-                            level=sepset['level'], result=result)
-            db.session.add(sepset)
+        # sepset_list = json['sepset_list']
+        # for sepset in sepset_list:
+        #     sepset = SepSet(nodes=sepset['nodes'], statistic=sepset['statistic'],
+        #                     level=sepset['level'], result=result)
+        #     db.session.add(sepset)
 
         db.session.delete(job)
         current_app.logger.info('Result {} created'.format(result.id))

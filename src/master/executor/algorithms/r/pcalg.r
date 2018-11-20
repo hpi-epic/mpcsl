@@ -4,6 +4,8 @@ library(pcalg)
 library(graph)
 
 option_list_v <- list(
+                    make_option(c("-j", "--job_id"), type="character",
+                                help="Job ID", metavar=""),
                     make_option(c("-d", "--dataset_id"), type="character",
                                 help="Dataset ID", metavar=""),
                     make_option(c("-a", "--alpha"), type="double", default=0.05,
@@ -29,15 +31,17 @@ result = pc(suffStat=sufficient_stats, indepTest=gaussCItest, p=ncol(matrix_df),
 graph <- result@'graph'
 
 edges <- edges(graph)
-from <- c()
-to <- c()
+edge_list <- list()
 for (node in names(edges)){
     for (edge in edges[[node]]){
-        from <- c(from, colnames(df)[strtoi(node)])
-        to <- c(to, colnames(df)[strtoi(edge)])
+        edge_list <- c(edge_list, list(from=colnames(df)[strtoi(node)], to=colnames(df)[strtoi(edge)]))
     }
 }
-edge_df = data.frame(start_node=from, end_node=to)
+result_json <- list(
+    job_id=job_id,
+    node_list=names(edges),
+    edge_list=edge_list,
+    meta_results=opt
+)
 
-graph_request <- POST('http://localhost:5000/results', encode='raw', type='text/csv',
-                      body=capture.output(write.csv(edge_df, row.names=FALSE)))
+graph_request <- POST('http://localhost:5000/results', encode='json', body=result_json)

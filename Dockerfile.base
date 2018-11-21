@@ -1,0 +1,9 @@
+FROM python:3.6.7
+RUN apt-get update && apt-get install -y r-base && apt-get install -y libv8-dev
+RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
+
+COPY requirements.txt ./app/
+COPY requirements.r ./app/
+WORKDIR ./app
+RUN Rscript requirements.r
+RUN pip install -r requirements.txt

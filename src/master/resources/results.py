@@ -2,17 +2,19 @@ from datetime import datetime
 
 from flask import current_app, request
 from flask_restful import Resource
+from marshmallow import Schema, fields
 
 from src.db import db
-from src.master.helpers.io import marshal
+from src.master.helpers.io import marshal, load_data
 from src.models import Job, Result, ResultSchema, Node, Edge
 
 
 class ResultListResource(Resource):
 
     def post(self):
-        json = request.json
-        job = Job.query.get(json['job_id'])
+        current_app.logger.info(request.json)
+        json = load_data(ResultSchema)
+        job = Job.query.get_or_404(json['job_id'])
 
         result = Result(experiment=job.experiment, start_time=job.start_time,
                         end_time=datetime.now(),
@@ -28,7 +30,7 @@ class ResultListResource(Resource):
 
         edge_list = json['edge_list']
         for edge in edge_list:
-            edge = Edge(from_node=node_mapping[edge['from']], to_node=node_mapping[edge['to']],
+            edge = Edge(from_node=node_mapping[edge['from_node']], to_node=node_mapping[edge['to_node']],
                         result=result)
             db.session.add(edge)
 
@@ -42,3 +44,21 @@ class ResultListResource(Resource):
         current_app.logger.info('Result {} created'.format(result.id))
         db.session.commit()
         return marshal(ResultSchema, result)
+
+
+class EdgeResultSchema(Schema):
+
+    from_node = fields.String()
+
+    to_node = fields.String()
+
+
+class ResultSchema(Schema):
+
+    job_id = fields.Integer()
+
+    meta_results = fields.Dict()
+
+    node_list = fields.List(fields.String())
+
+    edge_list = fields.Nested(EdgeResultSchema, many=True)

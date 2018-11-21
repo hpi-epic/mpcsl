@@ -20,11 +20,13 @@ class Executor(Resource):
 
         db.session.flush()
 
-        r_process = Popen(['Rscript', 'src/master/executor/algorithms/r/pcalg.r', '-j', str(1),#new_job.id,
-                           '-d', str(1),#str(experiment.dataset_id),
-                           '-a', str(0.9),#str(experiment.alpha),
-                           '-c', str(1)])#str(experiment.cores)])
+        r_process = Popen(['Rscript', 'src/master/executor/algorithms/r/pcalg.r', '-j', str(new_job.id),
+                           '-d', str(experiment.dataset_id),
+                           '-a', str(experiment.alpha),
+                           '-c', str(experiment.cores)])
 
         new_job.pid = r_process.pid
+
+        db.session.commit()
 
         return marshal(JobSchema, new_job)

@@ -1,3 +1,5 @@
+import numpy as np
+
 from src.master.appfactory import AppFactory
 from src.db import db
 from src.master.resources.experiments import Experiment
@@ -12,9 +14,24 @@ def add_experiment(db, dataset_id):
 
 
 def add_dataset(db):
-    new_dataset = Dataset(name="Porsche", load_query="")
+    new_dataset = Dataset(name="Porsche", load_query="SELECT * FROM test_data")
     db.session.add(new_dataset)
+
+    db.session.execute("""
+        CREATE TABLE IF NOT EXISTS test_data (
+            a float,
+            b float,
+            c float
+        );
+    """)
+
+    mean = [0, 5, 10]
+    cov = [[1, 0, 0], [0, 10, 0], [0, 0, 20]]
+    source = np.random.multivariate_normal(mean, cov, size=50)
+    for l in source:
+        db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
     db.session.commit()
+
     return new_dataset.id
 
 

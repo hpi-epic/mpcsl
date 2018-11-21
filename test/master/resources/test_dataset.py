@@ -78,9 +78,9 @@ class DatasetTest(BaseResourceTest):
 
         db.session.execute("""
             CREATE TABLE IF NOT EXISTS test_data (
-        	    a float,
-        	    b float,
-        	    c float
+                a float,
+                b float,
+                c float
             );
         """)
 

@@ -33,12 +33,8 @@ class ExecutorTest(BaseIntegrationTest):
         db.session.commit()
 
         # When
-        print(self.api.url_for(Executor, experiment_id=ex.id))
         job = requests.get(self.api.url_for(Executor, experiment_id=ex.id)).json()
         job = db.session.query(Job).get(job['id'])
-        # job = requests.get('http://{}/experiments'.format(SERVER_NAME)).json()
-        print(job)
-        print(ex)
 
         result = None
         i = 0

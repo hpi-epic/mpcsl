@@ -40,6 +40,6 @@ class JobFactory(BaseFactory):
         model = Job
         sqlalchemy_session = db.session
 
-    experiment = None  # factory.SubFactory(ExperimentFactory)
+    experiment = factory.SubFactory(ExperimentFactory)
     start_time = factory.Faker('date_time')
     pid = factory.Faker('pyint')

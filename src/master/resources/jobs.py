@@ -18,7 +18,7 @@ class JobResource(Resource):
         job = Job.query.get_or_404(job_id)
 
         os.kill(job.pid, signal.SIGTERM)
-        
+
         data = marshal(JobSchema, job)
         db.session.delete(job)
 

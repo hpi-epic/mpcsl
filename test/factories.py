@@ -31,5 +31,5 @@ class ExperimentFactory(BaseFactory):
         sqlalchemy_session = db.session
 
     alpha = factory.Lazy(lambda o: random.random())
-    cores = factory.Faker(lambda o: random.randint(0, 4))
+    cores = factory.Lazy(lambda o: random.randint(0, 4))
     dataset = factory.SubFactory(DatasetFactory)

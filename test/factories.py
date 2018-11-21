@@ -13,7 +13,7 @@ class BaseFactory(SQLAlchemyModelFactory):
         abstract = False
         sqlalchemy_session = db.session
         strategy = factory.CREATE_STRATEGY
-        sqlalchemy_session_persistence = 'flush'
+        sqlalchemy_session_persistence = 'commit'
 
 
 class DatasetFactory(BaseFactory):

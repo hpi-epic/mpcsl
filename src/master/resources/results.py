@@ -11,6 +11,11 @@ from src.models import Job, Result, ResultSchema, Node, Edge
 
 class ResultListResource(Resource):
 
+    def get(self):
+        results = Result.query.all()
+
+        return marshal(ResultSchema, results, many=True)
+
     def post(self):
         json = load_data(ResultEndpointSchema)
         job = Job.query.get_or_404(json['job_id'])

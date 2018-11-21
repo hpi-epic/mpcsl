@@ -1,8 +1,9 @@
 import factory
+import random
 from factory.alchemy import SQLAlchemyModelFactory
 
 
-from src.models import BaseModel, Dataset, Job
+from src.models import BaseModel, Dataset, Experiment, Job
 from src.db import db
 
 
@@ -22,6 +23,16 @@ class DatasetFactory(BaseFactory):
 
     name = factory.Faker('word')
     load_query = factory.Faker('file_path')
+
+
+class ExperimentFactory(BaseFactory):
+    class Meta:
+        model = Experiment
+        sqlalchemy_session = db.session
+
+    alpha = factory.LazyAttribute(lambda o: random.randint(0, 100)/100)
+    cores = factory.LazyAttribute(lambda o: random.randint(0, 4))
+    dataset = factory.SubFactory(DatasetFactory)
 
 
 class JobFactory(BaseFactory):

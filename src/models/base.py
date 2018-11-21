@@ -18,6 +18,7 @@ class BaseSchema(ModelSchema):
 
     class Meta:
         sqla_session = db.session
+        include_fk = True
 
     def make_instance(self, data):
         # Overridden to disable automatic loading by SQLAlchemy-Marshmallow.

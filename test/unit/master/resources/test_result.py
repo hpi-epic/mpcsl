@@ -20,9 +20,9 @@ class DatasetTest(BaseResourceTest):
 
         data = {
             'job_id': mock_job.id,
-            'meta_results': 'lol',
+            'meta_results': {'important_note': 'lol'},
             'edge_list': [
-                {'from': 'X1', 'to': 'X2'}
+                {'from_node': 'X1', 'to_node': 'X2'}
             ],
             'node_list': [
                 'X1', 'X2', 'X3'
@@ -42,7 +42,7 @@ class DatasetTest(BaseResourceTest):
 
         for edge in data['edge_list']:
             assert db.session.query(Edge).filter(
-                    Edge.from_node.has(name=edge['from'])
+                    Edge.from_node.has(name=edge['from_node'])
                 ).filter(
-                    Edge.to_node.has(name=edge['to'])
+                    Edge.to_node.has(name=edge['to_node'])
                 ).first() is not None

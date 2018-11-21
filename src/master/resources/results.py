@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import current_app, request
+from flask import current_app
 from flask_restful import Resource
 from marshmallow import Schema, fields
 
@@ -12,7 +12,7 @@ from src.models import Job, Result, ResultSchema, Node, Edge
 class ResultListResource(Resource):
 
     def post(self):
-        json = load_data(ResultSchema)
+        json = load_data(ResultEndpointSchema)
         job = Job.query.get_or_404(json['job_id'])
 
         result = Result(experiment=job.experiment, start_time=job.start_time,
@@ -46,18 +46,12 @@ class ResultListResource(Resource):
 
 
 class EdgeResultSchema(Schema):
-
     from_node = fields.String()
-
     to_node = fields.String()
 
 
-class ResultSchema(Schema):
-
+class ResultEndpointSchema(Schema):
     job_id = fields.Integer()
-
     meta_results = fields.Dict()
-
     node_list = fields.List(fields.String())
-
     edge_list = fields.Nested(EdgeResultSchema, many=True)

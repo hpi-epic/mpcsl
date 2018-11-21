@@ -7,6 +7,6 @@ __all__ = [
     'DatasetListResource',
     'DatasetResource',
     'ExperimentListResource',
-    'ExperimentResource'
+    'ExperimentResource',
     'Results'
 ]

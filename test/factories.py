@@ -30,7 +30,7 @@ class ExperimentFactory(BaseFactory):
         model = Experiment
         sqlalchemy_session = db.session
 
-    alpha = factory.LazyAttribute(lambda o: random.randint(0, 100)/100)
+    alpha = factory.LazyAttribute(lambda o: round(random.random(), 2))
     cores = factory.LazyAttribute(lambda o: random.randint(0, 4))
     dataset = factory.SubFactory(DatasetFactory)
 

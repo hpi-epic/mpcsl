@@ -31,14 +31,19 @@ result = pc(suffStat=sufficient_stats, indepTest=gaussCItest, p=ncol(matrix_df),
 graph <- result@'graph'
 
 edges <- edges(graph)
-edge_list <- c()
+from_list <- c()
+to_list <- c()
 node_list <- c()
 for (node in names(edges)){
     node_list <- c(node_list, colnames(df)[strtoi(node)])
     for (edge in edges[[node]]){
-        edge_list <- c(edge_list, list(from_node=colnames(df)[strtoi(node)], to_node=colnames(df)[strtoi(edge)]))
+        from_list <- c(from_list, colnames(df)[strtoi(node)])
+        to_list <- c(to_list, colnames(df)[strtoi(edge)])
     }
 }
+
+edge_list <- data.frame(from_node=from_list, to_node=to_list)
+
 result_json <- list(
     job_id=strtoi(opt$job_id),
     node_list=node_list,

@@ -12,7 +12,6 @@ from src.models import Job, Result, ResultSchema, Node, Edge
 class ResultListResource(Resource):
 
     def post(self):
-        current_app.logger.info(request.json)
         json = load_data(ResultSchema)
         job = Job.query.get_or_404(json['job_id'])
 

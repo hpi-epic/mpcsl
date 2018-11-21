@@ -1,4 +1,5 @@
 import factory
+import random
 from factory.alchemy import SQLAlchemyModelFactory
 
 
@@ -29,6 +30,6 @@ class ExperimentFactory(BaseFactory):
         model = Experiment
         sqlalchemy_session = db.session
 
-    alpha = factory.Faker('pyfloat')
-    cores = factory.Faker('pyint')
+    alpha = factory.Lazy(lambda o: random.random())
+    cores = factory.Faker(lambda o: random.randint(0, 4))
     dataset = factory.SubFactory(DatasetFactory)

@@ -1,6 +1,7 @@
 from .datasets import DatasetLoadResource, DatasetListResource, DatasetResource
 from .experiments import ExperimentListResource, ExperimentResource
 from .results import ResultListResource
+from .jobs import JobListResource, JobResource
 
 __all__ = [
     'DatasetLoadResource',
@@ -8,5 +9,7 @@ __all__ = [
     'DatasetResource',
     'ExperimentListResource',
     'ExperimentResource',
-    'Results'
+    'ResultListResource',
+    'JobListResource',
+    'JobResource'
 ]

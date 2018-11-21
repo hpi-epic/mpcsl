@@ -1,8 +1,12 @@
+import io
+
+import numpy as np
+import pandas as pd
 from sqlalchemy import inspect
 import factory
 
 from src.db import db
-from src.master.resources.datasets import DatasetListResource, DatasetResource
+from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource
 from src.models import Dataset
 from test.factories import DatasetFactory
 from .base import BaseResourceTest
@@ -65,3 +69,37 @@ class DatasetTest(BaseResourceTest):
 
         # Then
         assert ds.load_query == data['load_query'] == result['load_query']
+
+    def test_returns_the_correct_dataset(self):
+        # Given
+        ds = DatasetFactory(
+            load_query="SELECT * FROM test_data"
+        )
+
+        db.session.execute("""
+            CREATE TABLE IF NOT EXISTS test_data (
+                a float,
+                b float,
+                c float
+            );
+        """)
+
+        mean = [0, 5, 10]
+        cov = [[1, 0, 0], [0, 10, 0], [0, 0, 20]]
+        source = np.random.multivariate_normal(mean, cov, size=50)
+        for l in source:
+            db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+
+        db.session.commit()
+
+        # When
+        result = self.test_client.get(self.api.url_for(DatasetLoadResource, dataset_id=ds.id))
+
+        source = pd.DataFrame(source)
+        source.columns = ['a', 'b', 'c']
+        result = result.data.decode('utf-8')
+        result = io.StringIO(result)
+        result = pd.read_csv(result)
+
+        # Then
+        pd.testing.assert_frame_equal(source, result)

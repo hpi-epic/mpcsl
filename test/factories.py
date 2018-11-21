@@ -3,7 +3,7 @@ import random
 from factory.alchemy import SQLAlchemyModelFactory
 
 
-from src.models import BaseModel, Dataset, Experiment
+from src.models import BaseModel, Dataset, Experiment, Job
 from src.db import db
 
 
@@ -33,3 +33,13 @@ class ExperimentFactory(BaseFactory):
     alpha = factory.LazyAttribute(lambda o: random.randint(0, 100)/100)
     cores = factory.LazyAttribute(lambda o: random.randint(0, 4))
     dataset = factory.SubFactory(DatasetFactory)
+
+
+class JobFactory(BaseFactory):
+    class Meta:
+        model = Job
+        sqlalchemy_session = db.session
+
+    experiment = factory.SubFactory(ExperimentFactory)
+    start_time = factory.Faker('date_time')
+    pid = factory.Faker('pyint')

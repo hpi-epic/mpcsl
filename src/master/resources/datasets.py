@@ -1,5 +1,7 @@
-import numpy as np
-import pandas as pd
+import csv
+
+import io
+
 from flask import Response
 from flask_restful import Resource
 
@@ -54,8 +56,16 @@ class DatasetListResource(Resource):
 class DatasetLoadResource(Resource):
 
     def get(self, dataset_id):
-        mean = [0, 5, 10]
-        cov = [[1, 0, 0], [0, 10, 0], [0, 0, 20]]
-        ds = pd.DataFrame(np.random.multivariate_normal(mean, cov, size=1000), columns=['X1', 'X2', 'X3'])
-        resp = Response(ds.to_csv(index=False), mimetype='text/csv')
+        ds = Dataset.query.get_or_404(dataset_id)
+
+        result = db.session.execute(ds.load_query)
+        keys = result.keys()
+
+        f = io.StringIO()
+        wr = csv.writer(f)
+        wr.writerow(keys)
+        for line in result:
+            wr.writerow(line)
+
+        resp = Response(f.getvalue(), mimetype='text/csv')
         return resp

@@ -1,7 +1,8 @@
-library(optparse)
-library(httr)
-library(pcalg)
-library(graph)
+library(optparse, quietly = T)
+library(httr, quietly = T)
+library(pcalg, quietly = T)
+library(graph, quietly = T)
+library(jsonlite, quietly = T)
 
 option_list_v <- list(
                     make_option(c("-j", "--job_id"), type="character",
@@ -44,12 +45,13 @@ for (node in names(edges)){
 
 edge_list <- data.frame(from_node=from_list, to_node=to_list)
 
-result_json <- list(
+result_json <- jsonlite::toJSON(list(
     job_id=strtoi(opt$job_id),
     node_list=node_list,
-    edge_list=edge_list,
+    edge_list=if(nrow(edge_list) == 0) list() else edge_list,
     meta_results=opt
-)
+), auto_unbox=TRUE)
+# print(result_json)
 
-graph_request <- POST('http://localhost:5000/results', encode='json', body=result_json)
-print(content(graph_request, 'text'))
+graph_request <- POST('http://localhost:5000/results', body=result_json, add_headers("Content-Type" = "application/json"))
+# print(graph_request$request)

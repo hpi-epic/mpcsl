@@ -33,18 +33,20 @@ class ExecutorTest(BaseIntegrationTest):
         db.session.commit()
 
         # When
-        job = requests.get(self.api.url_for(Executor, experiment_id=ex.id)).json()
-        job = db.session.query(Job).get(job['id'])
+        job_r = requests.get(self.api.url_for(Executor, experiment_id=ex.id))
+        assert job_r.status_code >= 200 and job_r.status_code < 300
+
+        job = db.session.query(Job).get(job_r.json()['id'])
 
         result = None
         i = 0
         while result is None:
-            if i > 30:
+            if i > 15:
                 raise TimeoutError
             time.sleep(1)
 
             # If this fails because of transaction abort, check R script (use same session)
-            result = db.session.query(Result).first()
+            result = db.session.query(Result).filter(Result.experiment == ex).first()
             i += 1
 
         assert result.experiment_id == ex.id

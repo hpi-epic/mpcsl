@@ -10,7 +10,7 @@ ipak <- function(pkg){
 # non-CRAN dependencies
 bioc_packages <- c('graph', 'RBGL')
 # CRAN dependencies
-packages <- c('optparse', 'pcalg', 'httr')
+packages <- c('optparse', 'pcalg', 'httr', 'jsonlite')
 # <-------------------------------------------------
 
 

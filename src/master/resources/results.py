@@ -1,17 +1,24 @@
 from datetime import datetime
 
-from flask import current_app, request
+from flask import current_app
 from flask_restful import Resource
+from marshmallow import Schema, fields
 
-from src import db
-from src.models import Job, Result, Node, Edge, SepSet
+from src.db import db
+from src.master.helpers.io import marshal, load_data
+from src.models import Job, Result, ResultSchema, Node, Edge
 
 
-class Results(Resource):
+class ResultListResource(Resource):
+
+    def get(self):
+        results = Result.query.all()
+
+        return marshal(ResultSchema, results, many=True)
 
     def post(self):
-        json = request.json
-        job = Job.query.get(json['job_id'])
+        json = load_data(ResultEndpointSchema)
+        job = Job.query.get_or_404(json['job_id'])
 
         result = Result(experiment=job.experiment, start_time=job.start_time,
                         end_time=datetime.now(),
@@ -26,18 +33,30 @@ class Results(Resource):
             db.session.add(node)
 
         edge_list = json['edge_list']
-        for from_node, to_node in edge_list:
-            edge = Edge(from_node=node_mapping[from_node], to_node=node_mapping[to_node],
+        for edge in edge_list:
+            edge = Edge(from_node=node_mapping[edge['from_node']], to_node=node_mapping[edge['to_node']],
                         result=result)
             db.session.add(edge)
 
-        sepset_list = json['sepset_list']
-        for sepset in sepset_list:
-            sepset = SepSet(nodes=sepset['nodes'], statistic=sepset['statistic'],
-                            level=sepset['level'], result=result)
-            db.session.add(sepset)
+        # sepset_list = json['sepset_list']
+        # for sepset in sepset_list:
+        #     sepset = SepSet(nodes=sepset['nodes'], statistic=sepset['statistic'],
+        #                     level=sepset['level'], result=result)
+        #     db.session.add(sepset)
 
         db.session.delete(job)
         current_app.logger.info('Result {} created'.format(result.id))
         db.session.commit()
-        return 'OK'
+        return marshal(ResultSchema, result)
+
+
+class EdgeResultEndpointSchema(Schema):
+    from_node = fields.String()
+    to_node = fields.String()
+
+
+class ResultEndpointSchema(Schema):
+    job_id = fields.Integer()
+    meta_results = fields.Dict()
+    node_list = fields.List(fields.String())
+    edge_list = fields.Nested(EdgeResultEndpointSchema, many=True)

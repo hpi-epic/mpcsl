@@ -1,5 +1,9 @@
-FROM python:3.6.7
-COPY . ./app
-WORKDIR ./app
+FROM danthe1/mpci_backend:latest
+
+COPY requirements.txt /app/
+COPY requirements.r /app/
+WORKDIR /app
+RUN Rscript requirements.r
 RUN pip install -r requirements.txt
+COPY . .
 CMD ["python", "server.py"]

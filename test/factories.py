@@ -13,7 +13,7 @@ class BaseFactory(SQLAlchemyModelFactory):
         abstract = False
         sqlalchemy_session = db.session
         strategy = factory.CREATE_STRATEGY
-        sqlalchemy_session_persistence = 'flush'
+        sqlalchemy_session_persistence = 'commit'
 
 
 class DatasetFactory(BaseFactory):
@@ -30,8 +30,8 @@ class ExperimentFactory(BaseFactory):
         model = Experiment
         sqlalchemy_session = db.session
 
-    alpha = factory.LazyAttribute(lambda o: random.randint(0, 100)/100)
-    cores = factory.LazyAttribute(lambda o: random.randint(0, 4))
+    alpha = factory.LazyAttribute(lambda o: round(random.random(), 2))
+    cores = factory.LazyAttribute(lambda o: 1)
     dataset = factory.SubFactory(DatasetFactory)
 
 

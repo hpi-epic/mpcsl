@@ -8,7 +8,7 @@ class Result(BaseModel):
 
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
-    meta_results = db.Column(db.String)
+    meta_results = db.Column(db.JSON)
 
 
 class ResultSchema(BaseSchema):

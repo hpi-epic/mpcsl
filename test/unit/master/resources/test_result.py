@@ -26,6 +26,9 @@ class DatasetTest(BaseResourceTest):
             ],
             'node_list': [
                 'X1', 'X2', 'X3'
+            ],
+            'sepset_list': [
+                {'from_node': 'X2', 'to_node': 'X3', 'nodes': ['X1'], 'level': 1, 'statistic': 0.5}
             ]
         }
 

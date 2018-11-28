@@ -6,7 +6,7 @@ from marshmallow import Schema, fields
 
 from src.db import db
 from src.master.helpers.io import marshal, load_data
-from src.models import Job, Result, ResultSchema, Node, Edge
+from src.models import Job, Result, ResultSchema, Node, Edge, Sepset
 
 
 class ResultListResource(Resource):
@@ -38,11 +38,12 @@ class ResultListResource(Resource):
                         result=result)
             db.session.add(edge)
 
-        # sepset_list = json['sepset_list']
-        # for sepset in sepset_list:
-        #     sepset = SepSet(nodes=sepset['nodes'], statistic=sepset['statistic'],
-        #                     level=sepset['level'], result=result)
-        #     db.session.add(sepset)
+        sepset_list = json['sepset_list']
+        for sepset in sepset_list:
+            sepset = Sepset(nodes=[node_mapping[n].id for n in sepset['nodes']], statistic=sepset['statistic'],
+                            level=sepset['level'], from_node=node_mapping[sepset['from_node']],
+                            to_node=node_mapping[sepset['to_node']], result=result)
+            db.session.add(sepset)
 
         db.session.delete(job)
         current_app.logger.info('Result {} created'.format(result.id))
@@ -55,8 +56,17 @@ class EdgeResultEndpointSchema(Schema):
     to_node = fields.String()
 
 
+class SepsetResultEndpointSchema(Schema):
+    from_node = fields.String()
+    to_node = fields.String()
+    nodes = fields.List(fields.String())
+    level = fields.Integer()
+    statistic = fields.Float()
+
+
 class ResultEndpointSchema(Schema):
     job_id = fields.Integer()
     meta_results = fields.Dict()
     node_list = fields.List(fields.String())
     edge_list = fields.Nested(EdgeResultEndpointSchema, many=True)
+    sepset_list = fields.Nested(SepsetResultEndpointSchema, many=True)

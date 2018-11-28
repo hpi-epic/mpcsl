@@ -9,6 +9,8 @@ option_list_v <- list(
                                 help="Job ID", metavar=""),
                     make_option(c("-d", "--dataset_id"), type="character",
                                 help="Dataset ID", metavar=""),
+                    make_option(c("-t", "--independence_test"), type="character", default="gaussCI",
+                                help="Independence test used for the pcalg", metavar=""),
                     make_option(c("-a", "--alpha"), type="double", default=0.05,
                                 help="This is a hyperparameter", metavar=""),
                     make_option(c("-c", "--cores"), type="integer", default=1,
@@ -19,16 +21,21 @@ option_list_v <- list(
                                 help="The connections that are fixed via prior knowledge", metavar="")
 );
 
+indepTestDict <- list(gaussCI=gaussCItest, binCI=binCItest, disCI=disCItest)
+
 option_parser <- OptionParser(option_list=option_list_v)
 opt <- parse_args(option_parser)
+
+print(opt$independence_test)
 
 df_request <- GET(paste0('http://localhost:5000/dataset/', opt$dataset_id, '/load'))
 df <- read.csv(text=content(df_request, 'text'))
 
 matrix_df <- data.matrix(df)
 sufficient_stats <- list(C=cor(matrix_df),n=nrow(matrix_df))
-result = pc(suffStat=sufficient_stats, indepTest=gaussCItest, p=ncol(matrix_df),
-            alpha=opt$alpha, numCores=opt$cores)
+result = pc(suffStat=sufficient_stats,
+            indepTest=indepTestDict[[opt$independence_test]],
+            p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores)
 graph <- result@'graph'
 
 edges <- edges(graph)

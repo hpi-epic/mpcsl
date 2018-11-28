@@ -46,7 +46,7 @@ for (node in names(edges)){
     node_list <- c(node_list, colnames(df)[strtoi(node)])
     for (edge in edges[[node]]){
         edge_list[['from_node']][[i]] <- colnames(df)[strtoi(node)]
-        edge_list[['to_node']][[i]] <- colnames(df)[strtoi(node)]
+        edge_list[['to_node']][[i]] <- colnames(df)[strtoi(edge)]
         i <- i + 1
     }
 }

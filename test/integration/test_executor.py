@@ -34,7 +34,7 @@ class ExecutorTest(BaseIntegrationTest):
 
         # When
         job_r = requests.get(self.api.url_for(Executor, experiment_id=ex.id))
-        assert job_r.status_code >= 200 and job_r.status_code < 300
+        assert job_r.status_code == 200
 
         job = db.session.query(Job).get(job_r.json()['id'])
 

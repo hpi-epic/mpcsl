@@ -50,7 +50,7 @@ class ResultListResource(Resource):
         return marshal(ResultSchema, result)
 
 
-class EdgeResultSchema(Schema):
+class EdgeResultEndpointSchema(Schema):
     from_node = fields.String()
     to_node = fields.String()
 
@@ -59,4 +59,4 @@ class ResultEndpointSchema(Schema):
     job_id = fields.Integer()
     meta_results = fields.Dict()
     node_list = fields.List(fields.String())
-    edge_list = fields.Nested(EdgeResultSchema, many=True)
+    edge_list = fields.Nested(EdgeResultEndpointSchema, many=True)

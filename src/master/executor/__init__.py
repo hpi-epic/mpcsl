@@ -1,5 +1,5 @@
-from .executor import Executor
+from .executor import ExecutorResource
 
 __all__ = [
-    'Executor'
+    'ExecutorResource'
 ]

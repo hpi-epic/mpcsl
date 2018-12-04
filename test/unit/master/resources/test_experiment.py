@@ -31,7 +31,7 @@ class ExperimentTest(BaseResourceTest):
 
         # Then
         assert result['id'] == ex.id
-        assert result['alpha'] == ex.alpha
+        assert result['parameters']['alpha'] == ex.parameters['alpha']
 
     def test_create_new_experiment(self):
         # Given
@@ -46,4 +46,6 @@ class ExperimentTest(BaseResourceTest):
 
         # Then
         assert ex.dataset_id == ds.id
-        assert ex.alpha == data['alpha'] == result['alpha']
+        assert result['parameters']['alpha'] == \
+               ex.parameters['alpha'] == \
+               data['parameters']['alpha']

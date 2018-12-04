@@ -49,7 +49,7 @@ class ExecutorTest(BaseIntegrationTest):
             result = db.session.query(Result).filter(Result.experiment == ex).first()
             i += 1
 
-        assert result.experiment_id == ex.id
+        assert result.job_id == job.id
         assert result.start_time == job.start_time
 
         nodes = db.session.query(Node).all()

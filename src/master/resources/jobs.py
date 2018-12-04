@@ -23,7 +23,7 @@ class JobResource(Resource):
 
         os.kill(job.pid, signal.SIGTERM)
 
-        job.status = JobStatus.killed
+        job.status = JobStatus.cancelled
         db.session.commit()
 
         return marshal(JobSchema, job)

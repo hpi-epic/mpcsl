@@ -5,7 +5,7 @@ import requests
 
 from src.db import db
 from src.models import Result, Job, Node
-from src.master.executor import Executor
+from src.master.executor import ExecutorResource
 from test.factories import ExperimentFactory, DatasetFactory
 from .base import BaseIntegrationTest
 
@@ -33,7 +33,7 @@ class ExecutorTest(BaseIntegrationTest):
         db.session.commit()
 
         # When
-        job_r = requests.get(self.api.url_for(Executor, experiment_id=ex.id))
+        job_r = requests.get(self.api.url_for(ExecutorResource, experiment_id=ex.id))
         assert job_r.status_code == 200
 
         job = db.session.query(Job).get(job_r.json()['id'])

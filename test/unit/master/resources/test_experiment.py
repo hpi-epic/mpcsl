@@ -1,4 +1,3 @@
-from sqlalchemy import inspect
 import factory
 
 from src.db import db
@@ -47,5 +46,5 @@ class ExperimentTest(BaseResourceTest):
         # Then
         assert ex.dataset_id == ds.id
         assert result['parameters']['alpha'] == \
-               ex.parameters['alpha'] == \
-               data['parameters']['alpha']
+            ex.parameters['alpha'] == \
+            data['parameters']['alpha']

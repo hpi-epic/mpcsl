@@ -65,7 +65,6 @@ class JobResultResource(Resource):
         #                     level=sepset['level'], result=result)
         #     db.session.add(sepset)
 
-        db.session.delete(job)
         current_app.logger.info('Result {} created'.format(result.id))
         job.status = JobStatus.done
         db.session.commit()

@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import signal
 from unittest.mock import patch
 

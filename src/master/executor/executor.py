@@ -10,7 +10,7 @@ from src.models.job import Job, JobSchema
 from src.models.experiment import Experiment
 
 
-class Executor(Resource):
+class ExecutorResource(Resource):
 
     def get(self, experiment_id):
         current_app.logger.info('Got request')

@@ -60,5 +60,5 @@ result_json <- jsonlite::toJSON(list(
 ), auto_unbox=TRUE)
 # print(result_json)
 
-graph_request <- POST('http://localhost:5000/results', body=result_json, add_headers("Content-Type" = "application/json"))
+graph_request <- POST(paste0('http://localhost:5000/job/', opt$job_id, '/result'), body=result_json, add_headers("Content-Type" = "application/json"))
 # print(graph_request$request)

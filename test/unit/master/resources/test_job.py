@@ -67,9 +67,11 @@ class JobTest(BaseResourceTest):
                 'X1', 'X2', 'X3'
             ]
         }
+
         # When
         result = self.post(self.api.url_for(JobResultResource, job_id=mock_job.id), json=data)
         db_result = db.session.query(Result).first()
+
         # Then
         assert db_result.meta_results == data['meta_results'] == result['meta_results']
         assert db.session.query(Job).first() is None

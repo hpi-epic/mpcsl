@@ -8,12 +8,11 @@ INDEPENDENCE_TESTS = ["gaussCI", "disCI"]
 
 
 class Experiment(BaseModel):
-    parameters = db.Column(db.JSON)
-
     dataset_id = db.Column(db.Integer, db.ForeignKey('dataset.id'))
     dataset = db.relationship('Dataset')
 
     name = db.Column(db.String)
+    parameters = db.Column(db.JSON)
 
 
 class ExperimentParameterSchema(Schema):

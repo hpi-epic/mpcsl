@@ -46,7 +46,7 @@ class ExecutorTest(BaseIntegrationTest):
             time.sleep(1)
 
             # If this fails because of transaction abort, check R script (use same session)
-            result = db.session.query(Result).filter(Result.experiment == ex).first()
+            result = db.session.query(Result).filter(Result.job == job).first()
             i += 1
 
         assert result.job_id == job.id

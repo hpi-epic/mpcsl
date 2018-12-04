@@ -74,7 +74,6 @@ class JobTest(BaseResourceTest):
 
         # Then
         assert db_result.meta_results == data['meta_results'] == result['meta_results']
-        assert db.session.query(Job).first() is None
         for node in db.session.query(Node):
             assert node.name in data['node_list']
         for edge in data['edge_list']:

@@ -45,4 +45,4 @@ class JobTest(BaseResourceTest):
 
         # Then
         assert result['id'] == job.id
-        assert inspect(job).detached is True
+        assert result['status'] == "cancelled"

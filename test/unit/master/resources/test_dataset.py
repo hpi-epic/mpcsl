@@ -37,28 +37,6 @@ class DatasetTest(BaseResourceTest):
         assert result['id'] == ds.id
         assert result['load_query'] == ds.load_query
 
-    def test_delete_data_set(self):
-        # Given
-        ds = DatasetFactory()
-
-        # When
-        result = self.delete(self.api.url_for(DatasetResource, dataset_id=ds.id))
-
-        # Then
-        assert result['id'] == ds.id
-        assert inspect(ds).detached is True
-
-    def test_update_data_set(self):
-        # Given
-        ds = DatasetFactory()
-        update_data = factory.build(dict, FACTORY_CLASS=DatasetFactory)
-
-        # When
-        result = self.put(self.api.url_for(DatasetResource, dataset_id=ds.id), json=update_data)
-
-        # Then
-        assert ds.load_query == update_data['load_query'] == result['load_query']
-
     def test_create_new_data_set(self):
         # Given
         data = factory.build(dict, FACTORY_CLASS=DatasetFactory)

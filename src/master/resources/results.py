@@ -20,7 +20,7 @@ class ResultListResource(Resource):
         json = load_data(ResultEndpointSchema)
         job = Job.query.get_or_404(json['job_id'])
 
-        result = Result(experiment=job.experiment, start_time=job.start_time,
+        result = Result(job=job, start_time=job.start_time,
                         end_time=datetime.now(),
                         meta_results=json['meta_results'])
         db.session.add(result)

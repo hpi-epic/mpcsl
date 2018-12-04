@@ -1,5 +1,14 @@
+import enum
+
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
+
+
+class JobStatus(str, enum.Enum):
+    running = "running"
+    done = "done"
+    error = "error"
+    cancelled = "cancelled"
 
 
 class Job(BaseModel):
@@ -8,6 +17,7 @@ class Job(BaseModel):
 
     start_time = db.Column(db.DateTime, nullable=False)
     pid = db.Column(db.Integer)
+    status = db.Column(db.Enum(JobStatus))
 
 
 class JobSchema(BaseSchema):

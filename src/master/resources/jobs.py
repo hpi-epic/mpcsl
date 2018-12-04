@@ -6,6 +6,7 @@ from flask_restful import Resource
 from src.db import db
 from src.master.helpers.io import marshal
 from src.models import Job, JobSchema
+from src.models.job import JobStatus
 
 
 class JobResource(Resource):
@@ -19,12 +20,10 @@ class JobResource(Resource):
 
         os.kill(job.pid, signal.SIGTERM)
 
-        data = marshal(JobSchema, job)
-        db.session.delete(job)
-
+        job.status = JobStatus.killed
         db.session.commit()
 
-        return data
+        return marshal(JobSchema, job)
 
 
 class JobListResource(Resource):

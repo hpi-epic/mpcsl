@@ -16,25 +16,6 @@ class DatasetResource(Resource):
 
         return marshal(DatasetSchema, ds)
 
-    def put(self, dataset_id):
-        ds = Dataset.query.get_or_404(dataset_id)
-
-        ds.update(load_data(DatasetSchema))
-
-        db.session.commit()
-
-        return marshal(DatasetSchema, ds)
-
-    def delete(self, dataset_id):
-        ds = Dataset.query.get_or_404(dataset_id)
-
-        data = marshal(DatasetSchema, ds)
-        db.session.delete(ds)
-
-        db.session.commit()
-
-        return data
-
 
 class DatasetListResource(Resource):
     def get(self):

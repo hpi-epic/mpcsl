@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
+set -e
 
-#if [[ "$TRAVIS_BRANCH" = "master" && $TRAVIS_PULL_REQUEST = "false" ]]; then
-if [[ "$TRAVIS_BRANCH" = "master" ]]; then
+#if [[ $TRAVIS_BRANCH = "master" && $TRAVIS_PULL_REQUEST = "false" ]] ; then
+if [[ $TRAVIS_BRANCH = "master" ]]; then
     echo "Deploying the master"
     eval "$(ssh-agent -s)" # start the ssh agent
     chmod 600 .travis/deploy_key
@@ -9,7 +10,7 @@ if [[ "$TRAVIS_BRANCH" = "master" ]]; then
     ssh-add .travis/deploy_key
     git remote add deploy ssh://deploy@mpci.epic-hpi.de:/home/deploy/mpci
     git push deploy master
-    ssh deploy@mpci.epic-hpi.de <<EOF
+    ssh deploy@mpci.epic-hpi.de /bin/bash <<EOF
       cd mpci
       docker-compose down
       docker-compose build

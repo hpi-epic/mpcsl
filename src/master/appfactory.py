@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restful import Api
+from flask_restful_swagger_2 import Api
 
 from src.db import db
 from .routes import set_up_routes
@@ -22,7 +22,7 @@ class AppFactory(object):
         self.app.config.from_object('src.master.config')
 
     def set_up_api(self):
-        self.api = Api(self.app)
+        self.api = Api(self.app, api_version='0.0.1', api_spec_url='/swagger')
         set_up_routes(self.api)
 
     def up(self):

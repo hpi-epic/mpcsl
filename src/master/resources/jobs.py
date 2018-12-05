@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 import signal
+from flask_restful_swagger_2 import swagger
 
 from flask import current_app
 from flask_restful import Resource
@@ -8,16 +9,44 @@ from marshmallow import fields, Schema
 
 from src.db import db
 from src.master.helpers.io import marshal, load_data
+from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result
+from src.models.base import SwaggerMixin
 from src.models.job import JobStatus
 
 
 class JobResource(Resource):
+    @swagger.doc({
+        'description': 'Returns a single job',
+        'parameters': [
+            {
+                'name': 'job_id',
+                'description': 'Job identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(JobSchema.get_swagger())
+    })
     def get(self, job_id):
         job = Job.query.get_or_404(job_id)
 
         return marshal(JobSchema, job)
 
+    @swagger.doc({
+        'description': 'Deletes a single job, this also kills the process',
+        'parameters': [
+            {
+                'name': 'job_id',
+                'description': 'Job identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(JobSchema.get_swagger())
+    })
     def delete(self, job_id):
         job = Job.query.get_or_404(job_id)
 
@@ -30,6 +59,10 @@ class JobResource(Resource):
 
 
 class JobListResource(Resource):
+    @swagger.doc({
+        'description': 'Returns all jobs',
+        'responses': get_default_response(JobSchema.get_swagger().array())
+    })
     def get(self):
         job = Job.query.all()
 
@@ -37,6 +70,19 @@ class JobListResource(Resource):
 
 
 class JobResultResource(Resource):
+    @swagger.doc({
+        'description': 'Stores the results of job execution. Job is marked as done.',
+        'parameters': [
+            {
+                'name': 'job_id',
+                'description': 'Job identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(ResultSchema.get_swagger())
+    })
     def post(self, job_id):
         json = load_data(ResultEndpointSchema)
         job = Job.query.get_or_404(job_id)
@@ -71,12 +117,12 @@ class JobResultResource(Resource):
         return marshal(ResultSchema, result)
 
 
-class EdgeResultEndpointSchema(Schema):
+class EdgeResultEndpointSchema(Schema, SwaggerMixin):
     from_node = fields.String()
     to_node = fields.String()
 
 
-class ResultEndpointSchema(Schema):
+class ResultEndpointSchema(Schema, SwaggerMixin):
     meta_results = fields.Dict()
     node_list = fields.List(fields.String())
     edge_list = fields.Nested(EdgeResultEndpointSchema, many=True)

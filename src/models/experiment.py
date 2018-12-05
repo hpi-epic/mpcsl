@@ -3,6 +3,7 @@ from marshmallow.validate import OneOf
 
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
+from src.models.swagger import SwaggerMixin
 
 INDEPENDENCE_TESTS = ["gaussCI", "disCI", "binCI"]
 
@@ -15,7 +16,7 @@ class Experiment(BaseModel):
     parameters = db.Column(db.JSON)
 
 
-class ExperimentParameterSchema(Schema):
+class ExperimentParameterSchema(Schema, SwaggerMixin):
     alpha = fields.Float(required=True)
     independence_test = fields.String(required=True, validate=OneOf(INDEPENDENCE_TESTS))
     cores = fields.Integer(required=True)

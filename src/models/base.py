@@ -2,6 +2,8 @@ from src.db import db
 from marshmallow_sqlalchemy import ModelSchema
 from marshmallow import fields
 
+from src.models.swagger import SwaggerMixin
+
 
 class BaseModel(db.Model):
     __abstract__ = True
@@ -13,10 +15,11 @@ class BaseModel(db.Model):
             setattr(self, key, value)
 
 
-class BaseSchema(ModelSchema):
+class BaseSchema(ModelSchema, SwaggerMixin):
     id = fields.Integer(dump_only=True)
 
     class Meta:
+        dump_only = ['id']
         sqla_session = db.session
         include_fk = True
 

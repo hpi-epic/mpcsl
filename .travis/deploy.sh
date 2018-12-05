@@ -6,7 +6,7 @@ if [[ $TRAVIS_BRANCH != "master" ]]; then
     exit 0
 fi
 
-set -ex
+set -e
 echo "Deploying the master"
 eval "$(ssh-agent -s)"
 chmod 600 .travis/deploy_key

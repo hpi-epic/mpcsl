@@ -57,6 +57,14 @@ class SwaggerMixin(object):
                     definition = field.schema.get_swagger()
                     if field.many:
                         definition = definition.array()
+                elif type(field) == fields.List:
+                    definition = {
+                        'type': 'array',
+                        'items': {
+                            'type': TYPE_MAP[type(field.container)],
+                            'format': FORMAT_MAP[type(field.container)]
+                        }
+                    }
                 else:
                     definition = {
                         'type': TYPE_MAP[type(field)],

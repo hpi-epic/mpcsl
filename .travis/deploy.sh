@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-set -e
 
 #if [[ $TRAVIS_BRANCH = "master" && $TRAVIS_PULL_REQUEST = "false" ]] ; then
 if [[ $TRAVIS_BRANCH = "master" ]]; then
+    set -e
     echo "Deploying the master"
     eval "$(ssh-agent -s)" # start the ssh agent
     chmod 600 .travis/deploy_key

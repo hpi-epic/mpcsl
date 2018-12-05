@@ -22,7 +22,18 @@ class AppFactory(object):
         self.app.config.from_object('src.master.config')
 
     def set_up_api(self):
-        self.api = Api(self.app, api_version='0.0.1', api_spec_url='/swagger')
+        self.api = Api(
+            self.app,
+            api_version='0.0.1',
+            api_spec_url='/swagger',
+            description='This describes the MPCI backend API. '
+                        'The API allows it to define and execute causal '
+                        'inference jobs.',
+            host=self.app.config['SERVER_NAME'],
+            consumes=['application/json'],
+            produces=['application/json', 'application/csv'],
+            title='Causal Inference Pipeline API'
+        )
         set_up_routes(self.api)
 
     def up(self):

@@ -182,3 +182,4 @@ rsconnect/
 # End of https://www.gitignore.io/api/r,python
 
 conf/
+deploy_key

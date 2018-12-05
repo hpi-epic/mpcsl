@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_restful_swagger_2 import Api
 
@@ -18,7 +20,7 @@ class AppFactory(object):
             self.db.create_all()
 
     def set_up_app(self):
-        self.app = Flask(__name__)
+        self.app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'), static_url_path='/static')
         self.app.config.from_object('src.master.config')
 
     def set_up_api(self):
@@ -31,7 +33,7 @@ class AppFactory(object):
                         'inference jobs.',
             host=self.app.config['SERVER_NAME'],
             consumes=['application/json'],
-            produces=['application/json', 'application/csv'],
+            produces=['application/json'],
             title='Causal Inference Pipeline API'
         )
         set_up_routes(self.api)

@@ -107,7 +107,8 @@ class DatasetLoadResource(Resource):
             '500': {
                 'description': 'Internal server error (likely due to broken query)'
             }
-        }
+        },
+        'produces': ['application/csv']
     })
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)

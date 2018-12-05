@@ -19,7 +19,6 @@ class BaseSchema(ModelSchema, SwaggerMixin):
     id = fields.Integer(dump_only=True)
 
     class Meta:
-        dump_only = ['id']
         sqla_session = db.session
         include_fk = True
 

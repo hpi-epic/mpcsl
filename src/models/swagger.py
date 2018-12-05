@@ -10,7 +10,9 @@ TYPE_MAP = {
     fields.DateTime: 'string',
     sqlaFields.Related: 'integer',
     fields.Field: 'string',
-    fields.Raw: 'object'
+    fields.Raw: 'object',
+    fields.Dict: 'object',
+    fields.List: 'array'
 }
 
 FORMAT_MAP = {
@@ -20,7 +22,9 @@ FORMAT_MAP = {
     fields.DateTime: 'date-time',
     sqlaFields.Related: 'int64',
     fields.Field: 'string',
-    fields.Raw: 'object'
+    fields.Raw: 'object',
+    fields.Dict: 'object',
+    fields.List: 'array'
 }
 
 SWAGGER_SCHEMATA = {}
@@ -30,14 +34,14 @@ class SwaggerMixin(object):
     SwaggerSchema = {}
 
     @classmethod
-    def include_field(cls, fieldname):
+    def include_field(cls, fieldname, field):
         if not hasattr(cls, 'Meta'):
             return True
 
         dump_only = cls.Meta.dump_only if hasattr(cls.Meta, 'dump_only') else []
         exclude = cls.Meta.exclude if hasattr(cls.Meta, 'exclude') else []
 
-        return fieldname not in dump_only + exclude
+        return not field.dump_only and fieldname not in dump_only + exclude
 
     @classmethod
     def get_swagger(cls, for_load=False):
@@ -48,9 +52,11 @@ class SwaggerMixin(object):
         properties = {}
         for fieldname, field in cls._declared_fields.items():
             if type(field) != sqlaFields.Related and \
-                    (not for_load or cls.include_field(fieldname)):
+                    (not for_load or cls.include_field(fieldname, field)):
                 if type(field) == fields.Nested:
                     definition = field.schema.get_swagger()
+                    if field.many:
+                        definition = definition.array()
                 else:
                     definition = {
                         'type': TYPE_MAP[type(field)],

@@ -69,6 +69,17 @@ class JobListResource(Resource):
         return marshal(JobSchema, job, many=True)
 
 
+class EdgeResultEndpointSchema(Schema, SwaggerMixin):
+    from_node = fields.String()
+    to_node = fields.String()
+
+
+class ResultEndpointSchema(Schema, SwaggerMixin):
+    meta_results = fields.Dict()
+    node_list = fields.List(fields.String())
+    edge_list = fields.Nested(EdgeResultEndpointSchema, many=True)
+
+
 class JobResultResource(Resource):
     @swagger.doc({
         'description': 'Stores the results of job execution. Job is marked as done.',
@@ -79,6 +90,12 @@ class JobResultResource(Resource):
                 'in': 'path',
                 'type': 'integer',
                 'required': True
+            },
+            {
+                'name': 'result',
+                'description': 'Result data',
+                'in': 'body',
+                'schema': ResultEndpointSchema.get_swagger(True)
             }
         ],
         'responses': get_default_response(ResultSchema.get_swagger())
@@ -115,14 +132,3 @@ class JobResultResource(Resource):
         job.status = JobStatus.done
         db.session.commit()
         return marshal(ResultSchema, result)
-
-
-class EdgeResultEndpointSchema(Schema, SwaggerMixin):
-    from_node = fields.String()
-    to_node = fields.String()
-
-
-class ResultEndpointSchema(Schema, SwaggerMixin):
-    meta_results = fields.Dict()
-    node_list = fields.List(fields.String())
-    edge_list = fields.Nested(EdgeResultEndpointSchema, many=True)

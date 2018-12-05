@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-#if [[ $TRAVIS_BRANCH = "master"  ]] ; then
-if [[ $TRAVIS_BRANCH != "master" || $TRAVIS_PULL_REQUEST != "false" ]]; then
+#if [[ $TRAVIS_BRANCH != "master" || $TRAVIS_PULL_REQUEST != "false" ]]; then
+if [[ $TRAVIS_BRANCH != "master" ]]; then
+    echo "Skip deploying"
     exit 0
 fi
 

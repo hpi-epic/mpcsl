@@ -1,17 +1,32 @@
 from datetime import datetime
 from subprocess import Popen
+from flask_restful_swagger_2 import swagger
 
 from flask import current_app
 from flask_restful import Resource
 
 from src.master.helpers.io import marshal
 from src.db import db
+from src.master.helpers.swagger import get_default_response
 from src.models.job import Job, JobSchema
 from src.models.experiment import Experiment
 
 
 class ExecutorResource(Resource):
 
+    @swagger.doc({
+        'description': 'Starts a new job for this experiment',
+        'parameters': [
+            {
+                'name': 'experiment_id',
+                'description': 'Experiment identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(JobSchema.get_swagger())
+    })
     def get(self, experiment_id):
         current_app.logger.info('Got request')
         experiment = Experiment.query.get_or_404(experiment_id)

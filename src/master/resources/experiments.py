@@ -11,23 +11,12 @@ class ExperimentResource(Resource):
 
         return marshal(ExperimentSchema, ds)
 
-    def put(self, experiment_id):
-        ds = Experiment.query.get_or_404(experiment_id)
-
-        ds.update(load_data(ExperimentSchema))
-
-        db.session.commit()
-
-        return marshal(ExperimentSchema, ds)
-
     def delete(self, experiment_id):
         ds = Experiment.query.get_or_404(experiment_id)
-
         data = marshal(ExperimentSchema, ds)
+
         db.session.delete(ds)
-
         db.session.commit()
-
         return data
 
 

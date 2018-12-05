@@ -5,7 +5,7 @@ import requests
 
 from src.db import db
 from src.models import Result, Job, Node
-from src.master.executor import Executor
+from src.master.executor import ExecutorResource
 from test.factories import ExperimentFactory, DatasetFactory
 from .base import BaseIntegrationTest
 
@@ -33,7 +33,7 @@ class ExecutorTest(BaseIntegrationTest):
         db.session.commit()
 
         # When
-        job_r = requests.get(self.api.url_for(Executor, experiment_id=ex.id))
+        job_r = requests.get(self.api.url_for(ExecutorResource, experiment_id=ex.id))
         assert job_r.status_code == 200
 
         job = db.session.query(Job).get(job_r.json()['id'])
@@ -46,10 +46,10 @@ class ExecutorTest(BaseIntegrationTest):
             time.sleep(1)
 
             # If this fails because of transaction abort, check R script (use same session)
-            result = db.session.query(Result).filter(Result.experiment == ex).first()
+            result = db.session.query(Result).filter(Result.job == job).first()
             i += 1
 
-        assert result.experiment_id == ex.id
+        assert result.job_id == job.id
         assert result.start_time == job.start_time
 
         nodes = db.session.query(Node).all()

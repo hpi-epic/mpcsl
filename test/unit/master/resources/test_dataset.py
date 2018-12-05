@@ -2,8 +2,8 @@ import io
 
 import numpy as np
 import pandas as pd
-from sqlalchemy import inspect
 import factory
+from sqlalchemy import inspect
 
 from src.db import db
 from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource
@@ -36,28 +36,6 @@ class DatasetTest(BaseResourceTest):
         # Then
         assert result['id'] == ds.id
         assert result['load_query'] == ds.load_query
-
-    def test_delete_data_set(self):
-        # Given
-        ds = DatasetFactory()
-
-        # When
-        result = self.delete(self.api.url_for(DatasetResource, dataset_id=ds.id))
-
-        # Then
-        assert result['id'] == ds.id
-        assert inspect(ds).detached is True
-
-    def test_update_data_set(self):
-        # Given
-        ds = DatasetFactory()
-        update_data = factory.build(dict, FACTORY_CLASS=DatasetFactory)
-
-        # When
-        result = self.put(self.api.url_for(DatasetResource, dataset_id=ds.id), json=update_data)
-
-        # Then
-        assert ds.load_query == update_data['load_query'] == result['load_query']
 
     def test_create_new_data_set(self):
         # Given
@@ -103,3 +81,14 @@ class DatasetTest(BaseResourceTest):
 
         # Then
         pd.testing.assert_frame_equal(source, result)
+
+    def test_delete_dataset(self):
+        # Given
+        ex = DatasetFactory()
+
+        # When
+        result = self.delete(self.api.url_for(DatasetResource, dataset_id=ex.id))
+
+        # Then
+        assert result['id'] == ex.id
+        assert inspect(ex).detached is True

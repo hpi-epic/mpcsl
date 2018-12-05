@@ -30,10 +30,12 @@ class ExperimentFactory(BaseFactory):
         model = Experiment
         sqlalchemy_session = db.session
 
-    alpha = factory.LazyAttribute(lambda o: round(random.random(), 2))
-    independence_test = factory.LazyAttribute(lambda o: "gaussCI")
-    cores = factory.LazyAttribute(lambda o: 1)
     dataset = factory.SubFactory(DatasetFactory)
+    parameters = factory.LazyAttribute(lambda o: {
+        'alpha': round(random.random(), 2),
+        'independence_test': 'gaussCI',
+        'cores': 1
+    })
 
 
 class JobFactory(BaseFactory):

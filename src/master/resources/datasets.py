@@ -16,6 +16,14 @@ class DatasetResource(Resource):
 
         return marshal(DatasetSchema, ds)
 
+    def delete(self, dataset_id):
+        ds = Dataset.query.get_or_404(dataset_id)
+        data = marshal(DatasetSchema, ds)
+
+        db.session.delete(ds)
+        db.session.commit()
+        return data
+
 
 class DatasetListResource(Resource):
     def get(self):

@@ -10,6 +10,14 @@ class ExperimentResource(Resource):
         ds = Experiment.query.get_or_404(experiment_id)
 
         return marshal(ExperimentSchema, ds)
+    
+    def delete(self, experiment_id):
+        ds = Experiment.query.get_or_404(experiment_id)
+        data = marshal(ExperimentSchema, ds)
+
+        db.session.delete(ds)
+        db.session.commit()
+        return data
 
 
 class ExperimentListResource(Resource):

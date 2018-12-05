@@ -80,3 +80,14 @@ class DatasetTest(BaseResourceTest):
 
         # Then
         pd.testing.assert_frame_equal(source, result)
+
+    def test_delete_dataset(self):
+        # Given
+        ex = DatasetFactory()
+
+        # When
+        result = self.delete(self.api.url_for(DatasetResource, dataset_id=ex.id))
+
+        # Then
+        assert result['id'] == ex.id
+        assert inspect(ex).detached is True

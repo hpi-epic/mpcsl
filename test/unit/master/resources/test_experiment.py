@@ -1,4 +1,5 @@
 import factory
+from sqlalchemy import inspect
 
 from src.db import db
 from src.master.resources.experiments import ExperimentListResource, ExperimentResource
@@ -48,3 +49,14 @@ class ExperimentTest(BaseResourceTest):
         assert result['parameters']['alpha'] == \
             ex.parameters['alpha'] == \
             data['parameters']['alpha']
+
+    def test_delete_experiment(self):
+        # Given
+        ex = ExperimentFactory()
+
+        # When
+        result = self.delete(self.api.url_for(ExperimentResource, experiment_id=ex.id))
+
+        # Then
+        assert result['id'] == ex.id
+        assert inspect(ex).detached is True

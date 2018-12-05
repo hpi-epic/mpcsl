@@ -4,7 +4,7 @@ from marshmallow.validate import OneOf
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
 
-INDEPENDENCE_TESTS = ["gaussCI", "disCI"]
+INDEPENDENCE_TESTS = ["gaussCI", "disCI", "binCI"]
 
 
 class Experiment(BaseModel):

@@ -12,7 +12,7 @@ class Sepset(BaseModel):
     to_node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     to_node = db.relationship('Node', foreign_keys=[to_node_id])
 
-    nodes = db.Column(db.ARRAY(db.Integer), nullable=False)
+    node_names = db.Column(db.ARRAY(db.String), nullable=False)
     statistic = db.Column(db.Float, nullable=False)
     level = db.Column(db.Integer, nullable=False)
 

@@ -40,7 +40,7 @@ class ResultListResource(Resource):
 
         sepset_list = json['sepset_list']
         for sepset in sepset_list:
-            sepset = Sepset(nodes=[node_mapping[n].id for n in sepset['nodes']], statistic=sepset['statistic'],
+            sepset = Sepset(node_names=sepset['nodes'], statistic=sepset['statistic'],
                             level=sepset['level'], from_node=node_mapping[sepset['from_node']],
                             to_node=node_mapping[sepset['to_node']], result=result)
             db.session.add(sepset)

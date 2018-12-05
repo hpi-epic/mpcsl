@@ -62,7 +62,7 @@ for(from_node in 1:length(sepsets)){
         if(length(sepset) > 0){
             sepset_list[['from_node']][[i]] <- colnames(df)[from_node]
             sepset_list[['to_node']][[i]] <- colnames(df)[to_node]
-            ss_nodes_list[[i]] <- sepset
+            ss_nodes_list[[i]] <- list(sepset)
             sepset_list[['statistic']][[i]] <- 0
             sepset_list[['level']][[i]] <- length(sepset)
             i <- i + 1

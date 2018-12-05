@@ -3,6 +3,7 @@ import io
 import numpy as np
 import pandas as pd
 import factory
+from sqlalchemy import inspect
 
 from src.db import db
 from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource

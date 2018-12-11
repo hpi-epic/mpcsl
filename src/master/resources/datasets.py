@@ -1,47 +1,79 @@
 import csv
-
 import io
 
+from flask_restful_swagger_2 import swagger
 from flask import Response
 from flask_restful import Resource
 
 from src.db import db
 from src.master.helpers.io import load_data, marshal
+from src.master.helpers.swagger import get_default_response
 from src.models import Dataset, DatasetSchema
 
 
 class DatasetResource(Resource):
+    @swagger.doc({
+        'description': 'Returns a single dataset',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'Dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(DatasetSchema.get_swagger())
+    })
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
 
         return marshal(DatasetSchema, ds)
 
-    def put(self, dataset_id):
-        ds = Dataset.query.get_or_404(dataset_id)
-
-        ds.update(load_data(DatasetSchema))
-
-        db.session.commit()
-
-        return marshal(DatasetSchema, ds)
-
+    @swagger.doc({
+        'description': 'Deletes a dataset',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'Dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(DatasetSchema.get_swagger())
+    })
     def delete(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
-
         data = marshal(DatasetSchema, ds)
+
         db.session.delete(ds)
-
         db.session.commit()
-
         return data
 
 
 class DatasetListResource(Resource):
+    @swagger.doc({
+        'description': 'Returns all available datasets',
+        'responses': get_default_response(DatasetSchema.get_swagger().array())
+    })
     def get(self):
         ds = Dataset.query.all()
 
         return marshal(DatasetSchema, ds, many=True)
 
+    @swagger.doc({
+        'description': 'Creates a dataset',
+        'responses': get_default_response(DatasetSchema.get_swagger()),
+        'parameters': [
+            {
+                'name': 'dataset',
+                'description': 'Dataset parameters',
+                'in': 'body',
+                'schema': DatasetSchema.get_swagger(True)
+            }
+        ]
+    })
     def post(self):
         data = load_data(DatasetSchema)
 
@@ -54,7 +86,30 @@ class DatasetListResource(Resource):
 
 
 class DatasetLoadResource(Resource):
-
+    @swagger.doc({
+        'description': 'Returns a CSV formatted dataframe that contains the result of the query execution.',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'Dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': {
+            '200': {
+                'description': 'Success',
+            },
+            '404': {
+                'description': 'Dataset not found'
+            },
+            '500': {
+                'description': 'Internal server error (likely due to broken query)'
+            }
+        },
+        'produces': ['application/csv']
+    })
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
 

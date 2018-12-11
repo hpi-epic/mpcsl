@@ -1,5 +1,5 @@
-from sqlalchemy import inspect
 import factory
+from sqlalchemy import inspect
 
 from src.db import db
 from src.master.resources.experiments import ExperimentListResource, ExperimentResource
@@ -31,30 +31,7 @@ class ExperimentTest(BaseResourceTest):
 
         # Then
         assert result['id'] == ex.id
-        assert result['alpha'] == ex.alpha
-
-    def test_delete_experiment(self):
-        # Given
-        ex = ExperimentFactory()
-
-        # When
-        result = self.delete(self.api.url_for(ExperimentResource, experiment_id=ex.id))
-
-        # Then
-        assert result['id'] == ex.id
-        assert inspect(ex).detached is True
-
-    def test_update_experiment(self):
-        # Given
-        ex = ExperimentFactory()
-        update_data = factory.build(dict, FACTORY_CLASS=ExperimentFactory)
-        update_data.pop('dataset')
-
-        # When
-        result = self.put(self.api.url_for(ExperimentResource, experiment_id=ex.id), json=update_data)
-
-        # Then
-        assert ex.alpha == update_data['alpha'] == result['alpha']
+        assert result['parameters']['alpha'] == ex.parameters['alpha']
 
     def test_create_new_experiment(self):
         # Given
@@ -69,4 +46,17 @@ class ExperimentTest(BaseResourceTest):
 
         # Then
         assert ex.dataset_id == ds.id
-        assert ex.alpha == data['alpha'] == result['alpha']
+        assert result['parameters']['alpha'] == \
+            ex.parameters['alpha'] == \
+            data['parameters']['alpha']
+
+    def test_delete_experiment(self):
+        # Given
+        ex = ExperimentFactory()
+
+        # When
+        result = self.delete(self.api.url_for(ExperimentResource, experiment_id=ex.id))
+
+        # Then
+        assert result['id'] == ex.id
+        assert inspect(ex).detached is True

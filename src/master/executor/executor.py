@@ -1,17 +1,32 @@
 from datetime import datetime
 from subprocess import Popen
+from flask_restful_swagger_2 import swagger
 
 from flask import current_app
 from flask_restful import Resource
 
 from src.master.helpers.io import marshal
 from src.db import db
+from src.master.helpers.swagger import get_default_response
 from src.models.job import Job, JobSchema
 from src.models.experiment import Experiment
 
 
-class Executor(Resource):
+class ExecutorResource(Resource):
 
+    @swagger.doc({
+        'description': 'Starts a new job for this experiment',
+        'parameters': [
+            {
+                'name': 'experiment_id',
+                'description': 'Experiment identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(JobSchema.get_swagger())
+    })
     def get(self, experiment_id):
         current_app.logger.info('Got request')
         experiment = Experiment.query.get_or_404(experiment_id)
@@ -20,11 +35,16 @@ class Executor(Resource):
         db.session.add(new_job)
         db.session.flush()
 
-        r_process = Popen(['Rscript', 'src/master/executor/algorithms/r/pcalg.r', '-j', str(new_job.id),
-                           '-d', str(experiment.dataset_id),
-                           '-a', str(experiment.alpha),
-                           '-c', str(experiment.cores),
-                           '-t', str(experiment.independence_test.value)])
+        params = []
+        for k, v in experiment.parameters.items():
+            params.append('--' + k)
+            params.append(str(v))
+
+        r_process = Popen([
+            'Rscript', 'src/master/executor/algorithms/r/pcalg.r',
+            '-j', str(new_job.id),
+            '-d', str(experiment.dataset_id)
+        ] + params)
 
         new_job.pid = r_process.pid
         db.session.commit()

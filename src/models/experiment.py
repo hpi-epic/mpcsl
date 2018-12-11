@@ -1,5 +1,6 @@
 from marshmallow import fields, Schema
 from marshmallow.validate import OneOf
+from sqlalchemy.ext.mutable import MutableDict
 
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
@@ -13,7 +14,7 @@ class Experiment(BaseModel):
     dataset = db.relationship('Dataset')
 
     name = db.Column(db.String)
-    parameters = db.Column(db.JSON)
+    parameters = db.Column(MutableDict.as_mutable(db.JSON))
 
 
 class ExperimentParameterSchema(Schema, SwaggerMixin):

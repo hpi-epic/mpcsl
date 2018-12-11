@@ -65,6 +65,8 @@ class JobTest(BaseResourceTest):
             ],
             'node_list': [
                 'X1', 'X2', 'X3'
+            ],
+            'sepset_list': [
             ]
         }
 

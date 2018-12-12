@@ -10,7 +10,7 @@ from marshmallow import fields, Schema
 from src.db import db
 from src.master.helpers.io import marshal, load_data
 from src.master.helpers.swagger import get_default_response
-from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result
+from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset
 from src.models.base import SwaggerMixin
 from src.models.job import JobStatus
 
@@ -96,10 +96,19 @@ class EdgeResultEndpointSchema(Schema, SwaggerMixin):
     to_node = fields.String()
 
 
+class SepsetResultEndpointSchema(Schema, SwaggerMixin):
+    from_node = fields.String()
+    to_node = fields.String()
+    nodes = fields.List(fields.String())
+    level = fields.Integer()
+    statistic = fields.Float()
+
+
 class ResultEndpointSchema(Schema, SwaggerMixin):
     meta_results = fields.Dict()
     node_list = fields.List(fields.String())
     edge_list = fields.Nested(EdgeResultEndpointSchema, many=True)
+    sepset_list = fields.Nested(SepsetResultEndpointSchema, many=True)
 
 
 class JobResultResource(Resource):
@@ -144,11 +153,12 @@ class JobResultResource(Resource):
                         result=result)
             db.session.add(edge)
 
-        # sepset_list = json['sepset_list']
-        # for sepset in sepset_list:
-        #     sepset = SepSet(nodes=sepset['nodes'], statistic=sepset['statistic'],
-        #                     level=sepset['level'], result=result)
-        #     db.session.add(sepset)
+        sepset_list = json['sepset_list']
+        for sepset in sepset_list:
+            sepset = Sepset(node_names=sepset['nodes'], statistic=sepset['statistic'],
+                            level=sepset['level'], from_node=node_mapping[sepset['from_node']],
+                            to_node=node_mapping[sepset['to_node']], result=result)
+            db.session.add(sepset)
 
         current_app.logger.info('Result {} created'.format(result.id))
         job.status = JobStatus.done

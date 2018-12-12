@@ -5,7 +5,7 @@ from .job import Job, JobSchema
 from .result import Result, ResultSchema
 from .node import Node, NodeSchema
 from .edge import Edge, EdgeSchema
-from .sepset import SepSet, SepSetSchema
+from .sepset import Sepset, SepsetSchema
 
 __all__ = [
     'BaseModel',
@@ -17,8 +17,8 @@ __all__ = [
     'ExperimentSchema',
     'Result',
     'ResultSchema',
-    'SepSet',
-    'SepSetSchema',
+    'Sepset',
+    'SepsetSchema',
     'Node',
     'NodeSchema',
     'Job',

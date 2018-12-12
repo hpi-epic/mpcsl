@@ -21,15 +21,15 @@ class BaseIntegrationTest(TestCase):
         cls.app_context.push()
         cls.db = db
 
-        def run_func(app):
-            app.run(host="0.0.0.0", port='5000', debug=True, use_reloader=False, threaded=True)
-        cls.app_thread = Process(target=run_func, args=(cls.app, ))
-
     @classmethod
     def tearDownClass(cls):
         cls.db.engine.dispose()
 
     def setUp(self):
+        def run_func(app):
+            app.run(host="0.0.0.0", port='5000', debug=True, use_reloader=False, threaded=True)
+        self.app_thread = Process(target=run_func, args=(self.app, ))
+
         self.db.create_all()
 
         self.app_thread.start()

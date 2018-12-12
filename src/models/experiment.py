@@ -17,6 +17,8 @@ class Experiment(BaseModel):
 
     @property
     def last_job(self):
+        if len(self.jobs) == 0:
+            return None
         return sorted(self.jobs, key=lambda x: x.start_time)[-1]
 
 

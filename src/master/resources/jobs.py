@@ -69,6 +69,28 @@ class JobListResource(Resource):
         return marshal(JobSchema, job, many=True)
 
 
+class ExperimentJobListResource(Resource):
+    @swagger.doc({
+        'description': 'Returns all jobs of one specific experiment ordered by their start time',
+        'parameters': [
+            {
+                'name': 'experiment_id',
+                'description': 'Experiment identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(JobSchema.get_swagger().array())
+    })
+    def get(self, experiment_id):
+        job = Job.query\
+            .filter(Job.experiment_id == experiment_id)\
+            .order_by(Job.start_time)
+
+        return marshal(JobSchema, job, many=True)
+
+
 class EdgeResultEndpointSchema(Schema, SwaggerMixin):
     from_node = fields.String()
     to_node = fields.String()

@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 
 from src.db import db
-from src.master.resources.jobs import JobListResource, JobResource, JobResultResource
+from src.master.resources.jobs import JobListResource, JobResource, JobResultResource, ExperimentJobListResource
 from src.models import Experiment, Job, Result, Node, Edge
 from test.factories import JobFactory, DatasetFactory
 from .base import BaseResourceTest
@@ -34,6 +34,28 @@ class JobTest(BaseResourceTest):
         # Then
         assert result['id'] == job.id
         assert result['pid'] == job.pid
+
+    def test_returns_jobs_for_experiment(self):
+        # Given
+        job = JobFactory()
+        job2 = JobFactory(experiment=job.experiment)
+        if job2.start_time > job.start_time:
+            j = job
+            job = job2
+            job2 = j
+
+        JobFactory()
+
+        # When
+        result = self.get(self.api.url_for(
+            ExperimentJobListResource,
+            experiment_id=job.experiment_id
+        ))
+
+        # Then
+        assert len(result) == 2
+        assert result[0]['id'] == job.id
+        assert result[1]['id'] == job2.id
 
     def test_delete_job(self):
         # Given

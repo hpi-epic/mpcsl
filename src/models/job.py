@@ -12,9 +12,12 @@ class JobStatus(str, enum.Enum):
 
 
 class Job(BaseModel):
-    experiment_id = db.Column(db.Integer, db.ForeignKey('experiment.id'), nullable=False)
-    experiment = db.relationship('Experiment')
-
+    experiment_id = db.Column(
+        db.Integer,
+        db.ForeignKey('experiment.id'),
+        nullable=False
+    )
+    experiment = db.relationship('Experiment', backref='jobs')
     start_time = db.Column(db.DateTime, nullable=False)
     pid = db.Column(db.Integer)
     status = db.Column(db.Enum(JobStatus))

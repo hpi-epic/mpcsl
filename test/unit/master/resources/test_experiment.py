@@ -1,10 +1,12 @@
+import datetime
+
 import factory
 from sqlalchemy import inspect
 
 from src.db import db
 from src.master.resources.experiments import ExperimentListResource, ExperimentResource
 from src.models import Experiment
-from test.factories import ExperimentFactory, DatasetFactory
+from test.factories import ExperimentFactory, DatasetFactory, JobFactory
 from .base import BaseResourceTest
 
 
@@ -25,6 +27,7 @@ class ExperimentTest(BaseResourceTest):
     def test_returns_my_experiment(self):
         # Given
         ex = ExperimentFactory()
+        job = JobFactory(experiment=ex)
 
         # When
         result = self.get(self.api.url_for(ExperimentResource, experiment_id=ex.id))
@@ -32,6 +35,7 @@ class ExperimentTest(BaseResourceTest):
         # Then
         assert result['id'] == ex.id
         assert result['parameters']['alpha'] == ex.parameters['alpha']
+        assert result['last_job']['id'] == job.id
 
     def test_create_new_experiment(self):
         # Given

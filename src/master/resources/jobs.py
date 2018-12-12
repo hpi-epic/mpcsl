@@ -86,7 +86,7 @@ class ExperimentJobListResource(Resource):
     def get(self, experiment_id):
         job = Job.query\
             .filter(Job.experiment_id == experiment_id)\
-            .order_by(Job.start_time.asc())
+            .order_by(Job.start_time.desc())
 
         return marshal(JobSchema, job, many=True)
 

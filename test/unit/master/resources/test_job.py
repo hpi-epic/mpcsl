@@ -35,7 +35,7 @@ class JobTest(BaseResourceTest):
         assert result['id'] == job.id
         assert result['pid'] == job.pid
 
-    def test_returns_jobs_for_Experiment(self):
+    def test_returns_jobs_for_experiment(self):
         # Given
         job = JobFactory()
         job2 = JobFactory(experiment=job.experiment)

@@ -3,4 +3,9 @@ services:
   backend:
     build: .
     ports:
-     - "5000:5000"
+     - 5000:5000
+    depends_on:
+      - database
+    env_file:
+      - conf/backend.env
+    restart: on-failure

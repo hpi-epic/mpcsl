@@ -23,6 +23,7 @@ class DatasetFactory(BaseFactory):
 
     name = factory.Faker('word')
     load_query = factory.Faker('file_path')
+    description = factory.Faker('text')
 
 
 class ExperimentFactory(BaseFactory):

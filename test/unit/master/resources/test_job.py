@@ -39,7 +39,7 @@ class JobTest(BaseResourceTest):
         # Given
         job = JobFactory()
         job2 = JobFactory(experiment=job.experiment)
-        if job2.start_time < job.start_time:
+        if job2.start_time > job.start_time:
             j = job
             job = job2
             job2 = j

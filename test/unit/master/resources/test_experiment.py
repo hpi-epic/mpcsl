@@ -1,5 +1,3 @@
-import datetime
-
 import factory
 from sqlalchemy import inspect
 

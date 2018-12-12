@@ -15,6 +15,12 @@ class Experiment(BaseModel):
     name = db.Column(db.String)
     parameters = db.Column(db.JSON)
 
+    @property
+    def last_job(self):
+        if len(self.jobs) == 0:
+            return None
+        return sorted(self.jobs, key=lambda x: x.start_time)[-1]
+
 
 class ExperimentParameterSchema(Schema, SwaggerMixin):
     alpha = fields.Float(required=True)
@@ -24,6 +30,7 @@ class ExperimentParameterSchema(Schema, SwaggerMixin):
 
 class ExperimentSchema(BaseSchema):
     parameters = fields.Nested(ExperimentParameterSchema)
+    last_job = fields.Nested('JobSchema')
 
     class Meta(BaseSchema.Meta):
         model = Experiment

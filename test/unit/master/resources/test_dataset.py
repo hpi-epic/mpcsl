@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import factory
 from sqlalchemy import inspect
+from marshmallow.utils import from_iso
 
 from src.db import db
 from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource
@@ -36,6 +37,9 @@ class DatasetTest(BaseResourceTest):
         # Then
         assert result['id'] == ds.id
         assert result['load_query'] == ds.load_query
+        assert result['name'] == ds.name
+        assert result['description'] == ds.description
+        assert from_iso(result['time_created']) == ds.time_created
 
     def test_create_new_data_set(self):
         # Given

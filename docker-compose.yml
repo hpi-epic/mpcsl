@@ -10,6 +10,7 @@ services:
       - database
     env_file:
       - conf/backend.env
+    restart: on-failure
   database:
     image: postgres:latest
     volumes:
@@ -27,3 +28,4 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@database:5432/postgres?sslmode=disable
     depends_on:
       - database
+    restart: on-failure

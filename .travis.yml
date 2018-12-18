@@ -10,3 +10,5 @@ install:
 script:
   - docker-compose run backend flake8
   - docker-compose run backend pytest
+git:
+  submodules: false

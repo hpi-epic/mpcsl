@@ -17,4 +17,4 @@ def set_up_routes(api):
     api.add_resource(JobResultResource, '/job/<int:job_id>/result')
     api.add_resource(JobListResource, '/jobs')
     api.add_resource(ResultListResource, '/results')
-    api.add_resource(ResultResource, '/result/')
+    api.add_resource(ResultResource, '/result/<int:result_id>')

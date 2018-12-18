@@ -3,7 +3,7 @@ import random
 from factory.alchemy import SQLAlchemyModelFactory
 
 
-from src.models import BaseModel, Dataset, Experiment, Job
+from src.models import BaseModel, Dataset, Experiment, Job, Result, Node, Edge, Sepset
 from src.db import db
 
 
@@ -47,3 +47,29 @@ class JobFactory(BaseFactory):
     experiment = factory.SubFactory(ExperimentFactory)
     start_time = factory.Faker('date_time')
     pid = factory.Faker('pyint')
+
+
+class ResultFactory(BaseFactory):
+    class Meta:
+        model = Result
+        sqlalchemy_session = db.session
+
+    job = factory.SubFactory(JobFactory)
+
+
+class NodeFactory(BaseFactory):
+    class Meta:
+        model = Node
+        sqlalchemy_session = db.session
+
+
+class EdgeFactory(BaseFactory):
+    class Meta:
+        model = Edge
+        sqlalchemy_session = db.session
+
+
+class SepsetFactory(BaseFactory):
+    class Meta:
+        model = Sepset
+        sqlalchemy_session = db.session

@@ -32,7 +32,7 @@ df_request <- GET(paste0('http://localhost:5000/dataset/', opt$dataset_id, '/loa
 df <- read.csv(text=content(df_request, 'text'))
 
 matrix_df <- data.matrix(df)
-sufficient_stats <- list(C=cor(matrix_df),n=nrow(matrix_df))
+sufficient_stats <- list(C=cor(matrix_df), n=nrow(matrix_df))
 result = pc(suffStat=sufficient_stats,
             indepTest=indepTestDict[[opt$independence_test]],
             p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores)

@@ -1,0 +1,3 @@
+[submodule "static/ui"]
+	path = static/ui
+	url = git@github.com:threxx/mpci-frontend.git

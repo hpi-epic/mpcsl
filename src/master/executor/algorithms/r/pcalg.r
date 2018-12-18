@@ -28,7 +28,7 @@ opt <- parse_args(option_parser)
 
 print(opt$independence_test)
 
-df_request <- GET(paste0('http://localhost:5000/dataset/', opt$dataset_id, '/load'))
+df_request <- GET(paste0('http://localhost:5000/api/dataset/', opt$dataset_id, '/load'))
 df <- read.csv(text=content(df_request, 'text'))
 
 matrix_df <- data.matrix(df)
@@ -81,5 +81,5 @@ result_json <- jsonlite::toJSON(list(
 ), auto_unbox=TRUE)
 # print(result_json)
 
-graph_request <- POST(paste0('http://localhost:5000/job/', opt$job_id, '/result'), body=result_json, add_headers("Content-Type" = "application/json"))
+graph_request <- POST(paste0('http://localhost:5000/api/job/', opt$job_id, '/result'), body=result_json, add_headers("Content-Type" = "application/json"))
 # print(graph_request$request)

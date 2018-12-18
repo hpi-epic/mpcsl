@@ -16,9 +16,11 @@ The following features are currently under active development and will be added 
 - Integrate prior knowledge into the algorithms
 - Add additional steps to pre-process datasets
 
-The following images show the holistic architecture as a FMC diagram and our data model as ER diagram.
+The following image shows the holistic architecture as a FMC diagram:
 
-![FMC-Image](https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwjg_J38lqnfAhXNb1AKHdZODxkQjRx6BAgBEAU&url=%2Furl%3Fsa%3Di%26source%3Dimages%26cd%3D%26ved%3D%26url%3Dhttps%253A%252F%252Floremipsum.io%252F21-of-the-best-placeholder-image-generators%252F%26psig%3DAOvVaw2DZro9Krww7UVHbUq2w3HP%26ust%3D1545215633923981&psig=AOvVaw2DZro9Krww7UVHbUq2w3HP&ust=1545215633923981 "FMC Architecture Diagram")
+<img src="https://github.com/danthe96/mpci/blob/feature/readme/docs/fmc_architecture.png?raw=true" width="600" title="FMC Architecture Diagram">
+
+Additionally, the data model can be seen as ER diagram:
 
 <img src="https://github.com/danthe96/mpci/blob/feature/readme/docs/er_diagram.png" width="600" title="ER Datamodel Diagram">
 

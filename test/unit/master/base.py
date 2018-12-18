@@ -14,6 +14,7 @@ class BaseTest(TestCase):
         cls.app_context.push()
         cls.test_client = cls.app.test_client()
         cls.db = db
+        cls.original_tables = cls.db.metadata.sorted_tables
 
     @classmethod
     def tearDownClass(cls):
@@ -29,8 +30,7 @@ class BaseTest(TestCase):
         self.drop_all()
 
     def drop_all(self):
-        con = self.db.session()
-        meta = db.metadata
-        for table in reversed(meta.sorted_tables):
-            con.execute(table.delete())
-        con.commit()
+        for tbl in reversed(self.db.metadata.sorted_tables):
+            tbl.drop(self.db.engine)
+            if tbl not in self.original_tables:
+                self.db.metadata.remove(tbl)

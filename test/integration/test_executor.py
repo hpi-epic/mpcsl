@@ -67,7 +67,7 @@ class SepsetExecutorTest(BaseIntegrationTest):
             load_query="SELECT * FROM test_data"
         )
         df = pd.read_csv('test/fixtures/coolinghouse_1k.csv', index_col=0)
-        df.to_sql('test_data', con=db.engine, index=False)  # , if_exists='replace')
+        df.to_sql('test_data', con=db.engine, index=False)
         ex = ExperimentFactory(dataset=ds)
         ex.parameters['alpha'] = 0.05
         db.session.commit()

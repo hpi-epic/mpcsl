@@ -7,9 +7,15 @@ from src.master.resources.datasets import Dataset
 
 
 def add_experiment(db, dataset_id):
-    new_experiment = Experiment(alpha=0.9, cores=1,
-                                independence_test="gaussCI",
-                                dataset_id=dataset_id)
+    new_experiment = Experiment(
+        dataset_id=dataset_id,
+        parameters={
+            'alpha': 0.9,
+            'cores': 1,
+            'independence_test': 'gaussCI'
+        }
+    )
+    
     db.session.add(new_experiment)
     db.session.commit()
 

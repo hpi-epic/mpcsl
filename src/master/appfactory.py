@@ -34,7 +34,29 @@ class AppFactory(object):
             host=self.app.config['SERVER_NAME'],
             consumes=['application/json'],
             produces=['application/json'],
-            title='Causal Inference Pipeline API'
+            title='Causal Inference Pipeline API',
+            tags=[
+                {
+                    'name': 'Experiment',
+                    'description': 'All endpoints related to the definition of experiments.'
+                },
+                {
+                    'name': 'Dataset',
+                    'description': 'All endpoints related to the definition of datasets.'
+                },
+                {
+                    'name': 'Job',
+                    'description': 'Provides information about running and historic jobs.'
+                },
+                {
+                    'name': 'Result',
+                    'description': 'Provides execution results and metadata'
+                },
+                {
+                    'name': 'Executor',
+                    'description': 'Endpoints used by the worker processes to load data and store results.'
+                }
+            ]
         )
         set_up_routes(self.api)
 

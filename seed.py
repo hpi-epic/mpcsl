@@ -15,7 +15,7 @@ def add_experiment(db, dataset_id):
             'independence_test': 'gaussCI'
         }
     )
-    
+
     db.session.add(new_experiment)
     db.session.commit()
 

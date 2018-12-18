@@ -1,0 +1,17 @@
+FROM node:latest
+
+RUN apt-get update && apt-get install -yq nginx && rm -rf /var/lib/apt/lists/*
+RUN npm install -g yarn
+
+COPY ./nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY ./static/swagger /var/www/mpci/swagger
+COPY ./static/ui/package.json /var/www/mpci/ui/package.json
+COPY ./static/ui/yarn.lock /var/www/mpci/ui/yarn.lock
+
+WORKDIR /var/www/mpci/ui
+RUN yarn install
+
+COPY ./static/ui/ /var/www/mpci/ui
+RUN yarn run build
+
+CMD ["nginx", "-g", "daemon off;"]

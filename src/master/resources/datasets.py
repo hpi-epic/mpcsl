@@ -23,7 +23,8 @@ class DatasetResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(DatasetSchema.get_swagger())
+        'responses': get_default_response(DatasetSchema.get_swagger()),
+        'tags': ['Dataset']
     })
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
@@ -41,7 +42,8 @@ class DatasetResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(DatasetSchema.get_swagger())
+        'responses': get_default_response(DatasetSchema.get_swagger()),
+        'tags': ['Dataset']
     })
     def delete(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
@@ -55,7 +57,8 @@ class DatasetResource(Resource):
 class DatasetListResource(Resource):
     @swagger.doc({
         'description': 'Returns all available datasets',
-        'responses': get_default_response(DatasetSchema.get_swagger().array())
+        'responses': get_default_response(DatasetSchema.get_swagger().array()),
+        'tags': ['Dataset']
     })
     def get(self):
         ds = Dataset.query.all()
@@ -72,7 +75,8 @@ class DatasetListResource(Resource):
                 'in': 'body',
                 'schema': DatasetSchema.get_swagger(True)
             }
-        ]
+        ],
+        'tags': ['Dataset']
     })
     def post(self):
         data = load_data(DatasetSchema)
@@ -108,7 +112,8 @@ class DatasetLoadResource(Resource):
                 'description': 'Internal server error (likely due to broken query)'
             }
         },
-        'produces': ['application/csv']
+        'produces': ['application/csv'],
+        'tags': ['Executor']
     })
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)

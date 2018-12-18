@@ -47,5 +47,5 @@ This will start our backend with the default configuration.
 ## Endpoint Documentation
 
 A Swagger documentation of our REST endpoints is available using
-http://localhost:5000/static/ui/index.html
+http://localhost:5000/static/swagger/index.html
 given default host and port settings.

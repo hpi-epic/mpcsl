@@ -1,0 +1,43 @@
+version: '3'
+services:
+  backend:
+    container_name: backend
+    volumes:
+     - ./:/app
+    build: .
+    depends_on:
+      - database
+    env_file:
+      - conf/backend.env
+    restart: on-failure
+    command: "uwsgi --ini /app/uwsgi.ini"
+  database:
+    image: postgres:latest
+    volumes:
+      - /var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 'postgres'
+  ui:
+    image: nginx
+    links:
+      - backend
+    depends_on:
+      - backend
+    volumes:
+    - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
+    - ./static:/var/www/mpci
+    ports:
+    - 5000:5000
+    restart: on-failure
+  db-ui:
+    image: sosedoff/pgweb
+    ports:
+      - "8081:8081"
+    links:
+      - database
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@database:5432/postgres?sslmode=disable
+    depends_on:
+      - database
+    restart: on-failure

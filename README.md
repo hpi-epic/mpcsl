@@ -18,11 +18,11 @@ The following features are currently under active development and will be added 
 
 The following image shows the holistic architecture as a FMC diagram:
 
-<img src="https://github.com/danthe96/mpci/blob/feature/readme/docs/fmc_architecture.png?raw=true" width="600" title="FMC Architecture Diagram">
+<img src="https://user-images.githubusercontent.com/8962207/50157097-d2869800-02d0-11e9-9c15-299442846712.png" width="600" title="FMC Architecture Diagram">
 
 Additionally, the data model can be seen as ER diagram:
 
-<img src="https://github.com/danthe96/mpci/blob/feature/readme/docs/er_diagram.png" width="600" title="ER Datamodel Diagram">
+<img src="https://user-images.githubusercontent.com/8962207/50157111-e03c1d80-02d0-11e9-80a9-96d301355201.png" width="600" title="ER Datamodel Diagram">
 
 ## Setup
 

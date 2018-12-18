@@ -18,9 +18,9 @@ The following features are currently under active development and will be added 
 
 The following images show the holistic architecture as a FMC diagram and our data model as ER diagram.
 
-![alt text](https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwjg_J38lqnfAhXNb1AKHdZODxkQjRx6BAgBEAU&url=%2Furl%3Fsa%3Di%26source%3Dimages%26cd%3D%26ved%3D%26url%3Dhttps%253A%252F%252Floremipsum.io%252F21-of-the-best-placeholder-image-generators%252F%26psig%3DAOvVaw2DZro9Krww7UVHbUq2w3HP%26ust%3D1545215633923981&psig=AOvVaw2DZro9Krww7UVHbUq2w3HP&ust=1545215633923981 "FMC Architecture Diagram")
+![FMC-Image](https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwjg_J38lqnfAhXNb1AKHdZODxkQjRx6BAgBEAU&url=%2Furl%3Fsa%3Di%26source%3Dimages%26cd%3D%26ved%3D%26url%3Dhttps%253A%252F%252Floremipsum.io%252F21-of-the-best-placeholder-image-generators%252F%26psig%3DAOvVaw2DZro9Krww7UVHbUq2w3HP%26ust%3D1545215633923981&psig=AOvVaw2DZro9Krww7UVHbUq2w3HP&ust=1545215633923981 "FMC Architecture Diagram")
 
-![alt text](https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwjg_J38lqnfAhXNb1AKHdZODxkQjRx6BAgBEAU&url=%2Furl%3Fsa%3Di%26source%3Dimages%26cd%3D%26ved%3D%26url%3Dhttps%253A%252F%252Floremipsum.io%252F21-of-the-best-placeholder-image-generators%252F%26psig%3DAOvVaw2DZro9Krww7UVHbUq2w3HP%26ust%3D1545215633923981&psig=AOvVaw2DZro9Krww7UVHbUq2w3HP&ust=1545215633923981 "ER Datamodel Diagram")
+<img src="https://github.com/danthe96/mpci/blob/feature/readme/docs/er_diagram.png" width="600" title="ER Datamodel Diagram">
 
 ## Setup
 

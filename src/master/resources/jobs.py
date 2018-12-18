@@ -27,7 +27,8 @@ class JobResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(JobSchema.get_swagger())
+        'responses': get_default_response(JobSchema.get_swagger()),
+        'tags': ['Job']
     })
     def get(self, job_id):
         job = Job.query.get_or_404(job_id)
@@ -45,7 +46,8 @@ class JobResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(JobSchema.get_swagger())
+        'responses': get_default_response(JobSchema.get_swagger()),
+        'tags': ['Job']
     })
     def delete(self, job_id):
         job = Job.query.get_or_404(job_id)
@@ -61,7 +63,8 @@ class JobResource(Resource):
 class JobListResource(Resource):
     @swagger.doc({
         'description': 'Returns all jobs',
-        'responses': get_default_response(JobSchema.get_swagger().array())
+        'responses': get_default_response(JobSchema.get_swagger().array()),
+        'tags': ['Job']
     })
     def get(self):
         job = Job.query.all()
@@ -81,7 +84,8 @@ class ExperimentJobListResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(JobSchema.get_swagger().array())
+        'responses': get_default_response(JobSchema.get_swagger().array()),
+        'tags': ['Job', 'Experiment']
     })
     def get(self, experiment_id):
         job = Job.query\
@@ -129,7 +133,8 @@ class JobResultResource(Resource):
                 'schema': ResultEndpointSchema.get_swagger(True)
             }
         ],
-        'responses': get_default_response(ResultSchema.get_swagger())
+        'responses': get_default_response(ResultSchema.get_swagger()),
+        'tags': ['Executor']
     })
     def post(self, job_id):
         json = load_data(ResultEndpointSchema)

@@ -25,9 +25,10 @@ class ExecutorResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(JobSchema.get_swagger())
+        'responses': get_default_response(JobSchema.get_swagger()),
+        'tags': ['Experiment']
     })
-    def get(self, experiment_id):
+    def post(self, experiment_id):
         current_app.logger.info('Got request')
         experiment = Experiment.query.get_or_404(experiment_id)
 

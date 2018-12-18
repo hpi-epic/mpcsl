@@ -19,14 +19,13 @@ services:
     environment:
       POSTGRES_PASSWORD: 'postgres'
   ui:
-    image: nginx
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
     links:
       - backend
     depends_on:
       - backend
-    volumes:
-    - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
-    - ./static:/var/www/mpci
     ports:
     - 5000:5000
     restart: on-failure

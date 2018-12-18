@@ -34,16 +34,19 @@ class JobTest(BaseResourceTest):
         for node in full_result['nodes']:
             assert node['id'] in node_ids
             node_ids.remove(node['id'])
+        assert len(node_ids) == 0
 
         edge_ids = {e.id for e in edges}
         for edge in full_result['edges']:
             assert edge['id'] in edge_ids
             edge_ids.remove(edge['id'])
+        assert len(edge_ids) == 0
 
         sepset_ids = {s.id for s in sepsets}
         for sepset in full_result['sepsets']:
             assert sepset['id'] in sepset_ids
             sepset_ids.remove(sepset['id'])
+        assert len(sepset_ids) == 0
 
     def test_delete_job(self):
         # Given

@@ -1,7 +1,7 @@
 from .resources import DatasetLoadResource, DatasetListResource, \
     DatasetResource, JobResource, JobListResource, \
     ExperimentResource, ExperimentListResource, ResultListResource, \
-    JobResultResource, ExperimentJobListResource
+    JobResultResource, ExperimentJobListResource, ResultResource
 from src.master.executor.executor import ExecutorResource
 
 
@@ -17,3 +17,4 @@ def set_up_routes(api):
     api.add_resource(JobResultResource, '/job/<int:job_id>/result')
     api.add_resource(JobListResource, '/jobs')
     api.add_resource(ResultListResource, '/results')
+    api.add_resource(ResultResource, '/result/')

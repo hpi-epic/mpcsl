@@ -51,15 +51,15 @@ class JobTest(BaseResourceTest):
         assert len(sepset_ids) == 0
 
     def test_delete_job(self):
-        # Given
         result = ResultFactory()
         for _ in range(3):
             NodeFactory(result=result)
 
-        # When
+        assert len(db.session.query(Result).all()) == 1
+        assert len(db.session.query(Node).all()) == 3
+
         deleted_result = self.delete(self.api.url_for(ResultResource, result_id=result.id))
 
-        # Then
         assert deleted_result['id'] == result.id
         assert len(db.session.query(Result).all()) == 0
         assert len(db.session.query(Node).all()) == 0

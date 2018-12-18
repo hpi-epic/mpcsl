@@ -55,12 +55,16 @@ class ResultFactory(BaseFactory):
         sqlalchemy_session = db.session
 
     job = factory.SubFactory(JobFactory)
+    start_time = factory.Faker('date_time')
+    end_time = factory.Faker('date_time')
 
 
 class NodeFactory(BaseFactory):
     class Meta:
         model = Node
         sqlalchemy_session = db.session
+
+    name = factory.Faker('word')
 
 
 class EdgeFactory(BaseFactory):
@@ -73,3 +77,6 @@ class SepsetFactory(BaseFactory):
     class Meta:
         model = Sepset
         sqlalchemy_session = db.session
+
+    level = random.randint(1, 5)
+    statistic = random.random()

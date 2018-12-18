@@ -19,7 +19,8 @@ class ExperimentResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(ExperimentSchema.get_swagger())
+        'responses': get_default_response(ExperimentSchema.get_swagger()),
+        'tags': ['Experiment']
     })
     def get(self, experiment_id):
         ds = Experiment.query.get_or_404(experiment_id)
@@ -37,7 +38,8 @@ class ExperimentResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(ExperimentSchema.get_swagger())
+        'responses': get_default_response(ExperimentSchema.get_swagger()),
+        'tags': ['Experiment']
     })
     def delete(self, experiment_id):
         ds = Experiment.query.get_or_404(experiment_id)
@@ -51,7 +53,8 @@ class ExperimentResource(Resource):
 class ExperimentListResource(Resource):
     @swagger.doc({
         'description': 'Returns all experiments',
-        'responses': get_default_response(ExperimentSchema.get_swagger().array())
+        'responses': get_default_response(ExperimentSchema.get_swagger().array()),
+        'tags': ['Experiment']
     })
     def get(self):
         ds = Experiment.query.all()
@@ -68,7 +71,8 @@ class ExperimentListResource(Resource):
                 'schema': ExperimentSchema.get_swagger(True)
             }
         ],
-        'responses': get_default_response(ExperimentSchema.get_swagger())
+        'responses': get_default_response(ExperimentSchema.get_swagger()),
+        'tags': ['Experiment']
     })
     def post(self):
         data = load_data(ExperimentSchema)

@@ -10,7 +10,8 @@ class ResultListResource(Resource):
 
     @swagger.doc({
         'description': 'Returns all available results',
-        'responses': get_default_response(ResultSchema.get_swagger().array())
+        'responses': get_default_response(ResultSchema.get_swagger().array()),
+        'tags': ['Result']
     })
     def get(self):
         results = Result.query.all()

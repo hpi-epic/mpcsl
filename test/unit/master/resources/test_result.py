@@ -1,4 +1,6 @@
+from src.db import db
 from src.master.resources.results import ResultListResource, ResultResource
+from src.models import Node, Result
 from test.factories import ResultFactory, NodeFactory, EdgeFactory, SepsetFactory
 from .base import BaseResourceTest
 
@@ -51,9 +53,13 @@ class JobTest(BaseResourceTest):
     def test_delete_job(self):
         # Given
         result = ResultFactory()
+        for _ in range(3):
+            NodeFactory(result=result)
 
         # When
         deleted_result = self.delete(self.api.url_for(ResultResource, result_id=result.id))
 
         # Then
         assert deleted_result['id'] == result.id
+        assert len(db.session.query(Result).all()) == 0
+        assert len(db.session.query(Node).all()) == 0

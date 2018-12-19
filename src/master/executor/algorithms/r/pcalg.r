@@ -5,7 +5,7 @@ source("src/master/executor/algorithms/r/mcip_utils.r")
 option_list_v <- list(
                     make_option(c("-j", "--job_id"), type="character",
                                 help="Job ID", metavar=""),
-                    make_option(c("-ah", "--api_host"), type="character",
+                    make_option(c("--api_host"), type="character",
                                 help="API Host/Port", metavar=""),
                     make_option(c("-d", "--dataset_id"), type="character",
                                 help="Dataset ID", metavar=""),
@@ -15,9 +15,9 @@ option_list_v <- list(
                                 help="This is a hyperparameter", metavar=""),
                     make_option(c("-c", "--cores"), type="integer", default=1,
                                 help="The number of cores to run the pc-algorithm on", metavar=""),
-                    make_option(c("-fg", "--fixed_gaps"), type="character", default=FALSE,
+                    make_option(c("--fixed_gaps"), type="character", default=FALSE,
                                 help="The connections that are removed via prior knowledge", metavar=""),
-                    make_option(c("-fe", "--fixed_edges"), type="character", default=FALSE,
+                    make_option(c("--fixed_edges"), type="character", default=FALSE,
                                 help="The connections that are fixed via prior knowledge", metavar="")
 );
 

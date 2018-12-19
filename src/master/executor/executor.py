@@ -45,7 +45,7 @@ class ExecutorResource(Resource):
             'Rscript', 'src/master/executor/algorithms/r/pcalg.r',
             '-j', str(new_job.id),
             '-d', str(experiment.dataset_id),
-            '-ah', str(API_HOST)
+            '--api_host', str(API_HOST)
         ] + params)
 
         new_job.pid = r_process.pid

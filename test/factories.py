@@ -3,7 +3,7 @@ import random
 from factory.alchemy import SQLAlchemyModelFactory
 
 
-from src.models import BaseModel, Dataset, Experiment, Job, Result, Node, Edge, Sepset
+from src.models import BaseModel, Dataset, Experiment, Job, Result, Node, Edge, Sepset, JobStatus
 from src.db import db
 
 
@@ -47,6 +47,7 @@ class JobFactory(BaseFactory):
     experiment = factory.SubFactory(ExperimentFactory)
     start_time = factory.Faker('date_time')
     pid = factory.Faker('pyint')
+    status = JobStatus.running
 
 
 class ResultFactory(BaseFactory):

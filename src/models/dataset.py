@@ -17,9 +17,9 @@ class Dataset(BaseModel):
 
 class DatasetSchema(BaseSchema):
     name = field_for(Dataset, 'name', required=True, validate=Length(min=1))
-    description = field_for(Dataset, 'name', required=False, allow_none=True, default='')
-    load_query = field_for(Dataset, 'name', required=True, validate=Length(min=1))
-    remote_db = field_for(Dataset, 'name', validate=OneOf(list(DATA_SOURCE_CONNECTIONS.keys())))
+    description = field_for(Dataset, 'description', required=False, allow_none=True, default='')
+    load_query = field_for(Dataset, 'load_query', required=True, validate=Length(min=1))
+    remote_db = field_for(Dataset, 'remote_db', validate=OneOf(list(DATA_SOURCE_CONNECTIONS.keys())))
 
     class Meta(BaseSchema.Meta):
         dump_only = ['time_created']

@@ -8,7 +8,7 @@ from flask_restful import Resource
 from src.master.helpers.io import marshal
 from src.db import db
 from src.master.helpers.swagger import get_default_response
-from src.models.job import Job, JobSchema
+from src.models.job import Job, JobSchema, JobStatus
 from src.models.experiment import Experiment
 
 
@@ -32,7 +32,7 @@ class ExecutorResource(Resource):
         current_app.logger.info('Got request')
         experiment = Experiment.query.get_or_404(experiment_id)
 
-        new_job = Job(experiment=experiment, start_time=datetime.now())
+        new_job = Job(experiment=experiment, start_time=datetime.now(), status=JobStatus.running)
         db.session.add(new_job)
         db.session.flush()
 

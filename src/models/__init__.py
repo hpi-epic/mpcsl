@@ -1,7 +1,7 @@
 from .base import BaseModel, BaseSchema
 from .dataset import Dataset, DatasetSchema
 from .experiment import Experiment, ExperimentSchema
-from .job import Job, JobSchema
+from .job import Job, JobSchema, JobStatus
 from .result import Result, ResultSchema
 from .node import Node, NodeSchema
 from .edge import Edge, EdgeSchema
@@ -23,5 +23,6 @@ __all__ = [
     'Node',
     'NodeSchema',
     'Job',
-    'JobSchema'
+    'JobSchema',
+    'JobStatus'
 ]

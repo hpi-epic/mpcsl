@@ -70,3 +70,7 @@ class BaseIntegrationTest(TestCase):
         except Exception as ex:
             print('Failed to join the live server process: {}'.format(ex))
             return False
+
+    def url_for(self, resource, **values):
+        adapter = self.app.url_map.bind('localhost:5000')
+        return adapter.build(resource.endpoint, values, force_external=True)

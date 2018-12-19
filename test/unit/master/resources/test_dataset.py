@@ -20,7 +20,7 @@ class DatasetTest(BaseResourceTest):
         ds2 = DatasetFactory()
 
         # When
-        result = self.get(self.api.url_for(DatasetListResource))
+        result = self.get(self.url_for(DatasetListResource))
 
         # Then
         assert len(result) == 2
@@ -32,7 +32,7 @@ class DatasetTest(BaseResourceTest):
         ds = DatasetFactory()
 
         # When
-        result = self.get(self.api.url_for(DatasetResource, dataset_id=ds.id))
+        result = self.get(self.url_for(DatasetResource, dataset_id=ds.id))
 
         # Then
         assert result['id'] == ds.id
@@ -46,7 +46,7 @@ class DatasetTest(BaseResourceTest):
         data = factory.build(dict, FACTORY_CLASS=DatasetFactory)
 
         # When
-        result = self.post(self.api.url_for(DatasetListResource), json=data)
+        result = self.post(self.url_for(DatasetListResource), json=data)
         ds = db.session.query(Dataset).first()
 
         # Then
@@ -75,7 +75,7 @@ class DatasetTest(BaseResourceTest):
         db.session.commit()
 
         # When
-        result = self.test_client.get(self.api.url_for(DatasetLoadResource, dataset_id=ds.id))
+        result = self.test_client.get(self.url_for(DatasetLoadResource, dataset_id=ds.id))
 
         source = pd.DataFrame(source)
         source.columns = ['a', 'b', 'c']
@@ -91,7 +91,7 @@ class DatasetTest(BaseResourceTest):
         ex = DatasetFactory()
 
         # When
-        result = self.delete(self.api.url_for(DatasetResource, dataset_id=ex.id))
+        result = self.delete(self.url_for(DatasetResource, dataset_id=ex.id))
 
         # Then
         assert result['id'] == ex.id

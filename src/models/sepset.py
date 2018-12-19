@@ -6,11 +6,11 @@ class Sepset(BaseModel):
     result_id = db.Column(db.Integer, db.ForeignKey('result.id'), nullable=False)
     result = db.relationship('Result', backref=db.backref('sepsets', cascade="all, delete-orphan"))
 
-    from_node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    from_node_id = db.Column(db.Integer, db.ForeignKey('node.id'), nullable=False)
     from_node = db.relationship('Node', foreign_keys=[from_node_id],
                                 backref=db.backref('sepset_froms', cascade="all, delete-orphan"))
 
-    to_node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    to_node_id = db.Column(db.Integer, db.ForeignKey('node.id'), nullable=False)
     to_node = db.relationship('Node', foreign_keys=[to_node_id],
                               backref=db.backref('sepset_tos', cascade="all, delete-orphan"))
 

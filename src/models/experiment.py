@@ -10,7 +10,7 @@ INDEPENDENCE_TESTS = ["gaussCI", "disCI", "binCI"]
 
 
 class Experiment(BaseModel):
-    dataset_id = db.Column(db.Integer, db.ForeignKey('dataset.id'))
+    dataset_id = db.Column(db.Integer, db.ForeignKey('dataset.id'), nullable=False)
     dataset = db.relationship('Dataset')
 
     name = db.Column(db.String)

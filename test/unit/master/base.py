@@ -29,6 +29,10 @@ class BaseTest(TestCase):
         self.db.reflect()
         self.drop_all()
 
+    def url_for(self, resource, **values):
+        adapter = self.app.url_map.bind('localhost:5000')
+        return adapter.build(resource.endpoint, values, force_external=True)
+
     def drop_all(self):
         for tbl in reversed(self.db.metadata.sorted_tables):
             tbl.drop(self.db.engine)

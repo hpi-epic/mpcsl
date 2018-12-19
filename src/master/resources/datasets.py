@@ -2,7 +2,7 @@ import csv
 import io
 
 from flask_restful_swagger_2 import swagger
-from flask import Response
+from flask import Response, current_app
 from flask_restful import Resource, abort
 
 from src.db import db

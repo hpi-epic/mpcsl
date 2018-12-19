@@ -6,7 +6,7 @@ from flask import Response
 from flask_restful import Resource, abort
 
 from src.db import db
-from src.master.db import extension_dbs
+from src.master.db import data_source_connections
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
 from src.models import Dataset, DatasetSchema
@@ -120,7 +120,7 @@ class DatasetLoadResource(Resource):
         ds = Dataset.query.get_or_404(dataset_id)
 
         if ds.remote_db is not None:
-            session = extension_dbs.get(ds.remote_db)
+            session = data_source_connections.get(ds.remote_db, None)
             if session is None:
                 abort(400)
         else:

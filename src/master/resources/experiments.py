@@ -77,9 +77,9 @@ class ExperimentListResource(Resource):
     def post(self):
         data = load_data(ExperimentSchema)
 
-        ds = Experiment(**data)
+        experiment = Experiment(**data)
 
-        db.session.add(ds)
+        db.session.add(experiment)
         db.session.commit()
 
-        return marshal(ExperimentSchema, ds)
+        return marshal(ExperimentSchema, experiment)

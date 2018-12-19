@@ -1,6 +1,8 @@
 import os
 import json
 
+API_HOST = os.environ.get('API_HOST')
+
 # Database
 DB_TYPE = os.environ.get('DB_TYPE', 'postgresql')
 DB_HOST = os.environ.get('DB_HOST', 'database')

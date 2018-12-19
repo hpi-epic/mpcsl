@@ -5,6 +5,8 @@ source("src/master/executor/algorithms/r/mcip_utils.r")
 option_list_v <- list(
                     make_option(c("-j", "--job_id"), type="character",
                                 help="Job ID", metavar=""),
+                    make_option(c("-ah", "--api_host"), type="character",
+                                help="API Host/Port", metavar=""),
                     make_option(c("-d", "--dataset_id"), type="character",
                                 help="Dataset ID", metavar=""),
                     make_option(c("-t", "--independence_test"), type="character", default="gaussCI",
@@ -24,7 +26,7 @@ indepTestDict <- list(gaussCI=gaussCItest, binCI=binCItest, disCI=disCItest)
 option_parser <- OptionParser(option_list=option_list_v)
 opt <- parse_args(option_parser)
 
-df <- get_dataset(opt$dataset_id)
+df <- get_dataset(opt$api_host, opt$dataset_id)
 
 matrix_df <- data.matrix(df)
 
@@ -40,4 +42,4 @@ result = pc(suffStat=sufficient_stats,
             indepTest=indepTestDict[[opt$independence_test]],
             p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores)
 
-graph_requst <- store_graph_result(result@'graph', df, opt$job_id, opt)
+graph_requst <- store_graph_result(opt$api_host, result@'graph', df, opt$job_id, opt)

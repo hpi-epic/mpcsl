@@ -3,13 +3,14 @@ library(graph, quietly = T)
 library(jsonlite, quietly = T)
 
 
-get_dataset <- function(dataset_id) {
-    df_request <- GET(paste0('http://localhost:5000/api/dataset/', dataset_id, '/load'))
+get_dataset <- function(api_host, dataset_id) {
+    df_request <- GET(paste0('http://', api_host, '/api/dataset/', dataset_id, '/load'))
+    print(df_request)
     df <- read.csv(text=content(df_request, 'text'))
     return(df)
 }
 
-store_graph_result <- function(graph, df, job_id, opt) {
+store_graph_result <- function(api_host, graph, df, job_id, opt) {
     edges <- edges(graph)
     edge_list <- list(from_node=c(), to_node=c())
     node_list <- c()
@@ -53,7 +54,7 @@ store_graph_result <- function(graph, df, job_id, opt) {
     ), auto_unbox=TRUE)
     # print(result_json)
     
-    graph_request <- POST(paste0('http://localhost:5000/api/job/', job_id, '/result'), 
+    graph_request <- POST(paste0('http://', api_host, '/api/job/', job_id, '/result'),
                                  body=result_json, 
                                  add_headers("Content-Type" = "application/json"))
 

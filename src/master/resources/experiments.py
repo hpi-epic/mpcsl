@@ -23,9 +23,9 @@ class ExperimentResource(Resource):
         'tags': ['Experiment']
     })
     def get(self, experiment_id):
-        ds = Experiment.query.get_or_404(experiment_id)
+        experiment = Experiment.query.get_or_404(experiment_id)
 
-        return marshal(ExperimentSchema, ds)
+        return marshal(ExperimentSchema, experiment)
 
     @swagger.doc({
         'description': 'Deletes a single experiment',
@@ -42,10 +42,10 @@ class ExperimentResource(Resource):
         'tags': ['Experiment']
     })
     def delete(self, experiment_id):
-        ds = Experiment.query.get_or_404(experiment_id)
-        data = marshal(ExperimentSchema, ds)
+        experiment = Experiment.query.get_or_404(experiment_id)
+        data = marshal(ExperimentSchema, experiment)
 
-        db.session.delete(ds)
+        db.session.delete(experiment)
         db.session.commit()
         return data
 
@@ -57,9 +57,9 @@ class ExperimentListResource(Resource):
         'tags': ['Experiment']
     })
     def get(self):
-        ds = Experiment.query.all()
+        experiments = Experiment.query.all()
 
-        return marshal(ExperimentSchema, ds, many=True)
+        return marshal(ExperimentSchema, experiments, many=True)
 
     @swagger.doc({
         'description': 'Creates an experiment',

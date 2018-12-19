@@ -1,8 +1,9 @@
-from marshmallow.validate import Length
+from marshmallow.validate import Length, OneOf
 from marshmallow_sqlalchemy import field_for
 from sqlalchemy.sql import func
 
 from src.db import db
+from src.master.config import DATA_SOURCE_CONNECTIONS
 from src.models.base import BaseModel, BaseSchema
 
 
@@ -18,7 +19,7 @@ class DatasetSchema(BaseSchema):
     name = field_for(Dataset, 'name', required=True, validate=Length(min=1))
     description = field_for(Dataset, 'name', required=False, allow_none=True, default='')
     load_query = field_for(Dataset, 'name', required=True, validate=Length(min=1))
-    remote_db = field_for(Dataset, 'name', required=True, allow_none=True, validate=Length(min=1))
+    remote_db = field_for(Dataset, 'name', validate=OneOf(list(DATA_SOURCE_CONNECTIONS.keys())))
 
     class Meta(BaseSchema.Meta):
         dump_only = ['time_created']

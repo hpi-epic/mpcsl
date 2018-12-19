@@ -1,10 +1,10 @@
 from flask import request
 
 
-class BadRequestError(Exception):
+class InvalidInputData(Exception):
     status_code = 400
 
-    def __init__(self, message, status_code=None, payload=None):
+    def __init__(self, message='Invalid input data.', status_code=None, payload=None):
         Exception.__init__(self)
         self.message = message
         if status_code is not None:
@@ -21,7 +21,7 @@ def load_data(schema, location='json', *args, **kwargs):
     vals = getattr(request, location, None)
     data, errors = schema().load(vals, *args, **kwargs)
     if len(errors) > 0:
-        raise BadRequestError('Invalid input', payload=errors)
+        raise InvalidInputData(payload=errors)
     return data
 
 

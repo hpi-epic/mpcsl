@@ -5,7 +5,7 @@ from test.factories import ResultFactory, NodeFactory, EdgeFactory, SepsetFactor
 from .base import BaseResourceTest
 
 
-class JobTest(BaseResourceTest):
+class ResultTest(BaseResourceTest):
     def test_returns_all_results(self):
         # Given
         result = ResultFactory()

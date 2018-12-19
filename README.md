@@ -45,8 +45,8 @@ docker-compose up
 This will start our backend with the default configuration.
 
 ### Setup with user interface
-As the user interface files are store in a different repository (https://github.com/threxx/mpci-frontend),
-they have to be initialized using:
+As the user interface files are stored in a different repository (https://github.com/threxx/mpci-frontend),
+they have to be initialized using git submodule:
 
 ```
 git submodule init

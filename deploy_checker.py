@@ -31,8 +31,8 @@ if current_backend_commit != most_recent_backend_commit or current_ui_commit != 
         pickle.dump(current_ui_commit, open('most_recent_ui_commit.pkl', 'wb'))
 
         try:
-            run('git pull --recurse-submodules && git submodule update --remote &&'
-                'docker-compose -f docker-compose-nginx.yml up --build --force-recreate --detach',
+            run('git pull --recurse-submodules && git submodule update --remote && '
+                'docker-compose -f docker-compose-nginx.yml up --build --detach',
                 shell=True, check=True)
         except CalledProcessError:
             os.remove('most_recent_backend_commit.pkl')

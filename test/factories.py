@@ -64,6 +64,7 @@ class NodeFactory(BaseFactory):
         model = Node
         sqlalchemy_session = db.session
 
+    result = factory.SubFactory(ResultFactory)
     name = factory.Faker('word')
 
 
@@ -72,11 +73,20 @@ class EdgeFactory(BaseFactory):
         model = Edge
         sqlalchemy_session = db.session
 
+    result = factory.SubFactory(ResultFactory)
+    from_node = factory.SubFactory(NodeFactory)
+    to_node = factory.SubFactory(NodeFactory)
+
 
 class SepsetFactory(BaseFactory):
     class Meta:
         model = Sepset
         sqlalchemy_session = db.session
 
+    result = factory.SubFactory(ResultFactory)
+    from_node = factory.SubFactory(NodeFactory)
+    to_node = factory.SubFactory(NodeFactory)
+
     level = random.randint(1, 5)
     statistic = random.random()
+    node_names = factory.List([factory.Faker('word') for _ in range(random.randint(1, 5))])

@@ -34,6 +34,6 @@ class ResultSepsetListResource(Resource):
         'tags': ['Sepset']
     })
     def get(self, result_id):
-        sepsets = SepsetSchema.query.filter(Sepset.result_id == result_id).all()
+        sepsets = Sepset.query.filter(Sepset.result_id == result_id).all()
 
         return marshal(SepsetSchema, sepsets, many=True)

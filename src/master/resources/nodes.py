@@ -36,7 +36,7 @@ class ResultNodeListResource(Resource):
         'tags': ['Node']
     })
     def get(self, result_id):
-        nodes = NodeSchema.query.filter(Node.result_id == result_id).all()
+        nodes = Node.query.filter(Node.result_id == result_id).all()
 
         return marshal(NodeSchema, nodes, many=True)
 
@@ -56,7 +56,7 @@ class NodeContextResource(Resource):
     def get(self, node_id):
         main_node = Node.query.get_or_404(node_id)
         edges = main_node.edge_froms + main_node.edge_tos
-        context_nodes = {n for edge in edges for n in [edge.node_from, edge.node_to] if n != main_node}
+        context_nodes = {n for edge in edges for n in [edge.from_node, edge.to_node] if n != main_node}
 
         return marshal(NodeContextSchema, {
             'main_node': main_node,

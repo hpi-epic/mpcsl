@@ -1,4 +1,4 @@
-from src.master.resources.results import EdgeResource, ResultEdgeListResource
+from src.master.resources import EdgeResource, ResultEdgeListResource
 from test.factories import ResultFactory, NodeFactory, EdgeFactory
 from .base import BaseResourceTest
 
@@ -11,7 +11,7 @@ class EdgeTest(BaseResourceTest):
         edges = [EdgeFactory(result=result, from_node=nodes[i], to_node=nodes[j]) for i, j in [(0, 1), (1, 2)]]
 
         # When
-        results = self.get(self.api.url_for(ResultEdgeListResource))
+        results = self.get(self.api.url_for(ResultEdgeListResource, result_id=result.id))
 
         # Then
         assert len(results) == len(edges)

@@ -44,6 +44,27 @@ docker-compose up
 
 This will start our backend with the default configuration.
 
+### Setup with user interface
+As the user interface files are store in a different repository (https://github.com/threxx/mpci-frontend),
+they have to be initialized using:
+
+```
+git submodule init
+git submodule update
+```
+
+When the UI files are present, the full setup can be build and started using
+
+```
+docker-compose -f docker-compose-nginx.yaml build
+docker-compose -f docker-compose-nginx.yaml up
+```
+
+This will deploy the backend with an additional nginx server, that is used
+to serve static files and provide the backend functionality by connecting to uWSGI.
+The transpilation of the UI files will be done during build. If the UI files change,
+it is necessary to rebuild the containers.
+
 ## Endpoint Documentation
 
 A Swagger documentation of our REST endpoints is available using

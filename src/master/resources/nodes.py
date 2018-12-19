@@ -50,7 +50,7 @@ class NodeContextSchema(BaseSchema, SwaggerMixin):
 class NodeContextResource(Resource):
     @swagger.doc({
         'description': 'Returns all nodes for one result',
-        'responses': get_default_response(NodeSchema.get_swagger().array()),
+        'responses': get_default_response(NodeContextSchema.get_swagger()),
         'tags': ['Node']
     })
     def get(self, node_id):

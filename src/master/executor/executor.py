@@ -5,11 +5,11 @@ from flask_restful_swagger_2 import swagger
 from flask import current_app
 from flask_restful import Resource
 
+from src.master.config import API_HOST
 from src.master.helpers.io import marshal
 from src.db import db
 from src.master.helpers.swagger import get_default_response
-from src.models.job import Job, JobSchema
-from src.models.experiment import Experiment
+from src.models import Job, JobSchema, JobStatus, Experiment
 
 
 class ExecutorResource(Resource):
@@ -32,7 +32,7 @@ class ExecutorResource(Resource):
         current_app.logger.info('Got request')
         experiment = Experiment.query.get_or_404(experiment_id)
 
-        new_job = Job(experiment=experiment, start_time=datetime.now())
+        new_job = Job(experiment=experiment, start_time=datetime.now(), status=JobStatus.running)
         db.session.add(new_job)
         db.session.flush()
 
@@ -44,7 +44,8 @@ class ExecutorResource(Resource):
         r_process = Popen([
             'Rscript', 'src/master/executor/algorithms/r/pcalg.r',
             '-j', str(new_job.id),
-            '-d', str(experiment.dataset_id)
+            '-d', str(experiment.dataset_id),
+            '--api_host', str(API_HOST)
         ] + params)
 
         new_job.pid = r_process.pid

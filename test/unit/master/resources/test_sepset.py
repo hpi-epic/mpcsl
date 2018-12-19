@@ -11,7 +11,7 @@ class SepsetTest(BaseResourceTest):
         sepsets = [SepsetFactory(result=result, from_node=nodes[0], to_node=nodes[2], node_names=[nodes[1].name])]
 
         # When
-        results = self.get(self.api.url_for(ResultSepsetListResource, result_id=result.id))
+        results = self.get(self.url_for(ResultSepsetListResource, result_id=result.id))
 
         # Then
         assert len(results) == len(sepsets)
@@ -27,7 +27,7 @@ class SepsetTest(BaseResourceTest):
         sepset = SepsetFactory()
 
         # When
-        result = self.get(self.api.url_for(SepsetResource, sepset_id=sepset.id))
+        result = self.get(self.url_for(SepsetResource, sepset_id=sepset.id))
 
         # Then
         assert result['id'] == sepset.id

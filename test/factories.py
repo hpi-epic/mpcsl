@@ -3,7 +3,7 @@ import random
 from factory.alchemy import SQLAlchemyModelFactory
 
 
-from src.models import BaseModel, Dataset, Experiment, Job
+from src.models import BaseModel, Dataset, Experiment, Job, Result, Node, Edge, Sepset, JobStatus
 from src.db import db
 
 
@@ -47,3 +47,47 @@ class JobFactory(BaseFactory):
     experiment = factory.SubFactory(ExperimentFactory)
     start_time = factory.Faker('date_time')
     pid = factory.Faker('pyint')
+    status = JobStatus.running
+
+
+class ResultFactory(BaseFactory):
+    class Meta:
+        model = Result
+        sqlalchemy_session = db.session
+
+    job = factory.SubFactory(JobFactory)
+    start_time = factory.Faker('date_time')
+    end_time = factory.Faker('date_time')
+
+
+class NodeFactory(BaseFactory):
+    class Meta:
+        model = Node
+        sqlalchemy_session = db.session
+
+    result = factory.SubFactory(ResultFactory)
+    name = factory.Faker('word')
+
+
+class EdgeFactory(BaseFactory):
+    class Meta:
+        model = Edge
+        sqlalchemy_session = db.session
+
+    result = factory.SubFactory(ResultFactory)
+    from_node = factory.SubFactory(NodeFactory)
+    to_node = factory.SubFactory(NodeFactory)
+
+
+class SepsetFactory(BaseFactory):
+    class Meta:
+        model = Sepset
+        sqlalchemy_session = db.session
+
+    result = factory.SubFactory(ResultFactory)
+    from_node = factory.SubFactory(NodeFactory)
+    to_node = factory.SubFactory(NodeFactory)
+
+    level = random.randint(1, 5)
+    statistic = random.random()
+    node_names = factory.List([factory.Faker('word') for _ in range(random.randint(1, 5))])

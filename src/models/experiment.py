@@ -10,7 +10,7 @@ INDEPENDENCE_TESTS = ["gaussCI", "disCI", "binCI"]
 
 
 class Experiment(BaseModel):
-    dataset_id = db.Column(db.Integer, db.ForeignKey('dataset.id'))
+    dataset_id = db.Column(db.Integer, db.ForeignKey('dataset.id'), nullable=False)
     dataset = db.relationship('Dataset')
 
     name = db.Column(db.String)
@@ -31,7 +31,7 @@ class ExperimentParameterSchema(Schema, SwaggerMixin):
 
 class ExperimentSchema(BaseSchema):
     parameters = fields.Nested(ExperimentParameterSchema)
-    last_job = fields.Nested('JobSchema')
+    last_job = fields.Nested('JobSchema', dump_only=True)
 
     class Meta(BaseSchema.Meta):
         model = Experiment

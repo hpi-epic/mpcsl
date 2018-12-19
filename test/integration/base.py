@@ -20,6 +20,7 @@ class BaseIntegrationTest(TestCase):
         cls.app_context = cls.app.app_context()
         cls.app_context.push()
         cls.db = db
+        cls.original_tables = cls.db.metadata.sorted_tables
 
     @classmethod
     def tearDownClass(cls):
@@ -49,11 +50,10 @@ class BaseIntegrationTest(TestCase):
         self.drop_all()
 
     def drop_all(self):
-        con = self.db.session()
-        meta = db.metadata
-        for table in reversed(meta.sorted_tables):
-            con.execute(table.delete())
-        con.commit()
+        for tbl in reversed(self.db.metadata.sorted_tables):
+            tbl.drop(self.db.engine)
+            if tbl not in self.original_tables:
+                self.db.metadata.remove(tbl)
 
     def stop_app_thread(self):
         if self.app_thread:
@@ -70,3 +70,7 @@ class BaseIntegrationTest(TestCase):
         except Exception as ex:
             print('Failed to join the live server process: {}'.format(ex))
             return False
+
+    def url_for(self, resource, **values):
+        adapter = self.app.url_map.bind('localhost:5000')
+        return adapter.build(resource.endpoint, values, force_external=True)

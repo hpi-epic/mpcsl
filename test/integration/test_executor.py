@@ -34,7 +34,7 @@ class ExecutorTest(BaseIntegrationTest):
         db.session.commit()
 
         # When
-        job_r = requests.post(self.api.url_for(ExecutorResource, experiment_id=ex.id))
+        job_r = requests.post(self.url_for(ExecutorResource, experiment_id=ex.id))
         assert job_r.status_code == 200
 
         job = db.session.query(Job).get(job_r.json()['id'])
@@ -64,16 +64,16 @@ class SepsetExecutorTest(BaseIntegrationTest):
 
     def test_r_execution_with_sepsets(self):
         ds = DatasetFactory(
-            load_query="SELECT * FROM test_data2"
+            load_query="SELECT * FROM test_data"
         )
         df = pd.read_csv('test/fixtures/coolinghouse_1k.csv', index_col=0)
-        df.to_sql('test_data2', con=db.engine, index=False, if_exists='replace')
+        df.to_sql('test_data', con=db.engine, index=False)
         ex = ExperimentFactory(dataset=ds)
         ex.parameters['alpha'] = 0.05
         db.session.commit()
 
         # When
-        job_r = requests.post(self.api.url_for(ExecutorResource, experiment_id=ex.id))
+        job_r = requests.post(self.url_for(ExecutorResource, experiment_id=ex.id))
         assert job_r.status_code == 200
 
         job = db.session.query(Job).get(job_r.json()['id'])

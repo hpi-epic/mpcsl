@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 from src.db import db
 from src.master.resources.jobs import JobListResource, JobResource, JobResultResource, ExperimentJobListResource
-from src.models import Experiment, Job, Result, Node, Edge
-from test.factories import JobFactory, DatasetFactory
+from src.models import Result, Node, Edge
+from test.factories import ExperimentFactory, JobFactory, DatasetFactory
 from .base import BaseResourceTest
 
 
@@ -17,7 +17,7 @@ class JobTest(BaseResourceTest):
         job2 = JobFactory()
 
         # When
-        result = self.get(self.api.url_for(JobListResource))
+        result = self.get(self.url_for(JobListResource))
 
         # Then
         assert len(result) == 2
@@ -29,7 +29,7 @@ class JobTest(BaseResourceTest):
         job = JobFactory()
 
         # When
-        result = self.get(self.api.url_for(JobResource, job_id=job.id))
+        result = self.get(self.url_for(JobResource, job_id=job.id))
 
         # Then
         assert result['id'] == job.id
@@ -47,7 +47,7 @@ class JobTest(BaseResourceTest):
         JobFactory()
 
         # When
-        result = self.get(self.api.url_for(
+        result = self.get(self.url_for(
             ExperimentJobListResource,
             experiment_id=job.experiment_id
         ))
@@ -63,7 +63,7 @@ class JobTest(BaseResourceTest):
 
         # When
         with patch('src.master.resources.jobs.os.kill') as m:
-            result = self.delete(self.api.url_for(JobResource, job_id=job.id))
+            result = self.delete(self.url_for(JobResource, job_id=job.id))
 
             m.assert_called_once_with(job.pid, signal.SIGTERM)
 
@@ -74,9 +74,9 @@ class JobTest(BaseResourceTest):
     def test_submit_results(self):
         # Given
         ds = DatasetFactory()
-        mock_experiment = Experiment(dataset=ds)
+        mock_experiment = ExperimentFactory(dataset=ds)
         db.session.add(mock_experiment)
-        mock_job = Job(experiment=mock_experiment, start_time=datetime.now())
+        mock_job = JobFactory(experiment=mock_experiment, start_time=datetime.now())
         db.session.add(mock_job)
         db.session.commit()
         data = {
@@ -93,7 +93,7 @@ class JobTest(BaseResourceTest):
         }
 
         # When
-        result = self.post(self.api.url_for(JobResultResource, job_id=mock_job.id), json=data)
+        result = self.post(self.url_for(JobResultResource, job_id=mock_job.id), json=data)
         db_result = db.session.query(Result).first()
 
         # Then

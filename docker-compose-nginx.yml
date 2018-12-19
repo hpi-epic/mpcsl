@@ -9,6 +9,8 @@ services:
       - database
     env_file:
       - conf/backend.env
+    environment:
+      - API_HOST=ui:5000
     restart: on-failure
     command: "uwsgi --ini /app/uwsgi.ini"
   database:

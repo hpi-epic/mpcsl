@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 from src.db import db
 from src.master.resources.jobs import JobListResource, JobResource, JobResultResource, ExperimentJobListResource
-from src.models import Experiment, Job, Result, Node, Edge
-from test.factories import JobFactory, DatasetFactory
+from src.models import Result, Node, Edge
+from test.factories import ExperimentFactory, JobFactory, DatasetFactory
 from .base import BaseResourceTest
 
 
@@ -74,9 +74,9 @@ class JobTest(BaseResourceTest):
     def test_submit_results(self):
         # Given
         ds = DatasetFactory()
-        mock_experiment = Experiment(dataset=ds)
+        mock_experiment = ExperimentFactory(dataset=ds)
         db.session.add(mock_experiment)
-        mock_job = Job(experiment=mock_experiment, start_time=datetime.now())
+        mock_job = JobFactory(experiment=mock_experiment, start_time=datetime.now())
         db.session.add(mock_job)
         db.session.commit()
         data = {

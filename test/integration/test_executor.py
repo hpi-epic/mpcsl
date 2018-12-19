@@ -34,7 +34,7 @@ class ExecutorTest(BaseIntegrationTest):
         db.session.commit()
 
         # When
-        job_r = requests.post(self.api.url_for(ExecutorResource, experiment_id=ex.id))
+        job_r = requests.post(self.url_for(ExecutorResource, experiment_id=ex.id))
         assert job_r.status_code == 200
 
         job = db.session.query(Job).get(job_r.json()['id'])
@@ -73,7 +73,7 @@ class SepsetExecutorTest(BaseIntegrationTest):
         db.session.commit()
 
         # When
-        job_r = requests.post(self.api.url_for(ExecutorResource, experiment_id=ex.id))
+        job_r = requests.post(self.url_for(ExecutorResource, experiment_id=ex.id))
         assert job_r.status_code == 200
 
         job = db.session.query(Job).get(job_r.json()['id'])

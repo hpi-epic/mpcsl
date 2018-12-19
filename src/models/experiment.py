@@ -31,7 +31,7 @@ class ExperimentParameterSchema(Schema, SwaggerMixin):
 
 class ExperimentSchema(BaseSchema):
     parameters = fields.Nested(ExperimentParameterSchema)
-    last_job = fields.Nested('JobSchema')
+    last_job = fields.Nested('JobSchema', dump_only=True)
 
     class Meta(BaseSchema.Meta):
         model = Experiment

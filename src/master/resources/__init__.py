@@ -3,6 +3,9 @@ from .experiments import ExperimentListResource, ExperimentResource
 from .results import ResultListResource, ResultResource
 from .jobs import JobListResource, JobResource, JobResultResource, \
     ExperimentJobListResource
+from .nodes import NodeResource, ResultNodeListResource, NodeContextResource
+from .edges import EdgeResource, ResultEdgeListResource
+from .sepsets import SepsetResource, ResultSepsetListResource
 
 __all__ = [
     'DatasetLoadResource',
@@ -15,5 +18,12 @@ __all__ = [
     'JobResource',
     'JobResultResource',
     'ExperimentJobListResource',
-    'ResultResource'
+    'ResultResource',
+    'NodeResource',
+    'ResultNodeListResource',
+    'NodeContextResource',
+    'EdgeResource',
+    'ResultEdgeListResource',
+    'SepsetResource',
+    'ResultSepsetListResource'
 ]

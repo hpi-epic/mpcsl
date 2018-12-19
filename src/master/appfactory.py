@@ -1,9 +1,10 @@
 import os
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful_swagger_2 import Api
 
 from src.db import db
+from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
 
 
@@ -60,8 +61,16 @@ class AppFactory(object):
         )
         set_up_routes(self.api)
 
+    def set_up_error_handlers(self):
+        @self.app.errorhandler(InvalidInputData)
+        def handle_invalid_usage(error):
+            response = jsonify(error.to_dict())
+            response.status_code = error.status_code
+            return response
+
     def up(self):
         self.set_up_app()
         self.set_up_api()
         self.set_up_db()
+        self.set_up_error_handlers()
         return self.app

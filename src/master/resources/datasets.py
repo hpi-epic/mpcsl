@@ -3,9 +3,10 @@ import io
 
 from flask_restful_swagger_2 import swagger
 from flask import Response
-from flask_restful import Resource
+from flask_restful import Resource, abort
 
 from src.db import db
+from src.master.db import data_source_connections
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
 from src.models import Dataset, DatasetSchema
@@ -118,7 +119,14 @@ class DatasetLoadResource(Resource):
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
 
-        result = db.session.execute(ds.load_query)
+        if ds.remote_db is not None:
+            session = data_source_connections.get(ds.remote_db, None)
+            if session is None:
+                abort(400)
+        else:
+            session = db.session
+
+        result = session.execute(ds.load_query)
         keys = result.keys()
 
         f = io.StringIO()

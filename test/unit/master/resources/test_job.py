@@ -17,7 +17,7 @@ class JobTest(BaseResourceTest):
         job2 = JobFactory()
 
         # When
-        result = self.get(self.api.url_for(JobListResource))
+        result = self.get(self.url_for(JobListResource))
 
         # Then
         assert len(result) == 2
@@ -29,7 +29,7 @@ class JobTest(BaseResourceTest):
         job = JobFactory()
 
         # When
-        result = self.get(self.api.url_for(JobResource, job_id=job.id))
+        result = self.get(self.url_for(JobResource, job_id=job.id))
 
         # Then
         assert result['id'] == job.id
@@ -47,7 +47,7 @@ class JobTest(BaseResourceTest):
         JobFactory()
 
         # When
-        result = self.get(self.api.url_for(
+        result = self.get(self.url_for(
             ExperimentJobListResource,
             experiment_id=job.experiment_id
         ))
@@ -63,7 +63,7 @@ class JobTest(BaseResourceTest):
 
         # When
         with patch('src.master.resources.jobs.os.kill') as m:
-            result = self.delete(self.api.url_for(JobResource, job_id=job.id))
+            result = self.delete(self.url_for(JobResource, job_id=job.id))
 
             m.assert_called_once_with(job.pid, signal.SIGTERM)
 
@@ -93,7 +93,7 @@ class JobTest(BaseResourceTest):
         }
 
         # When
-        result = self.post(self.api.url_for(JobResultResource, job_id=mock_job.id), json=data)
+        result = self.post(self.url_for(JobResultResource, job_id=mock_job.id), json=data)
         db_result = db.session.query(Result).first()
 
         # Then

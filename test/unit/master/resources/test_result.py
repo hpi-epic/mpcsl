@@ -12,7 +12,7 @@ class ResultTest(BaseResourceTest):
         result2 = ResultFactory()
 
         # When
-        results = self.get(self.api.url_for(ResultListResource))
+        results = self.get(self.url_for(ResultListResource))
 
         # Then
         assert len(results) == 2
@@ -27,7 +27,7 @@ class ResultTest(BaseResourceTest):
         sepsets = [SepsetFactory(result=result, from_node=nodes[0], to_node=nodes[2], node_names=[nodes[1].name])]
 
         # When
-        full_result = self.get(self.api.url_for(ResultResource, result_id=result.id))
+        full_result = self.get(self.url_for(ResultResource, result_id=result.id))
 
         # Then
         assert full_result['id'] == result.id
@@ -58,7 +58,7 @@ class ResultTest(BaseResourceTest):
         assert len(db.session.query(Result).all()) == 1
         assert len(db.session.query(Node).all()) == 3
 
-        deleted_result = self.delete(self.api.url_for(ResultResource, result_id=result.id))
+        deleted_result = self.delete(self.url_for(ResultResource, result_id=result.id))
 
         assert deleted_result['id'] == result.id
         assert len(db.session.query(Result).all()) == 0

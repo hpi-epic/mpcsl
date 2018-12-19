@@ -10,7 +10,7 @@ class NodeTest(BaseResourceTest):
         nodes = [NodeFactory(result=result) for _ in range(3)]
 
         # When
-        results = self.get(self.api.url_for(ResultNodeListResource, result_id=result.id))
+        results = self.get(self.url_for(ResultNodeListResource, result_id=result.id))
 
         # Then
         assert len(results) == len(nodes)
@@ -26,7 +26,7 @@ class NodeTest(BaseResourceTest):
         node = NodeFactory()
 
         # When
-        result = self.get(self.api.url_for(NodeResource, node_id=node.id))
+        result = self.get(self.url_for(NodeResource, node_id=node.id))
 
         # Then
         assert result['id'] == node.id
@@ -40,7 +40,7 @@ class NodeTest(BaseResourceTest):
         main_node = nodes[1]
 
         # When
-        context = self.get(self.api.url_for(NodeContextResource, node_id=main_node.id))
+        context = self.get(self.url_for(NodeContextResource, node_id=main_node.id))
 
         assert context['main_node']['id'] == main_node.id
 

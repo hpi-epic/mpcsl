@@ -11,7 +11,7 @@ class EdgeTest(BaseResourceTest):
         edges = [EdgeFactory(result=result, from_node=nodes[i], to_node=nodes[j]) for i, j in [(0, 1), (1, 2)]]
 
         # When
-        results = self.get(self.api.url_for(ResultEdgeListResource, result_id=result.id))
+        results = self.get(self.url_for(ResultEdgeListResource, result_id=result.id))
 
         # Then
         assert len(results) == len(edges)
@@ -27,7 +27,7 @@ class EdgeTest(BaseResourceTest):
         edge = EdgeFactory()
 
         # When
-        result = self.get(self.api.url_for(EdgeResource, edge_id=edge.id))
+        result = self.get(self.url_for(EdgeResource, edge_id=edge.id))
 
         # Then
         assert result['id'] == edge.id

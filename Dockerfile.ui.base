@@ -1,0 +1,9 @@
+FROM node:latest
+
+RUN apt-get update && apt-get install -yq nginx && rm -rf /var/lib/apt/lists/*
+
+COPY ./static/ui/package.json /var/www/mpci/ui/package.json
+COPY ./static/ui/yarn.lock /var/www/mpci/ui/yarn.lock
+
+WORKDIR /var/www/mpci/ui
+RUN yarn install

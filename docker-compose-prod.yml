@@ -12,9 +12,10 @@ services:
     restart: on-failure
     command: "uwsgi --ini /app/uwsgi.ini"
   ui:
+    container_name: ui
     build:
       context: .
-      dockerfile: Dockerfile.nginx
+      dockerfile: Dockerfile.ui
     links:
       - backend
     depends_on:

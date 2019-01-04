@@ -4,8 +4,10 @@ library(jsonlite, quietly = T)
 
 
 get_dataset <- function(api_host, dataset_id) {
-    df_request <- GET(paste0('http://', api_host, '/api/dataset/', dataset_id, '/load'))
-    # print(df_request)
+    url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/load')
+    print(paste0('Load dataset from ', url))
+    df_request <- GET(url, write_disk(paste0("/tmp/dataset_", dataset_id, ".csv"), overwrite = TRUE), progress())
+    stop_for_status(df_request)
     df <- read.csv(text=content(df_request, 'text'))
     return(df)
 }

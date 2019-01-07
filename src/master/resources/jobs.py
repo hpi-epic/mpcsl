@@ -4,7 +4,7 @@ import signal
 from flask_restful_swagger_2 import swagger
 
 from flask import current_app
-from flask_restful import Resource
+from flask_restful import Resource, abort
 from marshmallow import fields, Schema
 
 from src.db import db
@@ -32,6 +32,31 @@ class JobResource(Resource):
     })
     def get(self, job_id):
         job = Job.query.get_or_404(job_id)
+
+        return marshal(JobSchema, job)
+
+    @swagger.doc({
+        'description': 'Updates the status of a running job to "error"',
+        'parameters': [
+            {
+                'name': 'job_id',
+                'description': 'Job identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(JobSchema.get_swagger()),
+        'tags': ['Job']
+    })
+    def put(self, job_id):
+        job = Job.query.get_or_404(job_id)
+        if job.status != JobStatus.running:
+            abort(400)
+
+        current_app.logger.info('An error occurred in Job {}'.format(job.id))
+        job.status = JobStatus.error
+        db.session.commit()
 
         return marshal(JobSchema, job)
 

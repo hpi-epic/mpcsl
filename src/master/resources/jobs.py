@@ -47,7 +47,7 @@ class JobResource(Resource):
             }
         ],
         'responses': get_default_response(JobSchema.get_swagger()),
-        'tags': ['Job']
+        'tags': ['Job', 'Executor']
     })
     def put(self, job_id):
         job = Job.query.get_or_404(job_id)

@@ -14,6 +14,7 @@ services:
     restart: on-failure
     command: "uwsgi --ini /app/uwsgi.ini"
   database:
+    container_name: db
     image: postgres:latest
     volumes:
       - /var/lib/postgresql/data
@@ -21,9 +22,10 @@ services:
     environment:
       POSTGRES_PASSWORD: 'postgres'
   ui:
+    container_name: ui
     build:
       context: .
-      dockerfile: Dockerfile.nginx
+      dockerfile: Dockerfile.ui
     links:
       - backend
     depends_on:
@@ -32,6 +34,7 @@ services:
     - 5000:5000
     restart: on-failure
   db-ui:
+    container_name: db-ui
     image: sosedoff/pgweb
     ports:
       - "8081:8081"

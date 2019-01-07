@@ -3,9 +3,21 @@ library(graph, quietly = T)
 library(jsonlite, quietly = T)
 
 
-get_dataset <- function(api_host, dataset_id) {
-    df_request <- GET(paste0('http://', api_host, '/api/dataset/', dataset_id, '/load'))
-    # print(df_request)
+check_request <- function(api_host, request, job_id) {
+    if (http_error(request)) {
+        error_request <- PUT(paste0('http://', api_host, '/api/job/', job_id))
+        warn_for_status(error_request)
+        stop_for_status(request)
+    }
+}
+
+get_dataset <- function(api_host, dataset_id, job_id) {
+    url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/load')
+    print(paste0('Load dataset from ', url))
+    df_request <- GET(url, progress())
+    check_request(api_host, df_request, job_id)
+    print('Successfully loaded dataset')
+
     df <- read.csv(text=content(df_request, 'text'))
     return(df)
 }

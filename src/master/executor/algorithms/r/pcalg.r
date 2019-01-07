@@ -26,7 +26,7 @@ indepTestDict <- list(gaussCI=gaussCItest, binCI=binCItest, disCI=disCItest)
 option_parser <- OptionParser(option_list=option_list_v)
 opt <- parse_args(option_parser)
 
-df <- get_dataset(opt$api_host, opt$dataset_id)
+df <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
 
 matrix_df <- data.matrix(df)
 

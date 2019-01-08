@@ -1,5 +1,6 @@
 from marshmallow import fields, Schema
-from marshmallow.validate import OneOf
+from marshmallow.validate import OneOf, Length
+from marshmallow_sqlalchemy import field_for
 from sqlalchemy.ext.mutable import MutableDict
 
 from src.db import db
@@ -14,6 +15,7 @@ class Experiment(BaseModel):
     dataset = db.relationship('Dataset')
 
     name = db.Column(db.String)
+    description = db.Column(db.String)
     parameters = db.Column(MutableDict.as_mutable(db.JSON))
 
     @property
@@ -30,6 +32,8 @@ class ExperimentParameterSchema(Schema, SwaggerMixin):
 
 
 class ExperimentSchema(BaseSchema):
+    name = field_for(Experiment, 'name', required=True, validate=Length(min=1))
+    description = field_for(Experiment, 'description', required=False, allow_none=True, default='')
     parameters = fields.Nested(ExperimentParameterSchema)
     last_job = fields.Nested('JobSchema', dump_only=True)
 

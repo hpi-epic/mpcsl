@@ -1,7 +1,7 @@
 import enum
 
 from src.db import db
-from marshmallow import fields, Schema
+from marshmallow import fields
 from src.models.base import BaseModel, BaseSchema
 
 

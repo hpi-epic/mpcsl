@@ -192,5 +192,6 @@ class JobResultResource(Resource):
 
         current_app.logger.info('Result {} created'.format(result.id))
         job.status = JobStatus.done
+        job.result_id = result.id
         db.session.commit()
         return marshal(ResultSchema, result)

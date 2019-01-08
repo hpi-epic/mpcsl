@@ -1,6 +1,7 @@
 import enum
 
 from src.db import db
+from marshmallow import fields
 from src.models.base import BaseModel, BaseSchema
 
 
@@ -22,7 +23,15 @@ class Job(BaseModel):
     pid = db.Column(db.Integer)
     status = db.Column(db.Enum(JobStatus), nullable=False)
 
+    @property
+    def result(self):
+        if len(self.results) == 0:
+            return None
+        return sorted(self.results, key=lambda x: x.start_time)[-1]
+
 
 class JobSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = Job
+
+    result = fields.Nested('ResultSchema')

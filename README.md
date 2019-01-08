@@ -45,19 +45,24 @@ docker-compose up
 This will start our backend with the default configuration.
 
 ### Setup with user interface
+
 As the user interface files are stored in a different repository (https://github.com/threxx/mpci-frontend),
-they have to be initialized using git submodule:
+you have to clone the repo using:
 
 ```
-git submodule init
-git submodule update
+git clone --recurse-submodules git@github.com:danthe96/mpci.git
+```
+
+If you already cloned the repo without submodules, they have to be initialized using git submodule:
+
+```
+git submodule update --remote --init 
 ```
 
 When the UI files are present, the full setup can be build and started using
 
 ```
-docker-compose -f docker-compose-nginx.yml build
-docker-compose -f docker-compose-nginx.yml up
+docker-compose -f docker-compose-nginx.yml up --build 
 ```
 
 This will deploy the backend with an additional nginx server, that is used

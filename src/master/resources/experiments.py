@@ -1,6 +1,7 @@
 from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 
+from src.app import app
 from src.db import db
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
@@ -57,6 +58,9 @@ class ExperimentListResource(Resource):
         'tags': ['Experiment']
     })
     def get(self):
+        app.logger.info("afafs")
+        app.logger.info(app.url_map.host_matching)
+
         ds = Experiment.query.all()
 
         return marshal(ExperimentSchema, ds, many=True)

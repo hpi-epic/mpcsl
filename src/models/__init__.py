@@ -1,4 +1,5 @@
 from .base import BaseModel
+from .algorithm import Algorithm, AlgorithmSchema
 from .dataset import Dataset, DatasetSchema
 from .experiment import Experiment, ExperimentSchema
 from .job import Job, JobSchema
@@ -8,6 +9,8 @@ from .edge import Edge, EdgeSchema
 from .sepset import Sepset, SepsetSchema
 
 __all__ = [
+    'Algorithm',
+    'AlgorithmSchema',
     'BaseModel',
     'DatasetSchema',
     'Dataset',

@@ -14,6 +14,10 @@ class Experiment(BaseModel):
     dataset = db.relationship('Dataset')
 
     name = db.Column(db.String)
+
+    algorithm_id = db.Column(db.Integer, db.ForeignKey('algorithm.id'))
+    algorithm = db.relationship('Algorithm')
+
     parameters = db.Column(MutableDict.as_mutable(db.JSON))
 
     @property

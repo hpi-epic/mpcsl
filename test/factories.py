@@ -2,8 +2,7 @@ import factory
 import random
 from factory.alchemy import SQLAlchemyModelFactory
 
-
-from src.models import BaseModel, Dataset, Experiment, Job, Result, Node, Edge, Sepset
+from src.models import BaseModel, Dataset, Experiment, Job, Result, Node, Edge, Sepset, Algorithm
 from src.db import db
 
 
@@ -26,18 +25,30 @@ class DatasetFactory(BaseFactory):
     description = factory.Faker('text')
 
 
+class AlgorithmFactory(BaseFactory):
+    class Meta:
+        model = Algorithm
+        sqlalchemy_session = db.session
+
+    name = factory.Faker('word')
+    script_filename = 'pcalg.r'
+    description = ''
+    backend = 'R'
+    valid_parameters = dict()
+
+
 class ExperimentFactory(BaseFactory):
     class Meta:
         model = Experiment
         sqlalchemy_session = db.session
 
     dataset = factory.SubFactory(DatasetFactory)
+    algorithm = factory.SubFactory(AlgorithmFactory)
     parameters = factory.LazyAttribute(lambda o: {
         'alpha': round(random.random(), 2),
         'independence_test': 'gaussCI',
         'cores': 1
     })
-
 
 class JobFactory(BaseFactory):
     class Meta:

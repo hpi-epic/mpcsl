@@ -1,10 +1,12 @@
 import os
+import json
 
 from flask import Flask
 from flask_restful_swagger_2 import Api
 
 from src.db import db
 from .routes import set_up_routes
+from src.models import Algorithm, AlgorithmSchema
 
 
 class AppFactory(object):
@@ -60,8 +62,21 @@ class AppFactory(object):
         )
         set_up_routes(self.api)
 
+    def set_up_algorithms(self):
+        if os.path.isfile('conf/algorithms.json'):
+            with self.app.app_context():
+                with open('conf/algorithms.json') as f:
+                    algorithms = json.load(f)
+                    for algorithm in algorithms:
+                        data, errors = AlgorithmSchema().load(algorithm)
+                        if not self.db.session.query(Algorithm).filter(Algorithm.name==data['name']).one_or_none():
+                            alg = Algorithm(**data)
+                            self.db.session.add(alg)
+                self.db.session.commit()
+
     def up(self):
         self.set_up_app()
         self.set_up_api()
         self.set_up_db()
+        self.set_up_algorithms()
         return self.app

@@ -31,6 +31,9 @@ class ExperimentFactory(BaseFactory):
         model = Experiment
         sqlalchemy_session = db.session
 
+    name = factory.Faker('word')
+    description = factory.Faker('text')
+
     dataset = factory.SubFactory(DatasetFactory)
     parameters = factory.LazyAttribute(lambda o: {
         'alpha': round(random.random(), 2),

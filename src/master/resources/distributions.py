@@ -14,6 +14,8 @@ from src.models.swagger import SwaggerMixin
 class DistributionSchema(BaseSchema, SwaggerMixin):
     node = fields.Nested('NodeSchema')
     dataset = fields.Nested('DatasetSchema')
+    bins = fields.List(fields.Int())
+    bin_edges = fields.List(fields.Float())
 
 
 class MarginalDistributionResource(Resource):
@@ -22,7 +24,7 @@ class MarginalDistributionResource(Resource):
         'parameters': [
             {
                 'name': 'node_id',
-                'description': 'Dataset identifier',
+                'description': 'Node identifier',
                 'in': 'path',
                 'type': 'integer',
                 'required': True
@@ -49,5 +51,6 @@ class MarginalDistributionResource(Resource):
         return marshal(DistributionSchema, {
             'node': node,
             'dataset': dataset,
-            # TODO
+            'bins': hist,
+            'bin_edges': bin_edges
         })

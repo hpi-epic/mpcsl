@@ -38,5 +38,5 @@ class DistributionTest(BaseResourceTest):
         assert distribution['node']['id'] == node.id
         assert distribution['dataset']['id'] == ds.id
         bins, bin_edges = np.histogram(source[:, 0], bins='auto', density=False)
-        assert distribution['bins'] == bins
-        assert distribution['bin_edges'] == bin_edges
+        assert (distribution['bins'] == bins).all()
+        assert np.allclose(distribution['bin_edges'], bin_edges)

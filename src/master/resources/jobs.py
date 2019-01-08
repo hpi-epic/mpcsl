@@ -61,7 +61,7 @@ class JobResource(Resource):
         return marshal(JobSchema, job)
 
     @swagger.doc({
-        'description': 'Deletes a single job, this also kills the process',
+        'description': 'Cancels a single job, this also kills the process',
         'parameters': [
             {
                 'name': 'job_id',

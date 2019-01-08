@@ -10,7 +10,7 @@ from marshmallow import fields, Schema
 from src.db import db
 from src.master.helpers.io import marshal, load_data
 from src.master.helpers.swagger import get_default_response
-from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset
+from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
 from src.models.base import SwaggerMixin
 from src.models.job import JobStatus
 
@@ -113,11 +113,12 @@ class ExperimentJobListResource(Resource):
         'tags': ['Job', 'Experiment']
     })
     def get(self, experiment_id):
-        job = Job.query\
+        Experiment.query.get_or_404(experiment_id)
+        jobs = Job.query\
             .filter(Job.experiment_id == experiment_id)\
             .order_by(Job.start_time.desc())
 
-        return marshal(JobSchema, job, many=True)
+        return marshal(JobSchema, jobs, many=True)
 
 
 class EdgeResultEndpointSchema(Schema, SwaggerMixin):

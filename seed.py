@@ -10,6 +10,7 @@ def add_experiment(db, dataset_id):
     new_experiment = Experiment(
         dataset_id=dataset_id,
         name="Example experiment",
+        description="This is an example description",
         parameters={
             'alpha': 0.9,
             'cores': 1,

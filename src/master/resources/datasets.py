@@ -126,7 +126,7 @@ class DatasetLoadResource(Resource):
         else:
             session = db.session
 
-        result = session.execute(ds.load_query)
+        result = session.execute(ds.load_query).fetchall()
         keys = result.keys()
 
         f = io.StringIO()

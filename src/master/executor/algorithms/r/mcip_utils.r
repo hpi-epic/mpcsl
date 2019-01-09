@@ -14,9 +14,11 @@ check_request <- function(api_host, request, job_id) {
 get_dataset <- function(api_host, dataset_id, job_id) {
     url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/load')
     print(paste0('Load dataset from ', url))
+    start_time <- Sys.time()
     df_request <- GET(url, progress())
     check_request(api_host, df_request, job_id)
-    print('Successfully loaded dataset')
+    print(paste('Successfully loaded dataset (size ', headers(df_request)$`content-length`,
+                ' bytes) in', (Sys.time() - start_time), 'sec'))
 
     df <- read.csv(text=content(df_request, 'text'))
     return(df)

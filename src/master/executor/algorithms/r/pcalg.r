@@ -48,7 +48,7 @@ if (opt$independence_test == "gaussCI") {
         suffStat$nlev <- nlev
         return(suffStat)
     }
-    sufficient_stats.categories <- add.nlev(sufficient_stats)
+    sufficient_stats <- add.nlev(sufficient_stats)
 } else{
     stop("No valid independence test specified")
 }

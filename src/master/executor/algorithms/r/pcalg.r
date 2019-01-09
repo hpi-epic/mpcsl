@@ -36,7 +36,7 @@ if (opt$independence_test == "gaussCI") {
     sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE)
 } else if (opt$independence_test == "disCI"){
     p <- ncol(matrix_df)
-    nlev <- vapply(seq_len(p), function(j) length(levels(factor(dm[,j]))), 1L)
+    nlev <- vapply(seq_len(p), function(j) length(levels(factor(matrix_df[,j]))), 1L)
     sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE, nlev=nlev)
 } else{
     stop("No valid independence test specified")

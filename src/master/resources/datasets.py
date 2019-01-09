@@ -126,12 +126,13 @@ class DatasetLoadResource(Resource):
         else:
             session = db.session
 
-        result = session.execute(ds.load_query).fetchall()
+        result = session.execute(ds.load_query)
         keys = result.keys()
 
         f = io.StringIO()
         wr = csv.writer(f)
         wr.writerow(keys)
+        result = result.fetchall()
         for line in result:
             wr.writerow(line)
 

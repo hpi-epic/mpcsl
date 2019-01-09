@@ -34,8 +34,23 @@ if (opt$independence_test == "gaussCI") {
     sufficient_stats <- list(C=cor(matrix_df), n=nrow(matrix_df))
 } else if (opt$independence_test == "binCI") {
     sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE)
-} else {
-    sufficient_stats <- list(C=matrix_df, adaptDF=FALSE)
+} else if (opt$independence_test == "disCI"){
+    sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE)
+    add.nlev <- function(suffStat){
+        if(is.data.frame(dm <- suffStat$dm)) 
+            dm <- data.matrix(dm)
+        else
+            stopifnot(is.matrix(dm))
+        p <- ncol(dm)
+        nlev <- suffStat$nlev
+        if(is.null(nlev))
+            nlev <- vapply(seq_len(p), function(j) length(levels(factor(dm[,j]))), 1L)
+        suffStat$nlev <- nlev
+        return(suffStat)
+    }
+    sufficient_stats.categories <- add.nlev(sufficient_stats)
+} else{
+    stop("No valid independence test specified")
 }
 
 result = pc(suffStat=sufficient_stats,

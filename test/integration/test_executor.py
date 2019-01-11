@@ -214,6 +214,5 @@ class SepsetExecutorTest(BaseIntegrationTest):
                       ('V5', 'V2', ['V4']), ('V6', 'V2', ['V4']), ('V5', 'V3', ['V4']),
                       ('V6', 'V3', ['V4']), ('V6', 'V5', ['V4'])]
         for sepset in sepsets:
-            print(sepset)
             assert (sepset.from_node.name, sepset.to_node.name, sepset.node_names) in sepset_set
         assert len(sepset_set) == len(sepsets)

@@ -210,9 +210,10 @@ class SepsetExecutorTest(BaseIntegrationTest):
         assert len(edge_set) == 0
 
         sepsets = db.session.query(Sepset).all()
-        sepset_set = [('V1', 'V4', ['V5']), ('V1', 'V5', ['V4']), ('V1', 'V6', ['V4']),
-                      ('V2', 'V5', ['V4']), ('V2', 'V6', ['V4']), ('V3', 'V5', ['V4']),
-                      ('V3', 'V6', ['V4']), ('V5', 'V6', ['V4'])]
+        sepset_set = [('V4', 'V1', ['V5']), ('V5', 'V1', ['V4']), ('V6', 'V1', ['V4']),
+                      ('V5', 'V2', ['V4']), ('V6', 'V2', ['V4']), ('V5', 'V3', ['V4']),
+                      ('V6', 'V3', ['V4']), ('V6', 'V5', ['V4'])]
         for sepset in sepsets:
+            print(sepset)
             assert (sepset.from_node.name, sepset.to_node.name, sepset.node_names) in sepset_set
         assert len(sepset_set) == len(sepsets)

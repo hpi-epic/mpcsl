@@ -45,7 +45,6 @@ class ExperimentTest(BaseResourceTest):
         data['algorithm_id'] = alg.id
         data['dataset_id'] = ds.id
 
-
         # When
         result = self.post(self.url_for(ExperimentListResource), json=data)
         ex = db.session.query(Experiment).first()

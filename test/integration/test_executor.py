@@ -202,17 +202,18 @@ class SepsetExecutorTest(BaseIntegrationTest):
         assert len(node_set) == 0
 
         edges = db.session.query(Edge).all()
-        edge_set = {('V1', 'V3'), ('V2', 'V3'), ('V2', 'V4'), ('V4', 'V2'), ('V4', 'V3'), ('V4', 'V5'),
-                    ('V4', 'V6'), ('V5', 'V4'), ('V6', 'V4')}
+        edge_set = {('V1', 'V3'), ('V2', 'V3'), ('V4', 'V2'), ('V4', 'V5'), ('V4', 'V6'),
+                    ('V5', 'V4'), ('V6', 'V4')}
         for edge in edges:
             assert (edge.from_node.name, edge.to_node.name) in edge_set
             edge_set.remove((edge.from_node.name, edge.to_node.name))
         assert len(edge_set) == 0
 
         sepsets = db.session.query(Sepset).all()
-        sepset_set = [('V4', 'V1', ['V5']), ('V5', 'V1', ['V4']), ('V6', 'V1', ['V4']),
-                      ('V5', 'V2', ['V4']), ('V6', 'V2', ['V4']), ('V5', 'V3', ['V4']),
-                      ('V6', 'V3', ['V4']), ('V6', 'V5', ['V4'])]
+        sepset_set = [('V4', 'V1', ['V5']), ('V4', 'V3', ['V5', 'V6']),
+                      ('V5', 'V1', ['V4']), ('V5', 'V2', ['V4']), ('V5', 'V3', ['V4']),
+                      ('V6', 'V1', ['V4']), ('V6', 'V2', ['V3', 'V4']),
+                      ('V6', 'V3', ['V1', 'V4']), ('V6', 'V5', ['V4'])]
         for sepset in sepsets:
             assert (sepset.from_node.name, sepset.to_node.name, sepset.node_names) in sepset_set
         assert len(sepset_set) == len(sepsets)

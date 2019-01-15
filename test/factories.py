@@ -2,7 +2,7 @@ import factory
 import random
 from factory.alchemy import SQLAlchemyModelFactory
 
-from src.models import BaseModel, Dataset, Experiment, Job, Result, Node, Edge, Sepset, Algorithm
+from src.models import BaseModel, Dataset, Experiment, Job, Result, Node, Edge, Sepset, JobStatus, Algorithm
 from src.db import db
 
 
@@ -42,6 +42,9 @@ class ExperimentFactory(BaseFactory):
         model = Experiment
         sqlalchemy_session = db.session
 
+    name = factory.Faker('word')
+    description = factory.Faker('text')
+
     dataset = factory.SubFactory(DatasetFactory)
     algorithm = factory.SubFactory(AlgorithmFactory)
     parameters = factory.LazyAttribute(lambda o: {
@@ -49,6 +52,7 @@ class ExperimentFactory(BaseFactory):
         'independence_test': 'gaussCI',
         'cores': 1
     })
+
 
 class JobFactory(BaseFactory):
     class Meta:
@@ -58,6 +62,7 @@ class JobFactory(BaseFactory):
     experiment = factory.SubFactory(ExperimentFactory)
     start_time = factory.Faker('date_time')
     pid = factory.Faker('pyint')
+    status = JobStatus.running
 
 
 class ResultFactory(BaseFactory):
@@ -75,6 +80,7 @@ class NodeFactory(BaseFactory):
         model = Node
         sqlalchemy_session = db.session
 
+    result = factory.SubFactory(ResultFactory)
     name = factory.Faker('word')
 
 
@@ -83,11 +89,20 @@ class EdgeFactory(BaseFactory):
         model = Edge
         sqlalchemy_session = db.session
 
+    result = factory.SubFactory(ResultFactory)
+    from_node = factory.SubFactory(NodeFactory)
+    to_node = factory.SubFactory(NodeFactory)
+
 
 class SepsetFactory(BaseFactory):
     class Meta:
         model = Sepset
         sqlalchemy_session = db.session
 
+    result = factory.SubFactory(ResultFactory)
+    from_node = factory.SubFactory(NodeFactory)
+    to_node = factory.SubFactory(NodeFactory)
+
     level = random.randint(1, 5)
     statistic = random.random()
+    node_names = factory.List([factory.Faker('word') for _ in range(random.randint(1, 5))])

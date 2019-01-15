@@ -1,13 +1,7 @@
 import os
+import json
 
-# App
-APP_HOST = os.environ.get('APP_HOST', 'localhost')
-APP_PORT = os.environ.get('APP_PORT', '5000')
-
-if APP_PORT != '80':
-    SERVER_NAME = APP_HOST + ':' + APP_PORT
-else:
-    SERVER_NAME = APP_HOST
+API_HOST = os.environ.get('API_HOST')
 
 # Database
 DB_TYPE = os.environ.get('DB_TYPE', 'postgresql')
@@ -15,6 +9,9 @@ DB_HOST = os.environ.get('DB_HOST', 'database')
 DB_DATABASE = os.environ.get('DB_DATABASE', 'postgres')
 DB_USER = os.environ.get('DB_USER', 'postgres')
 DB_PASSWORD = os.environ.get('DB_PASSWORD', 'postgres')
+
+# Remote databases for loading
+DATA_SOURCE_CONNECTIONS = json.loads(os.environ.get('DATA_SOURCE_CONNECTIONS', '{}'))
 
 SQLALCHEMY_DATABASE_URI = os.environ.get(
     'SQLALCHEMY_DATABASE_URI',

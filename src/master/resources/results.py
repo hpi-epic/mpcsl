@@ -40,7 +40,8 @@ class ResultResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(ResultLoadSchema.get_swagger())
+        'responses': get_default_response(ResultLoadSchema.get_swagger()),
+        'tags': ['Result']
     })
     def get(self, result_id):
         result = Result.query.get_or_404(result_id)
@@ -58,7 +59,8 @@ class ResultResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(ResultSchema.get_swagger())
+        'responses': get_default_response(ResultSchema.get_swagger()),
+        'tags': ['Result']
     })
     def delete(self, result_id):
         result = Result.query.get_or_404(result_id)

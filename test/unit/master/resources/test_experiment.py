@@ -15,7 +15,7 @@ class ExperimentTest(BaseResourceTest):
         ex2 = ExperimentFactory()
 
         # When
-        result = self.get(self.api.url_for(ExperimentListResource))
+        result = self.get(self.url_for(ExperimentListResource))
 
         # Then
         assert len(result) == 2
@@ -28,7 +28,7 @@ class ExperimentTest(BaseResourceTest):
         job = JobFactory(experiment=ex)
 
         # When
-        result = self.get(self.api.url_for(ExperimentResource, experiment_id=ex.id))
+        result = self.get(self.url_for(ExperimentResource, experiment_id=ex.id))
 
         # Then
         assert result['id'] == ex.id
@@ -43,7 +43,7 @@ class ExperimentTest(BaseResourceTest):
         data['dataset_id'] = ds.id
 
         # When
-        result = self.post(self.api.url_for(ExperimentListResource), json=data)
+        result = self.post(self.url_for(ExperimentListResource), json=data)
         ex = db.session.query(Experiment).first()
 
         # Then
@@ -57,7 +57,7 @@ class ExperimentTest(BaseResourceTest):
         ex = ExperimentFactory()
 
         # When
-        result = self.delete(self.api.url_for(ExperimentResource, experiment_id=ex.id))
+        result = self.delete(self.url_for(ExperimentResource, experiment_id=ex.id))
 
         # Then
         assert result['id'] == ex.id

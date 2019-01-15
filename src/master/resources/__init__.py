@@ -4,7 +4,10 @@ from .results import ResultListResource, ResultResource
 from .jobs import JobListResource, JobResource, JobResultResource, \
     ExperimentJobListResource
 from .algorithms import AlgorithmResource, AlgorithmListResource
-
+from .nodes import NodeResource, ResultNodeListResource, NodeContextResource
+from .edges import EdgeResource, ResultEdgeListResource
+from .sepsets import SepsetResource, ResultSepsetListResource
+from .distributions import MarginalDistributionResource
 
 __all__ = [
     'AlgorithmListResource',
@@ -19,5 +22,13 @@ __all__ = [
     'JobResource',
     'JobResultResource',
     'ExperimentJobListResource',
-    'ResultResource'
+    'ResultResource',
+    'NodeResource',
+    'ResultNodeListResource',
+    'NodeContextResource',
+    'EdgeResource',
+    'ResultEdgeListResource',
+    'SepsetResource',
+    'ResultSepsetListResource',
+    'MarginalDistributionResource'
 ]

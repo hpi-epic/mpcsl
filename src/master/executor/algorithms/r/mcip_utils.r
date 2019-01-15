@@ -3,13 +3,28 @@ library(graph, quietly = T)
 library(jsonlite, quietly = T)
 
 
-get_dataset <- function(dataset_id) {
-    df_request <- GET(paste0('http://localhost:5000/api/dataset/', dataset_id, '/load'))
+check_request <- function(api_host, request, job_id) {
+    if (http_error(request)) {
+        error_request <- PUT(paste0('http://', api_host, '/api/job/', job_id))
+        warn_for_status(error_request)
+        stop_for_status(request)
+    }
+}
+
+get_dataset <- function(api_host, dataset_id, job_id) {
+    url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/load')
+    print(paste0('Load dataset from ', url))
+    start_time <- Sys.time()
+    df_request <- GET(url, progress())
+    check_request(api_host, df_request, job_id)
+    print(paste('Successfully loaded dataset (size ', headers(df_request)$`content-length`,
+                ' bytes) in', (Sys.time() - start_time), 'sec'))
+
     df <- read.csv(text=content(df_request, 'text'))
     return(df)
 }
 
-store_graph_result <- function(graph, df, job_id, opt) {
+store_graph_result <- function(api_host, graph, df, job_id, opt) {
     edges <- edges(graph)
     edge_list <- list(from_node=c(), to_node=c())
     node_list <- c()
@@ -53,7 +68,7 @@ store_graph_result <- function(graph, df, job_id, opt) {
     ), auto_unbox=TRUE)
     # print(result_json)
     
-    graph_request <- POST(paste0('http://localhost:5000/api/job/', job_id, '/result'), 
+    graph_request <- POST(paste0('http://', api_host, '/api/job/', job_id, '/result'),
                                  body=result_json, 
                                  add_headers("Content-Type" = "application/json"))
 

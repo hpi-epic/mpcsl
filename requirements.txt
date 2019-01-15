@@ -27,13 +27,16 @@ psycopg2-binary==2.7.6.1
 py==1.7.0
 pycodestyle==2.4.0
 pyflakes==2.0.0
+pyhdb==0.3.4
 pytest==3.10.1
 python-dateutil==2.7.5
 pytz==2018.7
 requests==2.20.1
 six==1.11.0
 SQLAlchemy==1.2.14
+sqlalchemy-hana==0.3.0
 text-unidecode==1.2
 urllib3==1.24.1
 uWSGI==2.0.17.1
 Werkzeug==0.14.1
+pytest-ordering==0.6

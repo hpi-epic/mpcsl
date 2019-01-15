@@ -2,7 +2,9 @@ from .resources import DatasetLoadResource, DatasetListResource, \
     DatasetResource, JobResource, JobListResource, \
     ExperimentResource, ExperimentListResource, ResultListResource, \
     JobResultResource, ExperimentJobListResource, ResultResource, \
-    AlgorithmResource, AlgorithmListResource
+    AlgorithmResource, AlgorithmListResource, \
+    ResultNodeListResource, ResultEdgeListResource, ResultSepsetListResource, \
+    NodeResource, EdgeResource, SepsetResource, NodeContextResource, MarginalDistributionResource
 from src.master.executor.executor import ExecutorResource
 
 
@@ -25,3 +27,11 @@ def set_up_routes(api):
     api.add_resource(JobListResource, base_url('/jobs'))
     api.add_resource(ResultListResource, base_url('/results'))
     api.add_resource(ResultResource, base_url('/result/<int:result_id>'))
+    api.add_resource(ResultNodeListResource, base_url('/result/<int:result_id>/nodes'))
+    api.add_resource(ResultEdgeListResource, base_url('/result/<int:result_id>/edges'))
+    api.add_resource(ResultSepsetListResource, base_url('/result/<int:result_id>/sepsets'))
+    api.add_resource(NodeResource, base_url('/node/<int:node_id>'))
+    api.add_resource(NodeContextResource, base_url('/node/<int:node_id>/context'))
+    api.add_resource(MarginalDistributionResource, base_url('/node/<int:node_id>/marginal'))
+    api.add_resource(EdgeResource, base_url('/edge/<int:edge_id>'))
+    api.add_resource(SepsetResource, base_url('/sepset/<int:sepset_id>'))

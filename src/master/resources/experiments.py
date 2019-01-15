@@ -1,7 +1,6 @@
 from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 
-from src.app import app
 from src.db import db
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
@@ -24,9 +23,9 @@ class ExperimentResource(Resource):
         'tags': ['Experiment']
     })
     def get(self, experiment_id):
-        ds = Experiment.query.get_or_404(experiment_id)
+        experiment = Experiment.query.get_or_404(experiment_id)
 
-        return marshal(ExperimentSchema, ds)
+        return marshal(ExperimentSchema, experiment)
 
     @swagger.doc({
         'description': 'Deletes a single experiment',
@@ -43,10 +42,10 @@ class ExperimentResource(Resource):
         'tags': ['Experiment']
     })
     def delete(self, experiment_id):
-        ds = Experiment.query.get_or_404(experiment_id)
-        data = marshal(ExperimentSchema, ds)
+        experiment = Experiment.query.get_or_404(experiment_id)
+        data = marshal(ExperimentSchema, experiment)
 
-        db.session.delete(ds)
+        db.session.delete(experiment)
         db.session.commit()
         return data
 
@@ -58,12 +57,9 @@ class ExperimentListResource(Resource):
         'tags': ['Experiment']
     })
     def get(self):
-        app.logger.info("afafs")
-        app.logger.info(app.url_map.host_matching)
+        experiments = Experiment.query.all()
 
-        ds = Experiment.query.all()
-
-        return marshal(ExperimentSchema, ds, many=True)
+        return marshal(ExperimentSchema, experiments, many=True)
 
     @swagger.doc({
         'description': 'Creates an experiment',
@@ -81,9 +77,9 @@ class ExperimentListResource(Resource):
     def post(self):
         data = load_data(ExperimentSchema)
 
-        ds = Experiment(**data)
+        experiment = Experiment(**data)
 
-        db.session.add(ds)
+        db.session.add(experiment)
         db.session.commit()
 
-        return marshal(ExperimentSchema, ds)
+        return marshal(ExperimentSchema, experiment)

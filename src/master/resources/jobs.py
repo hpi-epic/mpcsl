@@ -4,13 +4,13 @@ import signal
 from flask_restful_swagger_2 import swagger
 
 from flask import current_app
-from flask_restful import Resource
+from flask_restful import Resource, abort
 from marshmallow import fields, Schema
 
 from src.db import db
 from src.master.helpers.io import marshal, load_data
 from src.master.helpers.swagger import get_default_response
-from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset
+from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
 from src.models.base import SwaggerMixin
 from src.models.job import JobStatus
 
@@ -36,7 +36,32 @@ class JobResource(Resource):
         return marshal(JobSchema, job)
 
     @swagger.doc({
-        'description': 'Deletes a single job, this also kills the process',
+        'description': 'Updates the status of a running job to "error"',
+        'parameters': [
+            {
+                'name': 'job_id',
+                'description': 'Job identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(JobSchema.get_swagger()),
+        'tags': ['Job', 'Executor']
+    })
+    def put(self, job_id):
+        job = Job.query.get_or_404(job_id)
+        if job.status != JobStatus.running:
+            abort(400)
+
+        current_app.logger.info('An error occurred in Job {}'.format(job.id))
+        job.status = JobStatus.error
+        db.session.commit()
+
+        return marshal(JobSchema, job)
+
+    @swagger.doc({
+        'description': 'Cancels a single job, this also kills the process',
         'parameters': [
             {
                 'name': 'job_id',
@@ -88,11 +113,12 @@ class ExperimentJobListResource(Resource):
         'tags': ['Job', 'Experiment']
     })
     def get(self, experiment_id):
-        job = Job.query\
+        Experiment.query.get_or_404(experiment_id)
+        jobs = Job.query\
             .filter(Job.experiment_id == experiment_id)\
             .order_by(Job.start_time.desc())
 
-        return marshal(JobSchema, job, many=True)
+        return marshal(JobSchema, jobs, many=True)
 
 
 class EdgeResultEndpointSchema(Schema, SwaggerMixin):
@@ -167,5 +193,6 @@ class JobResultResource(Resource):
 
         current_app.logger.info('Result {} created'.format(result.id))
         job.status = JobStatus.done
+        job.result_id = result.id
         db.session.commit()
         return marshal(ResultSchema, result)

@@ -37,6 +37,7 @@ class ExperimentParameterSchema(Schema, SwaggerMixin):
 class ExperimentSchema(BaseSchema):
     name = field_for(Experiment, 'name', required=True, validate=Length(min=1))
     description = field_for(Experiment, 'description', required=False, allow_none=True, default='')
+    algorithm = fields.Nested('AlgorithmSchema')
     parameters = fields.Nested(ExperimentParameterSchema)
     last_job = fields.Nested('JobSchema', dump_only=True)
 

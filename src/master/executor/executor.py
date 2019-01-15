@@ -48,7 +48,8 @@ class ExecutorResource(Resource):
             r_process = Popen([
                 'Rscript', 'src/master/executor/algorithms/r/' + algorithm.script_filename,
                 '-j', str(new_job.id),
-                '-d', str(experiment.dataset_id)
+                '-d', str(experiment.dataset_id),
+                '--api_host', str(API_HOST)
             ] + params)
 
             new_job.pid = r_process.pid

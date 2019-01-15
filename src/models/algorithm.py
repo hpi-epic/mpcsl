@@ -1,4 +1,6 @@
 import enum
+
+from marshmallow import fields
 from sqlalchemy.ext.mutable import MutableDict
 
 from src.db import db
@@ -20,5 +22,7 @@ class Algorithm(BaseModel):
 
 
 class AlgorithmSchema(BaseSchema):
+    valid_parameters = fields.Dict()
+
     class Meta(BaseSchema.Meta):
         model = Algorithm

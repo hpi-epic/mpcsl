@@ -1,6 +1,6 @@
-from flask_restful import Resource, fields
+from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
-from marshmallow import Schema
+from marshmallow import Schema, fields
 from marshmallow.validate import Length
 
 from src.db import db
@@ -56,7 +56,7 @@ TYPE_MAP = {
     'str': lambda: fields.String(required=True, validate=Length(min=0)),
     'int': lambda: fields.Integer(required=True),
     'float': lambda: fields.Float(required=True),
-    'bool': lambda: fields.Boolean(default=True),
+    'bool': lambda: fields.Boolean(required=True),
 }
 
 
@@ -104,7 +104,7 @@ class ExperimentListResource(Resource):
     def post(self):
         data = load_data(ExperimentSchema)
 
-        algorithm = Algorithm.get_or_404(data['algorithm_id'])
+        algorithm = Algorithm.query.get_or_404(data['algorithm_id'])
         schema = generate_schema(algorithm.valid_parameters)
         params, errors = schema().load(data['parameters'])
 

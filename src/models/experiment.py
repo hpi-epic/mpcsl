@@ -31,7 +31,7 @@ class Experiment(BaseModel):
 class ExperimentSchema(BaseSchema):
     name = field_for(Experiment, 'name', required=True, validate=Length(min=1))
     description = field_for(Experiment, 'description', required=False, allow_none=True, default='')
-    algorithm = fields.Nested('AlgorithmSchema')
+    algorithm = fields.Nested('AlgorithmSchema', dump_only=True)
     parameters = fields.Dict()
     last_job = fields.Nested('JobSchema', dump_only=True)
 

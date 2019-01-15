@@ -34,7 +34,11 @@ class AlgorithmFactory(BaseFactory):
     script_filename = 'pcalg.r'
     description = ''
     backend = 'R'
-    valid_parameters = dict()
+    valid_parameters = factory.LazyAttribute(lambda o: {
+        'alpha': 'float',
+        'independence_test': 'str',
+        'cores': 'int'
+    })
 
 
 class ExperimentFactory(BaseFactory):

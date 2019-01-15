@@ -28,17 +28,11 @@ class Experiment(BaseModel):
         return sorted(self.jobs, key=lambda x: x.start_time)[-1]
 
 
-class ExperimentParameterSchema(Schema, SwaggerMixin):
-    alpha = fields.Float(required=True)
-    independence_test = fields.String(required=True, validate=OneOf(INDEPENDENCE_TESTS))
-    cores = fields.Integer(required=True)
-
-
 class ExperimentSchema(BaseSchema):
     name = field_for(Experiment, 'name', required=True, validate=Length(min=1))
     description = field_for(Experiment, 'description', required=False, allow_none=True, default='')
     algorithm = fields.Nested('AlgorithmSchema')
-    parameters = fields.Nested(ExperimentParameterSchema)
+    parameters = fields.Dict()
     last_job = fields.Nested('JobSchema', dump_only=True)
 
     class Meta(BaseSchema.Meta):

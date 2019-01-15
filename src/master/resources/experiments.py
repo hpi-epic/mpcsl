@@ -1,10 +1,12 @@
-from flask_restful import Resource
+from flask_restful import Resource, fields
 from flask_restful_swagger_2 import swagger
+from marshmallow import Schema
+from marshmallow.validate import Length
 
 from src.db import db
-from src.master.helpers.io import load_data, marshal
+from src.master.helpers.io import load_data, marshal, InvalidInputData
 from src.master.helpers.swagger import get_default_response
-from src.models import Experiment, ExperimentSchema
+from src.models import Experiment, ExperimentSchema, Algorithm
 
 
 class ExperimentResource(Resource):
@@ -50,6 +52,31 @@ class ExperimentResource(Resource):
         return data
 
 
+TYPE_MAP = {
+    'str': lambda: fields.String(required=True, validate=Length(min=0)),
+    'int': lambda: fields.Integer(required=True),
+    'float': lambda: fields.Float(required=True),
+    'bool': lambda: fields.Boolean(default=True),
+}
+
+
+def generate_schema(fields):
+    """
+    This function generates a marshmallow schema,
+    given a fields dicts.
+    The dictionary should have the structure:
+    {
+        *field name*: *One of the datatypes listed in TYPE_MAP*,
+        ...
+    }
+    :param fields: List of fields, see above
+    :return: Schema
+    """
+    return type('Schema', (Schema,), {
+        attribute: TYPE_MAP[fields[attribute]]() for attribute in fields.keys()
+    })
+
+
 class ExperimentListResource(Resource):
     @swagger.doc({
         'description': 'Returns all experiments',
@@ -76,6 +103,15 @@ class ExperimentListResource(Resource):
     })
     def post(self):
         data = load_data(ExperimentSchema)
+
+        algorithm = Algorithm.get_or_404(data['algorithm_id'])
+        schema = generate_schema(algorithm.valid_parameters)
+        params, errors = schema().load(data['parameters'])
+
+        if len(errors) > 0:
+            raise InvalidInputData(payload=errors)
+
+        data['parameters'] = params
 
         experiment = Experiment(**data)
 

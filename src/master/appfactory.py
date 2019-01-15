@@ -70,7 +70,7 @@ class AppFactory(object):
                     algorithms = json.load(f)
                     for algorithm in algorithms:
                         data, errors = AlgorithmSchema().load(algorithm)
-                        if not self.db.session.query(Algorithm).filter(Algorithm.name==data['name']).one_or_none():
+                        if not self.db.session.query(Algorithm).filter(Algorithm.name == data['name']).one_or_none():
                             alg = Algorithm(**data)
                             self.db.session.add(alg)
                 self.db.session.commit()

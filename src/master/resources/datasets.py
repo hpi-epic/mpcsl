@@ -132,6 +132,7 @@ class DatasetLoadResource(Resource):
         f = io.StringIO()
         wr = csv.writer(f)
         wr.writerow(keys)
+        result = result.fetchall()
         for line in result:
             wr.writerow(line)
 

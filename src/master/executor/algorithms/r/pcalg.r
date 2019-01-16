@@ -1,6 +1,6 @@
 library(optparse, quietly = T)
 library(pcalg, quietly = T)
-source("src/master/executor/algorithms/r/mcip_utils.r")
+source("src/master/executor/algorithms/r/mpci_utils.r")
 
 option_list_v <- list(
                     make_option(c("-j", "--job_id"), type="character",

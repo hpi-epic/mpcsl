@@ -1,4 +1,5 @@
 library(optparse, quietly = T)
+library(pcalg, quietly = T)
 library(ParallelPC, quietly = T)
 source("src/master/executor/algorithms/r/mpci_utils.r")
 
@@ -44,6 +45,6 @@ if (opt$independence_test == "gaussCI") {
 
 result = pc_parallel(suffStat=sufficient_stats,
             indepTest=indepTestDict[[opt$independence_test]],
-            p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method="stable.fast")
+            p=ncol(matrix_df), alpha=opt$alpha, num.cores=opt$cores, skel.method="parallel")
 
 graph_request <- store_graph_result(opt$api_host, result@'graph', df, opt$job_id, opt)

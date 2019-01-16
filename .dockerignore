@@ -1,6 +1,13 @@
-.travis.yml
-.gitignore
-docker-compose-prod.yml
-docker-compose.yml
-README.md
-.git/
+
+# Double check which files and directories are copied in Dockerfiles
+
+docker-compose*.yml
+Dockerfile*
+
+**/README.md
+**/docs
+
+**/.travis.yml
+**/.git
+**/.gitignore
+**/node_modules

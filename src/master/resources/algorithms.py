@@ -28,7 +28,7 @@ class AlgorithmResource(Resource):
         return marshal(AlgorithmSchema, algorithm)
 
     @swagger.doc({
-        'description': 'Deletes a single experiment',
+        'description': 'Deletes a single Algorithm',
         'parameters': [
             {
                 'name': 'algorithm_id',

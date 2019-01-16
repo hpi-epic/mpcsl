@@ -1,0 +1,24 @@
+[
+   {
+       “name”: “pcalg”,
+       “script_filename”: “pcalg.r”,
+       “backend”: “R”,
+       “description”: “Standard pcalg R-implementation”,
+       “valid_parameters”: {
+           “alpha”: “Float”,
+           “independence_test”: “String”,
+           “cores”: “Integer”
+       }
+   },
+   {
+       “name”: "parallelpc",
+       “script_filename”: "parallelpc.r”,
+       “backend”: “R”,
+       “description”: “ParallelPC R-implementation”,
+       “valid_parameters”: {
+           “alpha”: “Float”,
+           “independence_test”: “String”,
+           “cores”: “Integer”
+       }
+   }
+]

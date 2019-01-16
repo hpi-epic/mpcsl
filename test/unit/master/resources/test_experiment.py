@@ -4,7 +4,7 @@ from sqlalchemy import inspect
 from src.db import db
 from src.master.resources.experiments import ExperimentListResource, ExperimentResource
 from src.models import Experiment
-from test.factories import ExperimentFactory, DatasetFactory, JobFactory
+from test.factories import ExperimentFactory, DatasetFactory, JobFactory, AlgorithmFactory
 from .base import BaseResourceTest
 
 
@@ -38,8 +38,11 @@ class ExperimentTest(BaseResourceTest):
     def test_create_new_experiment(self):
         # Given
         ds = DatasetFactory()
+        alg = AlgorithmFactory()
         data = factory.build(dict, FACTORY_CLASS=ExperimentFactory)
         data.pop('dataset')
+        data.pop('algorithm')
+        data['algorithm_id'] = alg.id
         data['dataset_id'] = ds.id
 
         # When

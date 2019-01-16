@@ -1,5 +1,5 @@
 library(optparse, quietly = T)
-library(parallelPC, quietly = T)
+library(ParallelPC, quietly = T)
 source("src/master/executor/algorithms/r/mpci_utils.r")
 
 option_list_v <- list(

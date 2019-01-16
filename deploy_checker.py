@@ -32,7 +32,8 @@ if current_backend_commit != most_recent_backend_commit or current_ui_commit != 
 
         try:
             run('git pull && git submodule update --remote --init && '
-                'docker-compose -f docker-compose-nginx.yml up --build --detach',
+                'docker-compose -f docker-compose-nginx.yml build --pull && '
+                'docker-compose -f docker-compose-nginx.yml up --detach',
                 shell=True, check=True)
         except CalledProcessError:
             os.remove('most_recent_backend_commit.pkl')

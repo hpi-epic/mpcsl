@@ -4,7 +4,7 @@
 #
 # <-------------------------------------------------
 # CRAN dependencies
-packages <- c('optparse', 'pcalg', 'httr', 'jsonlite', 'parallelPC')
+packages <- c('optparse', 'pcalg', 'httr', 'jsonlite', 'ParallelPC')
 # non-CRAN dependencies
 bioc_packages <- c('graph', 'RBGL')
 # <-------------------------------------------------

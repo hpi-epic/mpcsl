@@ -5,9 +5,9 @@
        "backend": "R",
        "description": "Standard pcalg R-implementation",
        "valid_parameters": {
-           "alpha": "Float",
-           "independence_test": "String",
-           "cores": "Integer"
+           "alpha": "float",
+           "independence_test": "str",
+           "cores": "int"
        }
    },
    {
@@ -16,9 +16,9 @@
        "backend": "R",
        "description": "ParallelPC R-implementation",
        "valid_parameters": {
-           "alpha": "Float",
-           "independence_test": "String",
-           "cores": "Integer"
+           "alpha": "float",
+           "independence_test": "str",
+           "cores": "int"
        }
    }
 ]

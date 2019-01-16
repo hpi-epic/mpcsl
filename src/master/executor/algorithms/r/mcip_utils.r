@@ -5,6 +5,7 @@ library(jsonlite, quietly = T)
 
 check_request <- function(api_host, request, job_id) {
     if (http_error(request)) {
+        save(request, file=paste0(job_id, '_error.RData'))
         error_request <- PUT(paste0('http://', api_host, '/api/job/', job_id))
         warn_for_status(error_request)
         stop_for_status(request)
@@ -66,12 +67,11 @@ store_graph_result <- function(api_host, graph, df, job_id, opt) {
         meta_results=opt,
         sepset_list=if(nrow(sepset_list) == 0) list() else sepset_list
     ), auto_unbox=TRUE)
-    # print(result_json)
     
     graph_request <- POST(paste0('http://', api_host, '/api/job/', job_id, '/result'),
                                  body=result_json, 
                                  add_headers("Content-Type" = "application/json"))
-    stop_for_status(graph_request)
+    check_request(api_host, graph_request, job_id)
 
     return(graph_request)
 }

@@ -1,6 +1,6 @@
 library(optparse, quietly = T)
 library(pcalg, quietly = T)
-source("src/master/executor/algorithms/r/mcip_utils.r")
+source("src/master/executor/algorithms/r/mpci_utils.r")
 
 option_list_v <- list(
                     make_option(c("-j", "--job_id"), type="character",
@@ -46,4 +46,4 @@ result = pc(suffStat=sufficient_stats,
             indepTest=indepTestDict[[opt$independence_test]],
             p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method="stable.fast")
 
-graph_requst <- store_graph_result(opt$api_host, result@'graph', df, opt$job_id, opt)
+graph_request <- store_graph_result(opt$api_host, result@'graph', df, opt$job_id, opt)

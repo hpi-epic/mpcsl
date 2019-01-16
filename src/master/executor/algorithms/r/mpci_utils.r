@@ -5,6 +5,7 @@ library(jsonlite, quietly = T)
 
 check_request <- function(api_host, request, job_id) {
     if (http_error(request)) {
+        save(request, file=paste0(job_id, '_error.RData'))
         error_request <- PUT(paste0('http://', api_host, '/api/job/', job_id))
         warn_for_status(error_request)
         stop_for_status(request)
@@ -49,7 +50,7 @@ store_graph_result <- function(api_host, graph, df, job_id, opt) {
             if(length(sepset) > 0){
                 sepset_list[['from_node']][[i]] <- colnames(df)[from_node]
                 sepset_list[['to_node']][[i]] <- colnames(df)[to_node]
-                ss_nodes_list[[i]] <- list(sepset)
+                ss_nodes_list[[i]] <- if(length(sepset) > 1) sepset else list(sepset)
                 sepset_list[['statistic']][[i]] <- 0
                 sepset_list[['level']][[i]] <- length(sepset)
                 i <- i + 1
@@ -66,11 +67,11 @@ store_graph_result <- function(api_host, graph, df, job_id, opt) {
         meta_results=opt,
         sepset_list=if(nrow(sepset_list) == 0) list() else sepset_list
     ), auto_unbox=TRUE)
-    # print(result_json)
     
     graph_request <- POST(paste0('http://', api_host, '/api/job/', job_id, '/result'),
                                  body=result_json, 
                                  add_headers("Content-Type" = "application/json"))
+    check_request(api_host, graph_request, job_id)
 
     return(graph_request)
 }

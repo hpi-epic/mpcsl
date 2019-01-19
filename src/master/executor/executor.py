@@ -44,14 +44,14 @@ class ExecutorResource(Resource):
             for k, v in experiment.parameters.items():
                 params.append('--' + k)
                 params.append(str(v))
-
+            logfile = open(f'job_{new_job.id}.log', 'a')
             r_process = Popen([
                 'Rscript', 'src/master/executor/algorithms/r/' + algorithm.script_filename,
                 '-j', str(new_job.id),
                 '-d', str(experiment.dataset_id),
                 '--api_host', str(API_HOST)
-            ] + params, start_new_session=True)
-
+            ] + params, start_new_session=True, stdout=logfile, stderr=logfile)
+            # TODO check if file descriptor is closed somewhere by sub processes (close_fds)
             new_job.pid = r_process.pid
             db.session.commit()
         else:

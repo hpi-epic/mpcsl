@@ -45,6 +45,6 @@ if (opt$independence_test == "gaussCI") {
 
 result = pc_parallel(suffStat=sufficient_stats,
             indepTest=indepTestDict[[opt$independence_test]],
-            p=ncol(matrix_df), alpha=opt$alpha, num.cores=opt$cores, skel.method="parallel")
+            p=ncol(matrix_df), alpha=opt$alpha, num.cores=opt$cores, skel.method="parallel", verbose=TRUE)
 
 graph_request <- store_graph_result(opt$api_host, result@'graph', df, opt$job_id, opt)

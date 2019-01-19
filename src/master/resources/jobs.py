@@ -77,7 +77,8 @@ class JobResource(Resource):
     def delete(self, job_id):
         job = Job.query.get_or_404(job_id)
 
-        os.kill(job.pid, signal.SIGTERM)
+        # Kill all subprocesses with the same process group id (pgid)
+        os.killpg(os.getpgid(job.pid), signal.SIGTERM)
 
         job.status = JobStatus.cancelled
         db.session.commit()

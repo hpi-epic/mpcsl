@@ -14,7 +14,7 @@ option_list_v <- list(
                                 help="Independence test used for the pcalg", metavar=""),
                     make_option(c("-a", "--alpha"), type="double", default=0.05,
                                 help="This is a hyperparameter", metavar=""),
-                    make_option(c("-c", "--cores"), type="integer", default=2,
+                    make_option(c("-c", "--cores"), type="integer", default=1,
                                 help="The number of cores to run the pc-algorithm on", metavar=""),
                     make_option(c("--fixed_gaps"), type="character", default=FALSE,
                                 help="The connections that are removed via prior knowledge", metavar=""),
@@ -45,6 +45,6 @@ if (opt$independence_test == "gaussCI") {
 
 result = pc_parallel(suffStat=sufficient_stats,
             indepTest=indepTestDict[[opt$independence_test]],
-            p=ncol(matrix_df), alpha=opt$alpha, num.cores=opt$cores, skel.method="parallel", verbose=TRUE)
+            p=ncol(matrix_df), alpha=opt$alpha, num.cores=opt$cores, skel.method="parallel")
 
 graph_request <- store_graph_result(opt$api_host, result@'graph', df, opt$job_id, opt)

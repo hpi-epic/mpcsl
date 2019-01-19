@@ -18,7 +18,7 @@ get_dataset <- function(api_host, dataset_id, job_id) {
     start_time <- Sys.time()
     df_request <- GET(url, progress())
     check_request(api_host, df_request, job_id)
-    print(paste('Successfully loaded dataset (size ', headers(df_request)$`content-length`,
+    print(paste('Successfully loaded dataset (size ', headers(df_request)$`x-content-length`,
                 ' bytes) in', (Sys.time() - start_time), 'sec'))
 
     df <- read.csv(text=content(df_request, 'text'))

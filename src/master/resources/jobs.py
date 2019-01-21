@@ -78,7 +78,7 @@ class JobResource(Resource):
         job = Job.query.get_or_404(job_id)
 
         if(job.status == JobStatus.running):
-            os.kill(job.pid, signal.SIGTERM)
+            os.killpg(os.getpgid(job.pid), signal.SIGTERM)
             job.status = JobStatus.cancelled
         else:
             job.status = JobStatus.hidden

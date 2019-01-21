@@ -1,5 +1,6 @@
 from datetime import datetime
 import signal
+import factory
 from unittest.mock import patch
 
 
@@ -82,12 +83,15 @@ class JobTest(BaseResourceTest):
         # Given
         job = JobFactory()
         job.status = JobStatus.running
+        job_pgid = factory.Faker('pyint')
 
         # When
-        with patch('src.master.resources.jobs.os.kill') as m:
-            result = self.delete(self.url_for(JobResource, job_id=job.id))
+        with patch('src.master.resources.jobs.os.getpgid', return_value=job_pgid) as mock_pgid:
+            with patch('src.master.resources.jobs.os.killpg') as mock_killpg:
+                result = self.delete(self.url_for(JobResource, job_id=job.id))
 
-            m.assert_called_once_with(job.pid, signal.SIGTERM)
+                mock_pgid.assert_called_once_with(job.pid)
+                mock_killpg.assert_called_once_with(job_pgid, signal.SIGTERM)
 
         # Then
         assert result['id'] == job.id

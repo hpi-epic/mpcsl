@@ -135,6 +135,6 @@ class DatasetLoadResource(Resource):
         result = result.fetchall()
         for line in result:
             wr.writerow(line)
-
         resp = Response(f.getvalue(), mimetype='text/csv')
+        resp.headers.add("X-Content-Length", f.tell())
         return resp

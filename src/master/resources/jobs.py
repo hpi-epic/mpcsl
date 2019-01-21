@@ -97,7 +97,6 @@ class JobListResource(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('show_hidden', required=False, type=int)
         show_hidden = parser.parse_args().get('show_hidden', 0)
-        print(parser.parse_args())
 
         jobs = Job.query.all() if show_hidden else Job.query.filter(Job.status != JobStatus.hidden)
 

@@ -37,7 +37,9 @@ class AlgorithmFactory(BaseFactory):
     valid_parameters = factory.LazyAttribute(lambda o: {
         'alpha': 'float',
         'independence_test': 'str',
-        'cores': 'int'
+        'cores': 'int',
+        'verbose': 'int',
+        'subset_size': 'int'
     })
 
 
@@ -54,7 +56,9 @@ class ExperimentFactory(BaseFactory):
     parameters = factory.LazyAttribute(lambda o: {
         'alpha': round(random.random(), 2),
         'independence_test': 'gaussCI',
-        'cores': 1
+        'cores': 1,
+        'verbose': 0,
+        'subset_size': -1
     })
 
 

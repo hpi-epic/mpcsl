@@ -7,9 +7,9 @@ services:
 install:
   - cp confdefault/* conf/
   - docker-compose build
-  - docker-compose run backend flask db upgrade
 script:
   - docker-compose run backend flake8
+  - docker-compose run backend flask db upgrade
   - docker-compose run backend pytest
 git:
   submodules: false

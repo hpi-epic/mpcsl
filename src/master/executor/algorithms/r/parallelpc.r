@@ -14,7 +14,7 @@ option_list_v <- list(
                                 help="Independence test used for the pcalg", metavar=""),
                     make_option(c("-a", "--alpha"), type="double", default=0.05,
                                 help="This is a hyperparameter", metavar=""),
-                    make_option(c("-c", "--cores"), type="integer", default=1,
+                    make_option(c("-c", "--cores"), type="integer", default=2,
                                 help="The number of cores to run the pc-algorithm on", metavar=""),
                     make_option(c("-s", "--subset_size"), type="integer", default=-1,
                                 help="The number of cores to run the pc-algorithm on", metavar=""),

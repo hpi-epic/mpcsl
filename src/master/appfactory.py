@@ -3,6 +3,7 @@ import json
 
 from flask import Flask, jsonify
 from flask_restful_swagger_2 import Api
+from flask_migrate import Migrate
 
 from src.db import db
 from src.master.helpers.io import InvalidInputData
@@ -15,12 +16,13 @@ class AppFactory(object):
         self.app = None
         self.db = None
         self.api = None
+        self.migrate = None
 
     def set_up_db(self):
         self.db = db
         self.db.init_app(self.app)
-        with self.app.app_context():
-            self.db.create_all()
+
+        self.migrate = Migrate(self.app, db)
 
     def set_up_app(self):
         self.app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'), static_url_path='/static')

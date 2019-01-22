@@ -68,7 +68,7 @@ class AppFactory(object):
     def set_up_algorithms(self):
         if os.path.isfile('conf/algorithms.json'):
             with self.app.app_context():
-                if self.db.dialect.has_table(Algorithm.__table__):
+                if self.db.session.dialect.has_table(Algorithm.__table__):
                     with open('conf/algorithms.json') as f:
                         algorithms = json.load(f)
                         for algorithm in algorithms:

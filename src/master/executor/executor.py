@@ -44,7 +44,7 @@ class ExecutorResource(Resource):
             for k, v in experiment.parameters.items():
                 params.append('--' + k)
                 params.append(str(v))
-            logfile = open(f'job_{new_job.id}.log', 'a')
+            logfile = open(f'logs/job_{new_job.id}.log', 'a')
             r_process = Popen([
                 'Rscript', 'src/master/executor/algorithms/r/' + algorithm.script_filename,
                 '-j', str(new_job.id),

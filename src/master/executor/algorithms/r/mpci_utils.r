@@ -5,7 +5,7 @@ library(jsonlite, quietly = T)
 
 check_request <- function(api_host, request, job_id) {
     if (http_error(request)) {
-        save(request, file=paste0(job_id, '_error.RData'))
+        save(request, file=paste0('logs/job_', job_id, '_error.RData'))
         error_request <- PUT(paste0('http://', api_host, '/api/job/', job_id))
         warn_for_status(error_request)
         stop_for_status(request)

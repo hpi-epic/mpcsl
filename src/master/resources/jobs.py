@@ -3,7 +3,7 @@ import os
 import signal
 from flask_restful_swagger_2 import swagger
 
-from flask import current_app
+from flask import current_app, send_file
 from flask_restful import Resource, abort
 from marshmallow import fields, Schema
 
@@ -197,3 +197,35 @@ class JobResultResource(Resource):
         job.result_id = result.id
         db.session.commit()
         return marshal(ResultSchema, result)
+
+
+class JobLogsResource(Resource):
+    @swagger.doc({
+        'description': 'Get the log output (stdout/stderr) for a given job',
+        'parameters': [
+            {
+                'name': 'job_id',
+                'description': 'Job identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': {
+            '200': {
+                'description': 'Success',
+            },
+            '404': {
+                'description': 'Log not found'
+            },
+            '500': {
+                'description': 'Internal server error'
+            }
+        },
+        'produces': ['text/plain'],
+        'tags': ['Executor', 'Job']
+    })
+    def get(self, job_id):
+        job = Job.query.get_or_404(job_id)
+        directory = os.path.dirname(current_app.instance_path) + '/logs'
+        return send_file(f'{directory}/job_{job.id}.log', mimetype='text/plain')

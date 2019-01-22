@@ -18,7 +18,7 @@ option_list_v <- list(
                     make_option(c("-s", "--subset_size"), type="integer", default=Inf,
                                 help="The number of cores to run the pc-algorithm on", metavar=""),
                     make_option(c("-v", "--verbose"), type="integer", default=0,
-                                help="The number of cores to run the pc-algorithm on", metavar=""),
+                                help="The number of cores to run the pc-algorithm on", metavar="")
                     #make_option(c("--fixed_gaps"), type="character", default=NULL,
                     #            help="The connections that are removed via prior knowledge", metavar=""),
                     #make_option(c("--fixed_edges"), type="character", default=NULL,

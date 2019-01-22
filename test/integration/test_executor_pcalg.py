@@ -115,3 +115,27 @@ class SepsetExecutorTest(BaseIntegrationTest):
             assert (sepset.from_node.name, sepset.to_node.name, sepset.node_names) or \
                    (sepset.to_node.name, sepset.from_node.name, sepset.node_names) in sepset_set
         assert len(sepset_set) == len(sepsets)
+
+
+class ParamExecutorTest(BaseIntegrationTest):
+
+    @pytest.mark.run(order=-5)
+    def test_r_execution_with_fixed_subset_size(self):
+        # Given
+        ex = ExperimentFactory(dataset=self.setup_dataset_cooling_house(), algorithm__script_filename='parallelpc.r')
+        ex.parameters['alpha'] = 0.05
+        ex.parameters['verbose'] = 1
+        ex.parameters['subset_size'] = 0
+        db.session.commit()
+
+        # When
+        job, result = self.run_experiment(ex)
+
+        # Then
+        assert result.job_id == job.id
+        assert result.job.experiment_id == ex.id
+        assert result.start_time == job.start_time
+
+        sepsets = db.session.query(Sepset).all()
+        # If m.max=0, there can be no separation sets
+        assert len(sepsets) == 0

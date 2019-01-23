@@ -1,7 +1,7 @@
 from .resources import DatasetLoadResource, DatasetListResource, \
     DatasetResource, JobResource, JobListResource, \
     ExperimentResource, ExperimentListResource, ResultListResource, \
-    JobLogsResource, JobResultResource, ExperimentJobListResource, ResultResource, \
+    JobLogsResource, JobLogStreamResource, JobResultResource, ExperimentJobListResource, ResultResource, \
     AlgorithmResource, AlgorithmListResource, \
     ResultNodeListResource, ResultEdgeListResource, ResultSepsetListResource, \
     NodeResource, EdgeResource, SepsetResource, NodeContextResource, MarginalDistributionResource
@@ -24,6 +24,7 @@ def set_up_routes(api):
     api.add_resource(ExperimentListResource, base_url('/experiments'))
     api.add_resource(JobResource, base_url('/job/<int:job_id>'))
     api.add_resource(JobLogsResource, base_url('/job/<int:job_id>/logs'))
+    api.add_resource(JobLogStreamResource, base_url('/job/<int:job_id>/logstream'))
     api.add_resource(JobResultResource, base_url('/job/<int:job_id>/result'))
     api.add_resource(JobListResource, base_url('/jobs'))
     api.add_resource(ResultListResource, base_url('/results'))

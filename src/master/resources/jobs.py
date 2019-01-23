@@ -1,9 +1,10 @@
 from datetime import datetime
 import os
 import signal
+from subprocess import Popen, PIPE
 from flask_restful_swagger_2 import swagger
 
-from flask import current_app, send_file
+from flask import current_app, send_file, Response
 from flask_restful import Resource, abort
 from marshmallow import fields, Schema
 
@@ -229,3 +230,48 @@ class JobLogsResource(Resource):
         job = Job.query.get_or_404(job_id)
         directory = os.path.dirname(current_app.instance_path) + '/logs'
         return send_file(f'{directory}/job_{job.id}.log', mimetype='text/plain')
+
+
+class JobLogStreamResource(Resource):
+        @swagger.doc({
+            'description': 'Get the log stream (stdout/stderr) for a given job',
+            'parameters': [
+                {
+                    'name': 'job_id',
+                    'description': 'Job identifier',
+                    'in': 'path',
+                    'type': 'integer',
+                    'required': True
+                }
+            ],
+            'responses': {
+                '200': {
+                    'description': 'Success',
+                },
+                '404': {
+                    'description': 'Log not found'
+                },
+                '500': {
+                    'description': 'Internal server error'
+                }
+            },
+            'produces': ['text/plain'],
+            'tags': ['Executor', 'Job']
+        })
+        def get(self, job_id):
+            job = Job.query.get_or_404(job_id)
+            directory = os.path.dirname(current_app.instance_path) + '/logs'
+            logfile = f'{directory}/job_{job.id}.log'
+
+            # https://stackoverflow.com/questions/1703640/how-to-implement-a-pythonic-equivalent-of-tail-f
+            def tail(filename):
+                # returns lines from a file, starting from the beginning
+                command = "tail -n +1 -F " + filename
+                p = Popen(command.split(), stdout=PIPE, universal_newlines=True)
+
+                for line in p.stdout:
+                    if line == '' and p.poll() is not None:
+                        break
+                    yield line
+
+            return Response(tail(logfile), mimetype='text/plain')

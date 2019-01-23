@@ -275,8 +275,8 @@ class JobLogStreamResource(Resource):
                 p = Popen(command.split(), stdout=PIPE, universal_newlines=True)
 
                 for line in p.stdout:
-                    if line == '' and p.poll() is not None:
-                        break
+                    if line == '':
+                        p.terminate()
                     yield line
 
             return Response(tail(logfile), mimetype='text/plain')

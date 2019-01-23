@@ -23,3 +23,5 @@ SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get(
     'SQLALCHEMY_TRACK_MODIFICATIONS',
     'false'
 ).lower() == 'true'
+
+DAEMON_CYCLE_TIME = 5

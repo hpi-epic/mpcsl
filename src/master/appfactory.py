@@ -1,11 +1,14 @@
 import os
 import json
+from sys import argv
 
 from flask import Flask, jsonify
 from flask_restful_swagger_2 import Api
 from flask_migrate import Migrate
+from werkzeug.serving import is_running_from_reloader
 
 from src.db import db
+from src.master.executor.daemon import JobDaemon
 from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
 from src.models import Algorithm, AlgorithmSchema
@@ -17,6 +20,7 @@ class AppFactory(object):
         self.db = None
         self.api = None
         self.migrate = None
+        self.daemon = None
 
     def set_up_db(self):
         self.db = db
@@ -82,6 +86,14 @@ class AppFactory(object):
                                 self.db.session.add(alg)
                     self.db.session.commit()
 
+    def set_up_daemon(self):
+        if not is_running_from_reloader() \
+                and (argv[-1] == 'server.py'
+                or (argv[-1] == 'uwsgi' and os.getpid() % 4 == 0)):
+            self.app.logger.info("Starting daemon.")
+            self.daemon = JobDaemon(self.app, name='Job-Daemon', daemon=True)
+            self.daemon.start()
+
     def set_up_error_handlers(self):
         @self.app.errorhandler(InvalidInputData)
         def handle_invalid_usage(error):
@@ -89,10 +101,12 @@ class AppFactory(object):
             response.status_code = error.status_code
             return response
 
-    def up(self):
+    def up(self, no_daemon=False):
         self.set_up_app()
         self.set_up_api()
         self.set_up_db()
         self.set_up_algorithms()
         self.set_up_error_handlers()
+        if not no_daemon:
+            self.set_up_daemon()
         return self.app

@@ -31,6 +31,7 @@ class BaseIntegrationTest(TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.db.engine.dispose()
+        cls.app.daemon.stop()
 
     def setUp(self):
         def run_func(app):

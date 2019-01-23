@@ -15,10 +15,15 @@ option_list_v <- list(
                                 help="This is a hyperparameter", metavar=""),
                     make_option(c("-c", "--cores"), type="integer", default=1,
                                 help="The number of cores to run the pc-algorithm on", metavar=""),
-                    make_option(c("--fixed_gaps"), type="character", default=FALSE,
-                                help="The connections that are removed via prior knowledge", metavar=""),
-                    make_option(c("--fixed_edges"), type="character", default=FALSE,
-                                help="The connections that are fixed via prior knowledge", metavar="")
+                    make_option(c("-s", "--subset_size"), type="integer", default=Inf,
+                                help="The number of cores to run the pc-algorithm on", metavar=""),
+                    make_option(c("-v", "--verbose"), type="integer", default=0,
+                                help="The number of cores to run the pc-algorithm on", metavar="")
+                    #make_option(c("--fixed_gaps"), type="character", default=NULL,
+                    #            help="The connections that are removed via prior knowledge", metavar=""),
+                    #make_option(c("--fixed_edges"), type="character", default=NULL,
+                    #            help="The connections that are fixed via prior knowledge", metavar=""),
+
 );
 
 indepTestDict <- list(gaussCI=gaussCItest, binCI=binCItest, disCI=disCItest)
@@ -42,8 +47,10 @@ if (opt$independence_test == "gaussCI") {
     stop("No valid independence test specified")
 }
 
-result = pc(suffStat=sufficient_stats,
-            indepTest=indepTestDict[[opt$independence_test]],
-            p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method="stable.fast", verbose=TRUE)
+subset_size <- if(opt$subset_size < 0) Inf else opt$subset_size
+verbose <- opt$verbose > 0
+result = pc(suffStat=sufficient_stats, verbose=verbose,
+            indepTest=indepTestDict[[opt$independence_test]], m.max=subset_size,
+            p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method="stable.fast")
 
 graph_request <- store_graph_result(opt$api_host, result@'graph', df, opt$job_id, opt)

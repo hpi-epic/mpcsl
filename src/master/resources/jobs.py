@@ -5,7 +5,7 @@ from subprocess import Popen, PIPE
 from flask_restful_swagger_2 import swagger
 
 from flask import current_app, send_file, Response
-from flask_restful import Resource, abort
+from flask_restful import Resource, abort, reqparse
 from marshmallow import fields, Schema
 
 from src.db import db
@@ -62,7 +62,7 @@ class JobResource(Resource):
         return marshal(JobSchema, job)
 
     @swagger.doc({
-        'description': 'Cancels a single job, this also kills the process',
+        'description': 'Cancels a single job if running, killing the process. Otherwise sets it to hidden.',
         'parameters': [
             {
                 'name': 'job_id',
@@ -78,10 +78,11 @@ class JobResource(Resource):
     def delete(self, job_id):
         job = Job.query.get_or_404(job_id)
 
-        # Kill all subprocesses with the same process group id (pgid)
-        os.killpg(os.getpgid(job.pid), signal.SIGTERM)
-
-        job.status = JobStatus.cancelled
+        if(job.status == JobStatus.running):
+            os.killpg(os.getpgid(job.pid), signal.SIGTERM)
+            job.status = JobStatus.cancelled
+        else:
+            job.status = JobStatus.hidden
         db.session.commit()
 
         return marshal(JobSchema, job)
@@ -89,14 +90,18 @@ class JobResource(Resource):
 
 class JobListResource(Resource):
     @swagger.doc({
-        'description': 'Returns all jobs',
+        'description': 'Returns all jobs. Pass show_hidden=1 in query string to display hidden jobs',
         'responses': get_default_response(JobSchema.get_swagger().array()),
         'tags': ['Job']
     })
     def get(self):
-        job = Job.query.all()
+        parser = reqparse.RequestParser()
+        parser.add_argument('show_hidden', required=False, type=int)
+        show_hidden = parser.parse_args().get('show_hidden', 0)
 
-        return marshal(JobSchema, job, many=True)
+        jobs = Job.query.all() if show_hidden else Job.query.filter(Job.status != JobStatus.hidden)
+
+        return marshal(JobSchema, jobs, many=True)
 
 
 class ExperimentJobListResource(Resource):

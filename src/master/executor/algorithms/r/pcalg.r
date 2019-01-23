@@ -16,9 +16,9 @@ option_list_v <- list(
                     make_option(c("-c", "--cores"), type="integer", default=1,
                                 help="The number of cores to run the pc-algorithm on", metavar=""),
                     make_option(c("-s", "--subset_size"), type="integer", default=Inf,
-                                help="The number of cores to run the pc-algorithm on", metavar=""),
+                                help="The maximal size of the conditioning sets that are considered", metavar=""),
                     make_option(c("-v", "--verbose"), type="integer", default=0,
-                                help="The number of cores to run the pc-algorithm on", metavar="")
+                                help="More detailed output is provided (with impact on performance)", metavar="")
                     #make_option(c("--fixed_gaps"), type="character", default=NULL,
                     #            help="The connections that are removed via prior knowledge", metavar=""),
                     #make_option(c("--fixed_edges"), type="character", default=NULL,

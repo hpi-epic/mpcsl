@@ -275,7 +275,7 @@ class JobLogStreamResource(Resource):
                 p = Popen(command.split(), stdout=PIPE, universal_newlines=True)
 
                 for line in p.stdout:
-                    if line == '':
+                    if line == '':  # FIXME: wrong criterion
                         p.terminate()
                     yield line
 

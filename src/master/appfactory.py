@@ -68,7 +68,10 @@ class AppFactory(object):
     def set_up_algorithms(self):
         if os.path.isfile('conf/algorithms.json'):
             with self.app.app_context():
-                if self.db.session.dialect.has_table(Algorithm.__table__):
+                # The second check here is necessary, because without running the migrations,
+                # the DB might be empty. To be able to run the migrations though, it is necessary to be able
+                # to initialize the app.
+                if self.db.engine.dialect.has_table(self.db.session, Algorithm.__table__.name):
                     with open('conf/algorithms.json') as f:
                         algorithms = json.load(f)
                         for algorithm in algorithms:

@@ -10,6 +10,7 @@ class JobStatus(str, enum.Enum):
     done = "done"
     error = "error"
     cancelled = "cancelled"
+    hidden = "hidden"
 
 
 class Job(BaseModel):

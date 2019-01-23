@@ -9,6 +9,7 @@ install:
   - docker-compose build
 script:
   - docker-compose run backend flake8
+  - docker-compose run backend flask db upgrade
   - docker-compose run backend pytest
 git:
   submodules: false

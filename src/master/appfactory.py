@@ -3,6 +3,7 @@ import json
 
 from flask import Flask, jsonify
 from flask_restful_swagger_2 import Api
+from flask_migrate import Migrate
 
 from src.db import db
 from src.master.helpers.io import InvalidInputData
@@ -15,12 +16,13 @@ class AppFactory(object):
         self.app = None
         self.db = None
         self.api = None
+        self.migrate = None
 
     def set_up_db(self):
         self.db = db
         self.db.init_app(self.app)
-        with self.app.app_context():
-            self.db.create_all()
+
+        self.migrate = Migrate(self.app, db)
 
     def set_up_app(self):
         self.app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'), static_url_path='/static')
@@ -66,14 +68,19 @@ class AppFactory(object):
     def set_up_algorithms(self):
         if os.path.isfile('conf/algorithms.json'):
             with self.app.app_context():
-                with open('conf/algorithms.json') as f:
-                    algorithms = json.load(f)
-                    for algorithm in algorithms:
-                        data, errors = AlgorithmSchema().load(algorithm)
-                        if not self.db.session.query(Algorithm).filter(Algorithm.name == data['name']).one_or_none():
-                            alg = Algorithm(**data)
-                            self.db.session.add(alg)
-                self.db.session.commit()
+                # The second check here is necessary, because without running the migrations,
+                # the DB might be empty. To be able to run the migrations though, it is necessary to be able
+                # to initialize the app.
+                if self.db.engine.dialect.has_table(self.db.session, Algorithm.__table__.name):
+                    with open('conf/algorithms.json') as f:
+                        algorithms = json.load(f)
+                        for algorithm in algorithms:
+                            data, errors = AlgorithmSchema().load(algorithm)
+                            if not self.db.session.query(Algorithm)\
+                                    .filter(Algorithm.name == data['name']).one_or_none():
+                                alg = Algorithm(**data)
+                                self.db.session.add(alg)
+                    self.db.session.commit()
 
     def set_up_error_handlers(self):
         @self.app.errorhandler(InvalidInputData)

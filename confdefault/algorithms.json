@@ -7,7 +7,9 @@
        "valid_parameters": {
            "alpha": "float",
            "independence_test": "str",
-           "cores": "int"
+           "cores": "int",
+           "verbose": "int",
+           "subset_size": "int" 
        }
    },
    {
@@ -18,7 +20,9 @@
        "valid_parameters": {
            "alpha": "float",
            "independence_test": "str",
-           "cores": "int"
+           "cores": "int",
+           "verbose": "int",
+           "subset_size": "int" 
        }
    }
 ]

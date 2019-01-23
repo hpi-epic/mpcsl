@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from src.db import db
 from src.master.resources.jobs import JobListResource, JobResource, JobResultResource, ExperimentJobListResource
-from src.models import Result, Node, Edge
+from src.models import Result, Node, Edge, JobStatus
 from test.factories import ExperimentFactory, JobFactory, DatasetFactory
 from .base import BaseResourceTest
 
@@ -24,6 +24,27 @@ class JobTest(BaseResourceTest):
         assert len(result) == 2
         assert result[0]['id'] == job.id
         assert result[1]['id'] == job2.id
+
+    def test_returns_hidden_jobs(self):
+        # Given
+        job = JobFactory()
+        job2 = JobFactory()
+        job3 = JobFactory()
+        job3.status = JobStatus.hidden
+
+        # When
+        result = self.get(self.url_for(JobListResource))
+        result2 = self.get(self.url_for(JobListResource) + '?show_hidden=1')
+
+        # Then
+        assert len(result) == 2
+        assert result[0]['id'] == job.id
+        assert result[1]['id'] == job2.id
+
+        assert len(result2) == 3
+        assert result2[0]['id'] == job.id
+        assert result2[1]['id'] == job2.id
+        assert result2[2]['id'] == job3.id
 
     def test_returns_my_job(self):
         # Given
@@ -58,9 +79,10 @@ class JobTest(BaseResourceTest):
         assert result[0]['id'] == job.id
         assert result[1]['id'] == job2.id
 
-    def test_delete_job(self):
+    def test_cancel_job(self):
         # Given
         job = JobFactory()
+        job.status = JobStatus.running
         job_pgid = factory.Faker('pyint')
 
         # When
@@ -73,7 +95,19 @@ class JobTest(BaseResourceTest):
 
         # Then
         assert result['id'] == job.id
-        assert result['status'] == "cancelled"
+        assert result['status'] == JobStatus.cancelled
+
+    def test_hide_job(self):
+        # Given
+        job = JobFactory()
+        job.status = JobStatus.error
+
+        # When
+        result = self.delete(self.url_for(JobResource, job_id=job.id))
+
+        # Then
+        assert result['id'] == job.id
+        assert result['status'] == JobStatus.hidden
 
     def test_submit_results(self):
         # Given

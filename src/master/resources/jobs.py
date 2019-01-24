@@ -268,15 +268,24 @@ class JobLogStreamResource(Resource):
             directory = os.path.dirname(current_app.instance_path) + '/logs'
             logfile = f'{directory}/job_{job.id}.log'
 
+            parser = reqparse.RequestParser()
+            parser.add_argument('last_known_line', required=False, type=int)
+            last_known_line = parser.parse_args().get('last_known_line', 0)
+
+            if job.status == JobStatus.running:
+                if last_known_line > 0:
+                    command = f'tail --lines +{last_known_line} {logfile}'  # --sleep-interval=1
+                else:
+                    command = f'tail -F --pid {job.pid} {logfile}'  # --sleep-interval=1
+            else:
+                return send_file(logfile, mimetype='text/plain')
+
             # https://stackoverflow.com/questions/1703640/how-to-implement-a-pythonic-equivalent-of-tail-f
-            def tail(filename):
+            def tail(cmd):
                 # returns lines from a file, starting from the beginning
-                command = "tail -n +1 -F " + filename
-                p = Popen(command.split(), stdout=PIPE, universal_newlines=True)
+                p = Popen(cmd.split(), stdout=PIPE, universal_newlines=True)
 
                 for line in p.stdout:
-                    if line == '':  # FIXME: wrong criterion
-                        p.terminate()
                     yield line
 
-            return Response(tail(logfile), mimetype='text/plain')
+            return Response(tail(command), mimetype='text/plain')

@@ -38,6 +38,7 @@ Then we can move into the repository to build and execute the backend on a conta
 
 ```
 cp confdefault/backend.env conf/backend.env
+cp confdefault/algorithms.json conf/algorithms.json
 docker-compose build
 ```
 
@@ -106,6 +107,9 @@ DROP SCHEMA public CASCADE; CREATE SCHEMA public
 
 When the models have been changed, make sure your database is up to date by using:
 ```
+# (optional) Check first if configuration files need to be updated
+diff confdefault/backend.env conf/backend.env
+diff confdefault/algorithms.json conf/algorithms.json
 docker-compose run backend flask db upgrade
 ```
 
@@ -124,8 +128,7 @@ in the new migration file.
 
 When you are done, re-run upgrade to apply your changes to your local instance.
 
-Alembic is used for the migration system. Alembic does not auto-detect the following
-the changes correctly:
+Alembic is used for the migration system. Alembic does not auto-detect the following changes correctly:
 - Table and column renames (are detected as deleted and added with another name)
 - Column type changes (are not detected at all, remember to add conversion function when adding them manually)
 

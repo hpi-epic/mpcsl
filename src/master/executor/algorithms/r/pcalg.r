@@ -49,8 +49,8 @@ if (opt$independence_test == "gaussCI") {
 
 subset_size <- if(opt$subset_size < 0) Inf else opt$subset_size
 verbose <- opt$verbose > 0
-# result = pc(suffStat=sufficient_stats, verbose=verbose,
-#             indepTest=indepTestDict[[opt$independence_test]], m.max=subset_size,
-#             p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method="stable.fast")
+result = pc(suffStat=sufficient_stats, verbose=verbose,
+            indepTest=indepTestDict[[opt$independence_test]], m.max=subset_size,
+            p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method="stable.fast")
 
 graph_request <- store_graph_result(opt$api_host, result@'graph', df, opt$job_id, opt)

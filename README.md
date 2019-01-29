@@ -34,7 +34,7 @@ The full backend setup is done using a docker container that means that you will
 git clone git@github.com:danthe96/mpci.git
 ```
 
-Then we can move into the repository to build and execute the backend on a container using:
+Then we can move into the repository to build the backend using:
 
 ```
 cp confdefault/backend.env conf/backend.env
@@ -42,15 +42,14 @@ cp confdefault/algorithms.json conf/algorithms.json
 docker-compose build
 ```
 
-To initialize the database we have to run the following command.
+To initialize the database we have to run the following command:
 ```
 docker-compose run backend flask db upgrade
 ```
-
+Finally, we can start our backend with the default configuration using:
 ```
 docker-compose up
 ```
-This will start our backend with the default configuration.
 
 ### Setup with user interface
 
@@ -67,16 +66,26 @@ If you already cloned the repo without submodules, they have to be initialized u
 git submodule update --remote --init 
 ```
 
-When the UI files are present, the full setup can be build and started using
-
+When the UI files are present, the full setup can be build using:
 ```
-docker-compose -f docker-compose-nginx.yml up --build 
+cp confdefault/backend.env conf/backend.env
+cp confdefault/algorithms.json conf/algorithms.json
+docker-compose -f docker-compose-nginx.yml build
 ```
 
+To initialize the database we have to run the following command:
+```
+docker-compose -f docker-compose-nginx.yml run backend flask db upgrade
+```
+
+Finally, we can start our frontend and backend with the default configuration using:
+```
+docker-compose -f docker-compose-nginx.yml up
+```
 This will deploy the backend with an additional nginx server, that is used
 to serve static files and provide the backend functionality by connecting to uWSGI.
 The transpilation of the UI files will be done during build. If the UI files change,
-it is necessary to rebuild the containers.
+it is necessary to rebuild the frontend container.
 
 ### Seeding the database
 The files include a small seed-script that generates a randomized dataset.

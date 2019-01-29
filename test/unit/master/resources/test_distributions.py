@@ -29,7 +29,7 @@ class DistributionTest(BaseResourceTest):
         exp = ExperimentFactory(dataset=ds)
         job = JobFactory(experiment=exp)
         result = ResultFactory(job=job)
-        node = NodeFactory(result=result, name='a')
+        node = NodeFactory(result=result, name='ABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
 
         # When
         distribution = self.get(self.url_for(MarginalDistributionResource, node_id=node.id))

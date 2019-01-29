@@ -14,7 +14,7 @@ class DistributionTest(BaseResourceTest):
         )
         db.session.execute("""
             CREATE TABLE IF NOT EXISTS test_data (
-                a float,
+                "MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand." float,
                 b float,
                 c float
             );
@@ -29,7 +29,7 @@ class DistributionTest(BaseResourceTest):
         exp = ExperimentFactory(dataset=ds)
         job = JobFactory(experiment=exp)
         result = ResultFactory(job=job)
-        node = NodeFactory(result=result, name='ABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
+        node = NodeFactory(result=result, name='MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
 
         # When
         distribution = self.get(self.url_for(MarginalDistributionResource, node_id=node.id))

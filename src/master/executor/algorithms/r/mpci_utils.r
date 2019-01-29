@@ -72,6 +72,6 @@ store_graph_result <- function(api_host, graph, df, job_id, opt) {
                                  body=result_json, 
                                  add_headers("Content-Type" = "application/json"))
     check_request(api_host, graph_request, job_id)
-
+    print(paste0('Successfully executed job ', job_id))
     return(graph_request)
 }

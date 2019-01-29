@@ -314,24 +314,29 @@ class JobLogStreamResource(Resource):
             job = Job.query.get_or_404(job_id)
             directory = os.path.dirname(current_app.instance_path) + '/logs'
             logfile = f'{directory}/job_{job.id}.log'
+            if not os.path.isfile(logfile):
+                abort(404)
 
-            # TODO update documentation, merge endpoints, limit and offset, stream
             parser = reqparse.RequestParser()
-            parser.add_argument('last_known_line', required=False, type=int)
-            last_known_line = parser.parse_args().get('last_known_line', 0)
-
-            if job.status == JobStatus.running:
-                if last_known_line > 0:
-                    command = f'tail --lines +{last_known_line} {logfile}'  # --sleep-interval=1
-                else:
-                    command = f'tail -F --pid {job.pid} {logfile}'  # --sleep-interval=1
-            else:
-                return send_file(logfile, mimetype='text/plain')
+            parser.add_argument('offset', required=False, type=int)
+            args = parser.parse_args()
+            offset = args.get('offset') if args.get('offset') is not None else 0
 
             def stream(cmd):
                 p = Popen(cmd.split(), stdout=PIPE, universal_newlines=True)
 
                 for line in p.stdout:
-                    yield line
+                    if p.poll() is None:
+                        yield line
 
-            return Response(stream(command), mimetype='text/plain')
+            if job.status == JobStatus.running:
+                if offset > 0:
+                    # return all lines starting from 'offset'
+                    command = f'tail -F --pid {job.pid} --lines +{offset} {logfile}'  # --sleep-interval=1
+                    return Response(stream(command), mimetype='text/plain')
+                else:
+                    command = f'tail -F --pid {job.pid} {logfile}'
+                    return Response(stream(command), mimetype='text/plain')
+            else:
+                # if job is not running anymore don't stream
+                return send_file(logfile, mimetype='text/plain')

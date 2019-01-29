@@ -16,7 +16,7 @@ option_list_v <- list(
                                 help="This is a hyperparameter", metavar=""),
                     make_option(c("-c", "--cores"), type="integer", default=2,
                                 help="The number of cores to run ParallelPC on", metavar=""),
-                    make_option(c("-s", "--subset_size"), type="integer", default=Inf,
+                    make_option(c("-s", "--subset_size"), type="integer", default=-1,
                                 help="The maximal size of the conditioning sets that are considered", metavar=""),
                     make_option(c("-v", "--verbose"), type="integer", default=0,
                                 help="More detailed output is provided (with impact on performance)", metavar="")

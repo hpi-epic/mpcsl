@@ -90,7 +90,19 @@ class JobResource(Resource):
 
 class JobListResource(Resource):
     @swagger.doc({
-        'description': 'Returns all jobs. Pass show_hidden=1 in query string to display hidden jobs',
+        'description': 'Returns all jobs',
+        'parameters': [
+            {
+                'name': 'show_hidden',
+                'description': 'Pass show_hidden=1 to display also hidden jobs',
+                'in': 'query',
+                'schema': {
+                    'type': 'integer',
+                    'enum': [0, 1],
+                    'default': 0
+                }
+            }
+        ],
         'responses': get_default_response(JobSchema.get_swagger().array()),
         'tags': ['Job']
     })
@@ -268,6 +280,7 @@ class JobLogStreamResource(Resource):
             directory = os.path.dirname(current_app.instance_path) + '/logs'
             logfile = f'{directory}/job_{job.id}.log'
 
+            # TODO update documentation, merge endpoints, limit and offset, stream
             parser = reqparse.RequestParser()
             parser.add_argument('last_known_line', required=False, type=int)
             last_known_line = parser.parse_args().get('last_known_line', 0)
@@ -280,12 +293,10 @@ class JobLogStreamResource(Resource):
             else:
                 return send_file(logfile, mimetype='text/plain')
 
-            # https://stackoverflow.com/questions/1703640/how-to-implement-a-pythonic-equivalent-of-tail-f
-            def tail(cmd):
-                # returns lines from a file, starting from the beginning
+            def stream(cmd):
                 p = Popen(cmd.split(), stdout=PIPE, universal_newlines=True)
 
                 for line in p.stdout:
                     yield line
 
-            return Response(tail(command), mimetype='text/plain')
+            return Response(stream(command), mimetype='text/plain')

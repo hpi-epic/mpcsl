@@ -22,7 +22,7 @@ class BaseIntegrationTest(TestCase):
     def setUpClass(cls):
         cls.factory = AppFactory()
         cls.app = cls.factory.up()
-        cls.factory.set_up_daemon()
+
         cls.api = cls.factory.api
         cls.app_context = cls.app.app_context()
         cls.app_context.push()
@@ -32,7 +32,6 @@ class BaseIntegrationTest(TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.db.engine.dispose()
-        cls.factory.daemon.stop()
 
     def setUp(self):
         def run_func(app):

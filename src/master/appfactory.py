@@ -86,10 +86,10 @@ class AppFactory(object):
                                 self.db.session.add(alg)
                     self.db.session.commit()
 
-    def set_up_daemon(self):
-        if not is_running_from_reloader() \
-                and (argv[-1] == 'server.py'
-                or (argv[-1] == 'uwsgi' and os.getpid() % 4 == 0)):
+    def set_up_daemon(self, force=False):
+        if force or (not is_running_from_reloader()
+                     and (argv[-1] == 'server.py'
+                     or (argv[-1] == 'uwsgi' and os.getpid() % 4 == 0))):
             self.app.logger.info("Starting daemon.")
             self.daemon = JobDaemon(self.app, name='Job-Daemon', daemon=True)
             self.daemon.start()

@@ -96,11 +96,9 @@ class JobListResource(Resource):
                 'name': 'show_hidden',
                 'description': 'Pass show_hidden=1 to display also hidden jobs',
                 'in': 'query',
-                'schema': {
-                    'type': 'integer',
-                    'enum': [0, 1],
-                    'default': 0
-                }
+                'type': 'integer',
+                'enum': [0, 1],
+                'default': 0
             }
         ],
         'responses': get_default_response(JobSchema.get_swagger().array()),

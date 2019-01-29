@@ -107,7 +107,7 @@ class JobListResource(Resource):
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument('show_hidden', required=False, type=int)
-        show_hidden = parser.parse_args().get('show_hidden', 0)
+        show_hidden = parser.parse_args().get('show_hidden')
 
         jobs = Job.query.all() if show_hidden else Job.query.filter(Job.status != JobStatus.hidden)
 
@@ -225,6 +225,18 @@ class JobLogsResource(Resource):
                 'in': 'path',
                 'type': 'integer',
                 'required': True
+            },
+            {
+                'name': 'offset',
+                'description': 'Output logs starting with line OFFSET',
+                'in': 'query',
+                'type': 'integer',
+            },
+            {
+                'name': 'limit',
+                'description': 'Output only the last LIMIT lines',
+                'in': 'query',
+                'type': 'integer'
             }
         ],
         'responses': {
@@ -244,7 +256,32 @@ class JobLogsResource(Resource):
     def get(self, job_id):
         job = Job.query.get_or_404(job_id)
         directory = os.path.dirname(current_app.instance_path) + '/logs'
-        return send_file(f'{directory}/job_{job.id}.log', mimetype='text/plain')
+        logfile = f'{directory}/job_{job.id}.log'
+        if not os.path.isfile(logfile):
+            abort(404)
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('offset', required=False, type=int)
+        parser.add_argument('limit', required=False, type=int)
+        args = parser.parse_args()
+        offset = args.get('offset') if args.get('offset') is not None else 0
+        limit = args.get('limit') if args.get('limit') is not None else 0
+
+        def run(cmd):
+            p = Popen(cmd.split(), stdout=PIPE, universal_newlines=True)
+            stdout, stderr = p.communicate()
+            return stdout
+
+        if offset > 0 and limit == 0:
+            log = run(f'tail --lines +{offset} {logfile}')  # return all lines starting from 'offset'
+            return Response(log, mimetype='text/plain')
+        elif limit > 0 and offset == 0:
+            command = f'tail --lines {limit} {logfile}'  # return last 'limit' lines
+            return Response(run(command), mimetype='text/plain')
+        elif limit > 0 and offset > 0:
+            abort(501)
+        else:
+            return send_file(logfile, mimetype='text/plain')
 
 
 class JobLogStreamResource(Resource):

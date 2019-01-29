@@ -25,23 +25,6 @@ get_dataset <- function(api_host, dataset_id, job_id) {
     return(df)
 }
 
-estimate_weight <- function(from_node, to_node, graph, df, regression=TRUE) {
-    if(regression) {
-        to_node_name <- colnames(df)[strtoi(to_node)]
-        from_node_name <- colnames(df)[strtoi(from_node)]
-
-        parents <- sapply(unlist(inEdges(to_node, graph)), function(x) colnames(df)[strtoi(x)])
-        frmla <- as.formula(paste(to_node_name, "~", paste(parents, collapse='+')))
-        mdl <- lm(frmla, data=df)
-        mdl$coefficients[[from_node_name]]
-    } else {
-        # Categorical values
-
-
-        
-    }
-}
-
 store_graph_result <- function(api_host, graph, df, job_id, opt) {
     edges <- edges(graph)
     edge_list <- list(from_node=c(), to_node=c())
@@ -52,13 +35,6 @@ store_graph_result <- function(api_host, graph, df, job_id, opt) {
         for (edge in edges[[node]]){
             edge_list[['from_node']][[i]] <- colnames(df)[strtoi(node)]
             edge_list[['to_node']][[i]] <- colnames(df)[strtoi(edge)]
-
-            weight <- estimate_weight(
-                node, edge, graph, df 
-                regression=(opt$independence_test != 'binCI' && opt$independence_test != 'disCI')
-            )
-            edge_list[['weight']][[i]] <- weight
-
             i <- i + 1
         }
     }

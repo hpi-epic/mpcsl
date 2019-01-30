@@ -36,7 +36,7 @@ DAEMON_CYCLE_TIME = 5
 # Further information is available in AppFactory::set_up_daemon
 UWSGI_NUM_PROCESSES = os.environ.get('UWSGI_NUM_PROCESSES', None)
 
-if UWSGI_NUM_PROCESSES is None:
+if UWSGI_NUM_PROCESSES is None and os.path.isfile('uwsgi.ini'):
     uwsgi_conf = ConfigParser()
     uwsgi_conf.read('uwsgi.ini')
 

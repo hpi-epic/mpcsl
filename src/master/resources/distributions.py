@@ -44,7 +44,7 @@ class MarginalDistributionResource(Resource):
         else:
             session = db.session
 
-        result = session.execute(f'SELECT {node.name} FROM ({dataset.load_query}) _subquery_')
+        result = session.execute(f"SELECT \"{node.name}\" FROM ({dataset.load_query}) _subquery_")
         values = [line[0] for line in result]
         hist, bin_edges = np.histogram(values, bins='auto', density=False)
 

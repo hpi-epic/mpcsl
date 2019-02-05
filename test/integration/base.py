@@ -152,7 +152,7 @@ class BaseIntegrationTest(TestCase):
         result = None
         i = 0
         while result is None:
-            if i > 15:
+            if i > 30:
                 raise TimeoutError
             time.sleep(1)
 

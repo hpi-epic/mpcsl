@@ -30,7 +30,6 @@ class ExecutorResource(Resource):
         'tags': ['Experiment']
     })
     def post(self, experiment_id):
-        current_app.logger.info('Got request')
         experiment = Experiment.query.get_or_404(experiment_id)
 
         algorithm = experiment.algorithm
@@ -44,8 +43,11 @@ class ExecutorResource(Resource):
         logfile = f'{directory}/job_{new_job.id}.log'
         if os.path.isfile(logfile):
             # backup log files that are already existing
-            os.rename(logfile, f'{directory}/job_{new_job.id}_{datetime.now()}.log')
-
+            renamed_logfile = f'{directory}/job_{new_job.id}_{datetime.now()}.log'
+            try:
+                os.rename(logfile, renamed_logfile)
+            except OSError:
+                current_app.logger.warn(f'Could not rename existing log file {logfile} to {renamed_logfile}')
         if algorithm.backend == 'R':
             params = []
             for k, v in experiment.parameters.items():

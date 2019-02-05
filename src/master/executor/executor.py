@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from subprocess import Popen
 from flask_restful_swagger_2 import swagger
@@ -39,12 +40,18 @@ class ExecutorResource(Resource):
         db.session.add(new_job)
         db.session.flush()
 
+        directory = os.path.dirname(current_app.instance_path) + '/logs'
+        logfile = f'{directory}/job_{new_job.id}.log'
+        if os.path.isfile(logfile):
+            # backup log files that are already existing
+            os.rename(logfile, f'{directory}/job_{new_job.id}_{datetime.now()}.log')
+
         if algorithm.backend == 'R':
             params = []
             for k, v in experiment.parameters.items():
                 params.append('--' + k)
                 params.append(str(v))
-            logfile = open(f'logs/job_{new_job.id}.log', 'a')
+            logfile = open(logfile, 'a')
             r_process = Popen([
                 'Rscript', 'src/master/executor/algorithms/r/' + algorithm.script_filename,
                 '-j', str(new_job.id),

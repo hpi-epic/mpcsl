@@ -1,11 +1,11 @@
-from datetime import datetime
 import os
 import signal
+from datetime import datetime
 from subprocess import Popen, PIPE
-from flask_restful_swagger_2 import swagger
 
 from flask import current_app, send_file, Response
 from flask_restful import Resource, abort, reqparse
+from flask_restful_swagger_2 import swagger
 from marshmallow import fields, Schema
 
 from src.db import db
@@ -78,8 +78,11 @@ class JobResource(Resource):
     def delete(self, job_id):
         job = Job.query.get_or_404(job_id)
 
-        if(job.status == JobStatus.running):
-            os.killpg(os.getpgid(job.pid), signal.SIGTERM)
+        if job.status == JobStatus.running:
+            try:
+                os.killpg(os.getpgid(job.pid), signal.SIGTERM)
+            except ProcessLookupError:
+                pass
             job.status = JobStatus.cancelled
         else:
             job.status = JobStatus.hidden
@@ -282,3 +285,37 @@ class JobLogsResource(Resource):
             abort(501)
         else:
             return send_file(logfile, mimetype='text/plain')
+
+    @swagger.doc({
+        'description': 'Removes the associated log files',
+        'parameters': [
+            {
+                'name': 'job_id',
+                'description': 'Job identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(JobSchema.get_swagger()),
+        'tags': ['Job']
+    })
+    def delete(self, job_id):
+        job = Job.query.get_or_404(job_id)
+
+        if job.status == JobStatus.running:
+            abort(403)
+        else:
+            directory = os.path.dirname(current_app.instance_path) + '/logs'
+            logfile = f'{directory}/job_{job_id}.log'
+            request_file = f'{directory}/job_{job_id}_error.RData'
+
+            def silent_remove(filename):
+                try:
+                    os.remove(filename)
+                except FileNotFoundError:
+                    pass
+
+            silent_remove(logfile)
+            silent_remove(request_file)
+        return job

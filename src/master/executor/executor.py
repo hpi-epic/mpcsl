@@ -6,8 +6,8 @@ from flask_restful_swagger_2 import swagger
 from flask import current_app
 from flask_restful import Resource, abort
 
-from src.master.config import API_HOST, LOGS_DIRECTORY
-from src.master.helpers.io import marshal
+from src.master.config import API_HOST
+from src.master.helpers.io import marshal, get_logfile_name
 from src.db import db
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, JobStatus, Experiment
@@ -39,10 +39,10 @@ class ExecutorResource(Resource):
         db.session.add(new_job)
         db.session.flush()
 
-        logfile = f'{LOGS_DIRECTORY}/job_{new_job.id}.log'
+        logfile = get_logfile_name(new_job.id)
         if os.path.isfile(logfile):
             # backup log files that are already existing
-            renamed_logfile = f'{LOGS_DIRECTORY}/job_{new_job.id}_{datetime.now()}.log'
+            renamed_logfile = f'{logfile[:-4]}_{datetime.now()}.log'
             try:
                 os.rename(logfile, renamed_logfile)
             except OSError:

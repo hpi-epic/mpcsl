@@ -4,7 +4,7 @@ import requests
 
 from src.db import db
 from src.master.resources import JobLogsResource
-from src.master.config import LOGS_DIRECTORY
+from src.master.helpers.io import get_logfile_name
 from src.models import Node, Edge, Sepset
 from test.factories import ExperimentFactory
 from .base import BaseIntegrationTest
@@ -184,7 +184,7 @@ class LogExecutorTest(BaseIntegrationTest):
         assert 'Casting arguments...' not in limit_log.text
         assert '[1] "Successfully executed job' in limit_log.text
 
-        logfile = f'{LOGS_DIRECTORY}/job_{job.id}.log'
+        logfile = get_logfile_name(job.id)
         assert os.path.isfile(logfile)
         delete_request = requests.delete(self.url_for(JobLogsResource, job_id=job.id))
         assert delete_request.status_code == 200

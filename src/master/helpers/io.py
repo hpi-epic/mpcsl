@@ -1,4 +1,6 @@
+import os
 from flask import request
+from src.master.config import LOGS_DIRECTORY
 
 
 class InvalidInputData(Exception):
@@ -27,3 +29,26 @@ def load_data(schema, location='json', *args, **kwargs):
 
 def marshal(schema, object, *args, **kwargs):
     return schema().dump(object, *args, **kwargs).data
+
+
+def silent_remove(filename):
+    try:
+        os.remove(filename)
+    except FileNotFoundError:
+        pass
+
+
+def get_logfile_name(job_id):
+    return f'{LOGS_DIRECTORY}/job_{job_id}.log'
+
+
+def get_r_logfile_name(job_id):
+    return f'{LOGS_DIRECTORY}/job_{job_id}_error.RData'
+
+
+def remove_logs(job_id):
+    logfile = get_logfile_name(job_id)
+    request_file = get_r_logfile_name(job_id)
+
+    silent_remove(logfile)
+    silent_remove(request_file)

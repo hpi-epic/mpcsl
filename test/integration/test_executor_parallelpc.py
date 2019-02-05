@@ -156,6 +156,7 @@ class LogExecutorTest(BaseIntegrationTest):
     def test_logs(self):
         # Given
         ex = ExperimentFactory(dataset=self.setup_dataset_gauss(), algorithm__script_filename='parallelpc.r')
+        ex.parameters['cores'] = 2
         ex.parameters['verbose'] = 1
         db.session.commit()
 

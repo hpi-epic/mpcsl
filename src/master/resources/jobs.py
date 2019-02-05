@@ -9,6 +9,7 @@ from flask_restful_swagger_2 import swagger
 from marshmallow import fields, Schema
 
 from src.db import db
+from src.master.config import LOGS_DIRECTORY
 from src.master.helpers.io import marshal, load_data
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
@@ -258,8 +259,7 @@ class JobLogsResource(Resource):
     })
     def get(self, job_id):
         job = Job.query.get_or_404(job_id)
-        directory = os.path.dirname(current_app.instance_path) + '/logs'
-        logfile = f'{directory}/job_{job.id}.log'
+        logfile = f'{LOGS_DIRECTORY}/job_{job.id}.log'
         if not os.path.isfile(logfile):
             abort(404)
 
@@ -306,9 +306,8 @@ class JobLogsResource(Resource):
         if job.status == JobStatus.running:
             abort(403)
         else:
-            directory = os.path.dirname(current_app.instance_path) + '/logs'
-            logfile = f'{directory}/job_{job_id}.log'
-            request_file = f'{directory}/job_{job_id}_error.RData'
+            logfile = f'{LOGS_DIRECTORY}/job_{job_id}.log'
+            request_file = f'{LOGS_DIRECTORY}/job_{job_id}_error.RData'
 
             def silent_remove(filename):
                 try:

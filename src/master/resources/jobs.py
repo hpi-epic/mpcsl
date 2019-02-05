@@ -318,4 +318,4 @@ class JobLogsResource(Resource):
 
             silent_remove(logfile)
             silent_remove(request_file)
-        return job
+        return marshal(JobSchema, job)

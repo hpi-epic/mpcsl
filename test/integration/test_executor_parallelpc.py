@@ -171,7 +171,6 @@ class LogExecutorTest(BaseIntegrationTest):
         assert 'Attaching package: ‘BiocGenerics’' in full_log.text
         assert '[1] "Load dataset from' in full_log.text
         assert '[1] "Successfully loaded dataset' in full_log.text
-        assert 'Casting arguments...' in full_log.text
         assert '[1] "Successfully executed job' in full_log.text
 
         offset_log = requests.get(self.url_for(JobLogsResource, job_id=job.id, offset=23))
@@ -179,7 +178,6 @@ class LogExecutorTest(BaseIntegrationTest):
         assert 'Attaching package: ‘BiocGenerics’' not in offset_log.text
         assert '[1] "Load dataset from' in offset_log.text
         assert '[1] "Successfully loaded dataset' in offset_log.text
-        assert 'Casting arguments...' in offset_log.text
         assert '[1] "Successfully executed job' in offset_log.text
 
         limit_log = requests.get(self.url_for(JobLogsResource, job_id=job.id, limit=1))
@@ -187,7 +185,6 @@ class LogExecutorTest(BaseIntegrationTest):
         assert 'Attaching package: ‘BiocGenerics’' not in limit_log.text
         assert '[1] "Load dataset from' not in limit_log.text
         assert '[1] "Successfully loaded dataset' not in limit_log.text
-        assert 'Casting arguments...' not in limit_log.text
         assert '[1] "Successfully executed job' in limit_log.text
 
         logfile = get_logfile_name(job.id)

@@ -25,7 +25,7 @@ get_dataset <- function(api_host, dataset_id, job_id) {
     return(df)
 }
 
-store_graph_result <- function(api_host, graph, df, job_id, opt) {
+store_graph_result <- function(api_host, graph, sepsets, df, job_id, opt) {
     edges <- edges(graph)
     edge_list <- list(from_node=c(), to_node=c())
     node_list <- c()
@@ -40,7 +40,6 @@ store_graph_result <- function(api_host, graph, df, job_id, opt) {
     }
     edge_list <- data.frame(edge_list)
     
-    sepsets <- result@'sepset'
     sepset_list <- list(from_node=c(), to_node=c(), statistic=c(), level=c())
     ss_nodes_list <- list()
     i <- 1

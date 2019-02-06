@@ -53,4 +53,4 @@ result = pc(suffStat=sufficient_stats, verbose=verbose,
             indepTest=indepTestDict[[opt$independence_test]], m.max=subset_size,
             p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method="stable.fast")
 
-graph_request <- store_graph_result(opt$api_host, result@'graph', df, opt$job_id, opt)
+graph_request <- store_graph_result(opt$api_host, result@'graph', result@'sepset', df, opt$job_id, opt)

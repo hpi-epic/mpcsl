@@ -11,6 +11,8 @@ DB_DATABASE = os.environ.get('DB_DATABASE', 'postgres')
 DB_USER = os.environ.get('DB_USER', 'postgres')
 DB_PASSWORD = os.environ.get('DB_PASSWORD', 'postgres')
 
+LOGS_DIRECTORY = os.environ.get('LOGS_DIRECTORY', os.path.abspath('/app/logs'))
+
 # Remote databases for loading
 DATA_SOURCE_CONNECTIONS = json.loads(os.environ.get('DATA_SOURCE_CONNECTIONS', '{}'))
 

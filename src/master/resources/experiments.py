@@ -4,9 +4,9 @@ from marshmallow import Schema, fields
 from marshmallow.validate import Length
 
 from src.db import db
-from src.master.helpers.io import load_data, marshal, InvalidInputData
+from src.master.helpers.io import load_data, marshal, InvalidInputData, remove_logs
 from src.master.helpers.swagger import get_default_response
-from src.models import Experiment, ExperimentSchema, Algorithm
+from src.models import Experiment, ExperimentSchema, Algorithm, Job
 
 
 class ExperimentResource(Resource):
@@ -46,6 +46,9 @@ class ExperimentResource(Resource):
     def delete(self, experiment_id):
         experiment = Experiment.query.get_or_404(experiment_id)
         data = marshal(ExperimentSchema, experiment)
+
+        for job in Job.query.filter(Job.experiment_id == experiment_id):
+            remove_logs(job.id)
 
         db.session.delete(experiment)
         db.session.commit()

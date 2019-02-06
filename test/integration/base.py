@@ -12,6 +12,7 @@ from urllib.request import urlopen
 from src.master.appfactory import AppFactory
 from src.db import db
 from src.master.executor import ExecutorResource
+from src.master.helpers.io import remove_logs
 from src.models import Result, Job
 from test.factories import DatasetFactory
 
@@ -51,10 +52,15 @@ class BaseIntegrationTest(TestCase):
                 timeout -= 1
 
     def tearDown(self):
+        self.remove_logs()
         self.stop_app_thread()
         self.db.session.remove()
         self.db.reflect()
         self.drop_all()
+
+    def remove_logs(self):
+        for job in Job.query.all():
+            remove_logs(job.id)
 
     def drop_all(self):
         for tbl in reversed(self.db.metadata.sorted_tables):
@@ -153,7 +159,7 @@ class BaseIntegrationTest(TestCase):
         result = None
         i = 0
         while result is None:
-            if i > 15:
+            if i > 30:
                 raise TimeoutError
             time.sleep(1)
 

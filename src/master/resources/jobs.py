@@ -1,14 +1,15 @@
-from datetime import datetime
 import os
 import signal
-from flask_restful_swagger_2 import swagger
+from datetime import datetime
+from subprocess import Popen, PIPE
 
-from flask import current_app
+from flask import current_app, send_file, Response
 from flask_restful import Resource, abort, reqparse
+from flask_restful_swagger_2 import swagger
 from marshmallow import fields, Schema
 
 from src.db import db
-from src.master.helpers.io import marshal, load_data
+from src.master.helpers.io import marshal, load_data, remove_logs, get_logfile_name
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
 from src.models.base import SwaggerMixin
@@ -77,8 +78,11 @@ class JobResource(Resource):
     def delete(self, job_id):
         job = Job.query.get_or_404(job_id)
 
-        if(job.status == JobStatus.running):
-            os.killpg(os.getpgid(job.pid), signal.SIGTERM)
+        if job.status == JobStatus.running:
+            try:
+                os.killpg(os.getpgid(job.pid), signal.SIGTERM)
+            except ProcessLookupError:
+                pass
             job.status = JobStatus.cancelled
         else:
             job.status = JobStatus.hidden
@@ -89,14 +93,24 @@ class JobResource(Resource):
 
 class JobListResource(Resource):
     @swagger.doc({
-        'description': 'Returns all jobs. Pass show_hidden=1 in query string to display hidden jobs',
+        'description': 'Returns all jobs',
+        'parameters': [
+            {
+                'name': 'show_hidden',
+                'description': 'Pass show_hidden=1 to display also hidden jobs',
+                'in': 'query',
+                'type': 'integer',
+                'enum': [0, 1],
+                'default': 0
+            }
+        ],
         'responses': get_default_response(JobSchema.get_swagger().array()),
         'tags': ['Job']
     })
     def get(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('show_hidden', required=False, type=int)
-        show_hidden = parser.parse_args().get('show_hidden', 0)
+        parser.add_argument('show_hidden', required=False, type=int, store_missing=False)
+        show_hidden = parser.parse_args().get('show_hidden', 0) == 1
 
         jobs = Job.query.all() if show_hidden else Job.query.filter(Job.status != JobStatus.hidden)
 
@@ -202,3 +216,94 @@ class JobResultResource(Resource):
         job.result_id = result.id
         db.session.commit()
         return marshal(ResultSchema, result)
+
+
+class JobLogsResource(Resource):
+    @swagger.doc({
+        'description': 'Get the log output (stdout/stderr) for a given job',
+        'parameters': [
+            {
+                'name': 'job_id',
+                'description': 'Job identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },
+            {
+                'name': 'offset',
+                'description': 'Output logs starting with line OFFSET',
+                'in': 'query',
+                'type': 'integer',
+            },
+            {
+                'name': 'limit',
+                'description': 'Output only the last LIMIT lines',
+                'in': 'query',
+                'type': 'integer'
+            }
+        ],
+        'responses': {
+            '200': {
+                'description': 'Success',
+            },
+            '404': {
+                'description': 'Log not found'
+            },
+            '500': {
+                'description': 'Internal server error'
+            }
+        },
+        'produces': ['text/plain'],
+        'tags': ['Executor', 'Job']
+    })
+    def get(self, job_id):
+        job = Job.query.get_or_404(job_id)
+        logfile = get_logfile_name(job.id)
+        if not os.path.isfile(logfile):
+            abort(404)
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('offset', required=False, type=int, store_missing=False)
+        parser.add_argument('limit', required=False, type=int, store_missing=False)
+        args = parser.parse_args()
+        offset = args.get('offset', 0)
+        limit = args.get('limit', 0)
+
+        def run(cmd):
+            p = Popen(cmd.split(), stdout=PIPE, universal_newlines=True)
+            stdout, stderr = p.communicate()
+            return stdout
+
+        if offset > 0 and limit == 0:
+            log = run(f'tail --lines +{offset} {logfile}')  # return all lines starting from 'offset'
+            return Response(log, mimetype='text/plain')
+        elif limit > 0 and offset == 0:
+            command = f'tail --lines {limit} {logfile}'  # return last 'limit' lines
+            return Response(run(command), mimetype='text/plain')
+        elif limit > 0 and offset > 0:
+            abort(501)
+        else:
+            return send_file(logfile, mimetype='text/plain')
+
+    @swagger.doc({
+        'description': 'Removes the associated log files',
+        'parameters': [
+            {
+                'name': 'job_id',
+                'description': 'Job identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(JobSchema.get_swagger()),
+        'tags': ['Job']
+    })
+    def delete(self, job_id):
+        job = Job.query.get_or_404(job_id)
+
+        if job.status == JobStatus.running:
+            abort(403)
+        else:
+            remove_logs(job_id)
+        return marshal(JobSchema, job)

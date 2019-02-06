@@ -1,11 +1,15 @@
 import os
 import json
+from sys import argv
 
 from flask import Flask, jsonify
 from flask_restful_swagger_2 import Api
 from flask_migrate import Migrate
+from werkzeug.serving import is_running_from_reloader
 
 from src.db import db
+from src.master.config import UWSGI_NUM_PROCESSES
+from src.master.executor.daemon import JobDaemon
 from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
 from src.models import Algorithm, AlgorithmSchema
@@ -17,6 +21,7 @@ class AppFactory(object):
         self.db = None
         self.api = None
         self.migrate = None
+        self.daemon = None
 
     def set_up_db(self):
         self.db = db
@@ -82,6 +87,27 @@ class AppFactory(object):
                                 self.db.session.add(alg)
                     self.db.session.commit()
 
+    def set_up_daemon(self, force=False):
+        """
+        This function starts the daemon in one of three cases:
+        - force is set to True
+        - the last command of the launch command was server.py, which means
+          that the server was launched by launching server.py directly
+        - the last command was uWSGI and the current pid % UWSGI_NUM_PROCESSES is zero
+          the last check is necessary, to ensure that the daemon is only
+          launched in a single uWSGI worker. uWSGI workers have pids that are sequential
+          up in a docker container, for example 4,5,6,7 so only 1 of them % num workers equals
+          zero.
+        :param force: Bool, set to true to force daemon launch.
+        :return:
+        """
+        if force or (not is_running_from_reloader()
+                     and (argv[-1] == 'server.py'
+                     or (argv[-1] == 'uwsgi' and os.getpid() % UWSGI_NUM_PROCESSES == 0))):
+            self.app.logger.info("Starting daemon.")
+            self.daemon = JobDaemon(self.app, name='Job-Daemon', daemon=True)
+            self.daemon.start()
+
     def set_up_error_handlers(self):
         @self.app.errorhandler(InvalidInputData)
         def handle_invalid_usage(error):
@@ -89,10 +115,12 @@ class AppFactory(object):
             response.status_code = error.status_code
             return response
 
-    def up(self):
+    def up(self, no_daemon=False):
         self.set_up_app()
         self.set_up_api()
         self.set_up_db()
         self.set_up_algorithms()
         self.set_up_error_handlers()
+        if not no_daemon:
+            self.set_up_daemon()
         return self.app

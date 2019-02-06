@@ -109,8 +109,8 @@ class JobListResource(Resource):
     })
     def get(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('show_hidden', required=False, type=int)
-        show_hidden = parser.parse_args().get('show_hidden')
+        parser.add_argument('show_hidden', required=False, type=int, store_missing=False)
+        show_hidden = parser.parse_args().get('show_hidden', 0)
 
         jobs = Job.query.all() if show_hidden else Job.query.filter(Job.status != JobStatus.hidden)
 
@@ -263,11 +263,11 @@ class JobLogsResource(Resource):
             abort(404)
 
         parser = reqparse.RequestParser()
-        parser.add_argument('offset', required=False, type=int)
-        parser.add_argument('limit', required=False, type=int)
+        parser.add_argument('offset', required=False, type=int, store_missing=False)
+        parser.add_argument('limit', required=False, type=int, store_missing=False)
         args = parser.parse_args()
-        offset = args.get('offset') if args.get('offset') is not None else 0
-        limit = args.get('limit') if args.get('limit') is not None else 0
+        offset = args.get('offset', 0)
+        limit = args.get('limit', 0)
 
         def run(cmd):
             p = Popen(cmd.split(), stdout=PIPE, universal_newlines=True)

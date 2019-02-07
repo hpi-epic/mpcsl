@@ -4,11 +4,20 @@ library(jsonlite, quietly = T)
 library(stringi, quietly = T)
 options(show.error.messages = FALSE)
 options(error = function() {
-    err <- stri_replace_all_regex(geterrmessage(), '\n', '\n\033[31m')
-    colorize_error(err)
-    colorize_error('Execution halted')
+    err <- stri_replace_all_regex(geterrmessage(), '\n', paste0('\n', ANSI_RED))
+    colorize_log(ANSI_RED, err)
+    colorize_log(ANSI_RED, 'Execution halted')
     quit("no", status=1, runLast=FALSE)
     })
+
+ANSI_RED <- '\033[31m'
+ANSI_GREEN <- '\033[32m'
+ANSI_RESET <- '\033[0m\n'
+
+colorize_log <- function(color, string) {
+    # ANSI coloring
+    cat(paste0(color, string, ANSI_RESET))
+}
 
 check_request <- function(api_host, request, job_id) {
     if (http_error(request)) {
@@ -19,27 +28,13 @@ check_request <- function(api_host, request, job_id) {
     }
 }
 
-colorize_log <- function(string) {
-    # ANSI coloring
-    green <- '\033[32m'
-    end <- '\033[0m\n'
-    cat(paste0(green, string, end))
-}
-
-colorize_error <- function(string) {
-    # ANSI coloring
-    red <- '\033[31m'
-    end <- '\033[0m\n'
-    cat(paste0(red, string, end))
-}
-
 get_dataset <- function(api_host, dataset_id, job_id) {
     url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/load')
-    colorize_log(paste0('Load dataset from ', url))
+    colorize_log(ANSI_GREEN, paste0('Load dataset from ', url))
     start_time <- Sys.time()
     df_request <- GET(url)
     check_request(api_host, df_request, job_id)
-    colorize_log(paste('Successfully loaded dataset (size ', headers(df_request)$`x-content-length`,
+    colorize_log(ANSI_GREEN, paste('Successfully loaded dataset (size ', headers(df_request)$`x-content-length`,
                 ' bytes) in', (Sys.time() - start_time), 'sec'))
 
     df <- read.csv(text=content(df_request, 'text'))
@@ -92,6 +87,6 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, opt) {
                                  body=result_json, 
                                  add_headers("Content-Type" = "application/json"))
     check_request(api_host, graph_request, job_id)
-    colorize_log(paste0('Successfully executed job ', job_id))
+    colorize_log(ANSI_GREEN, paste0('Successfully executed job ', job_id))
     return(graph_request)
 }

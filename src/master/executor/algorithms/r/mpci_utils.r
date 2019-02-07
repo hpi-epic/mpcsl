@@ -1,7 +1,14 @@
 library(httr, quietly = T)
 library(graph, quietly = T)
 library(jsonlite, quietly = T)
-
+library(stringi, quietly = T)
+options(show.error.messages = FALSE)
+options(error = function() {
+    err <- stri_replace_all_regex(geterrmessage(), '\n', '\n\033[31m')
+    colorize_error(err)
+    colorize_error('Execution halted')
+    quit("no", status=1, runLast=FALSE)
+    })
 
 check_request <- function(api_host, request, job_id) {
     if (http_error(request)) {
@@ -12,20 +19,27 @@ check_request <- function(api_host, request, job_id) {
     }
 }
 
-log <- function(string) {
+colorize_log <- function(string) {
     # ANSI coloring
     green <- '\033[32m'
-    end <- '\033[0m'
+    end <- '\033[0m\n'
     cat(paste0(green, string, end))
+}
+
+colorize_error <- function(string) {
+    # ANSI coloring
+    red <- '\033[31m'
+    end <- '\033[0m\n'
+    cat(paste0(red, string, end))
 }
 
 get_dataset <- function(api_host, dataset_id, job_id) {
     url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/load')
-    log(paste0('Load dataset from ', url))
+    colorize_log(paste0('Load dataset from ', url))
     start_time <- Sys.time()
     df_request <- GET(url)
     check_request(api_host, df_request, job_id)
-    log(paste('Successfully loaded dataset (size ', headers(df_request)$`x-content-length`,
+    colorize_log(paste('Successfully loaded dataset (size ', headers(df_request)$`x-content-length`,
                 ' bytes) in', (Sys.time() - start_time), 'sec'))
 
     df <- read.csv(text=content(df_request, 'text'))
@@ -78,6 +92,6 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, opt) {
                                  body=result_json, 
                                  add_headers("Content-Type" = "application/json"))
     check_request(api_host, graph_request, job_id)
-    log(paste0('Successfully executed job ', job_id))
+    colorize_log(paste0('Successfully executed job ', job_id))
     return(graph_request)
 }

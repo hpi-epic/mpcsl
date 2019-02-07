@@ -12,13 +12,20 @@ check_request <- function(api_host, request, job_id) {
     }
 }
 
+log <- function(string) {
+    # ANSI coloring
+    green <- '\033[32m'
+    end <- '\033[0m'
+    cat(paste0(green, string, end))
+}
+
 get_dataset <- function(api_host, dataset_id, job_id) {
     url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/load')
-    print(paste0('Load dataset from ', url))
+    log(paste0('Load dataset from ', url))
     start_time <- Sys.time()
     df_request <- GET(url)
     check_request(api_host, df_request, job_id)
-    print(paste('Successfully loaded dataset (size ', headers(df_request)$`x-content-length`,
+    log(paste('Successfully loaded dataset (size ', headers(df_request)$`x-content-length`,
                 ' bytes) in', (Sys.time() - start_time), 'sec'))
 
     df <- read.csv(text=content(df_request, 'text'))
@@ -71,6 +78,6 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, opt) {
                                  body=result_json, 
                                  add_headers("Content-Type" = "application/json"))
     check_request(api_host, graph_request, job_id)
-    print(paste0('Successfully executed job ', job_id))
+    log(paste0('Successfully executed job ', job_id))
     return(graph_request)
 }

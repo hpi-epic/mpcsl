@@ -70,6 +70,6 @@ class DistributionTest(BaseResourceTest):
             # Then
             assert distribution['node']['id'] == node.id
             assert distribution['dataset']['id'] == ds.id
-            bins = dict(zip(*np.unique(source[:, 0], return_counts=True)))
+            bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(source[:, 0], return_counts=True))])
             assert distribution['bins'] == bins
             assert 'bin_edges' not in distribution

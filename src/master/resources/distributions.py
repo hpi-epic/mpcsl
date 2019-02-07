@@ -22,7 +22,7 @@ class ContinuousDistributionSchema(DistributionSchema):
 
 
 class DiscreteDistributionSchema(DistributionSchema):
-    bins = fields.Dict(values=fields.Int())
+    bins = fields.Dict(values=fields.Int(), keys=fields.String())
 
 
 class MarginalDistributionResource(Resource):
@@ -57,7 +57,7 @@ class MarginalDistributionResource(Resource):
         values = [line[0] for line in result]
 
         if len(np.unique(values)) <= 10:  # Categorical
-            bins = dict(zip(*np.unique(values, return_counts=True)))
+            bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(values, return_counts=True))])
             return marshal(DiscreteDistributionSchema, {
                 'node': node,
                 'dataset': dataset,

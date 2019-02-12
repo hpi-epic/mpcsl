@@ -2,6 +2,7 @@ import os
 import signal
 from datetime import datetime
 from decimal import Decimal
+from functools import partial
 from subprocess import Popen, PIPE
 from tempfile import TemporaryFile
 
@@ -195,7 +196,9 @@ class JobResultResource(Resource):
         node_mapping = {}
 
         with TemporaryFile(mode='w+b') as t_file:
-            t_file.write(request.get_data(cache=False))
+            for chunk in iter(partial(request.stream.read, 1024), b''):
+                t_file.write(chunk)
+
             t_file.seek(0)
 
             meta_results = next(ijson.items(t_file, 'meta_results'), None)

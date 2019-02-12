@@ -14,6 +14,7 @@ import ijson
 from ijson.common import ObjectBuilder
 
 from src.db import db
+from src.master.config import RESULT_READ_BUFF_SIZE
 from src.master.helpers.io import marshal, remove_logs, get_logfile_name
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
@@ -169,10 +170,9 @@ class ResultEndpointSchema(Schema, SwaggerMixin):
 def items(file, prefixes):
     '''
     An iterator returning native Python objects constructed from the events
-    under a given prefix.
+    under a list of given prefixes.
     '''
-    prefixed_events = ijson.parse(file, buf_size=24)
-    prefixed_events = iter(prefixed_events)
+    prefixed_events = iter(ijson.parse(file, buf_size=RESULT_READ_BUFF_SIZE))
     try:
         while True:
             current, event, value = next(prefixed_events)

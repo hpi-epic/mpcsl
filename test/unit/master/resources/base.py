@@ -22,6 +22,10 @@ class BaseResourceTest(BaseTest):
             kwargs['content_type'] = 'application/json'
             kwargs['data'] = json.dumps(kwargs.pop('json')).encode('utf-8')
 
+        dont_parse = kwargs.pop('dont_parse', False)
+
         result = method(*args, **kwargs)
+        if dont_parse:
+            return result
 
         return json.loads(result.data)

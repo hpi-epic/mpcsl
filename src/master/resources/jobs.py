@@ -11,6 +11,7 @@ from flask_restful import Resource, abort, reqparse
 from flask_restful_swagger_2 import swagger
 from marshmallow import fields, Schema
 import ijson
+from ijson.common import ObjectBuilder
 
 from src.db import db
 from src.master.helpers.io import marshal, remove_logs, get_logfile_name
@@ -165,6 +166,32 @@ class ResultEndpointSchema(Schema, SwaggerMixin):
     sepset_list = fields.Nested(SepsetResultEndpointSchema, many=True)
 
 
+def items(file, prefixes):
+    '''
+    An iterator returning native Python objects constructed from the events
+    under a given prefix.
+    '''
+    prefixed_events = ijson.parse(file, buf_size=24)
+    prefixed_events = iter(prefixed_events)
+    try:
+        while True:
+            current, event, value = next(prefixed_events)
+            matches = [prefix for prefix in prefixes if current == prefix]
+            if len(matches) > 0:
+                prefix = matches[0]
+                if event in ('start_map', 'start_array'):
+                    builder = ObjectBuilder()
+                    end_event = event.replace('start', 'end')
+                    while (current, event) != (prefix, end_event):
+                        builder.event(event, value)
+                        current, event, value = next(prefixed_events)
+                    yield prefix, builder.value
+                else:
+                    yield prefix, value
+    except StopIteration:
+        pass
+
+
 class JobResultResource(Resource):
     @swagger.doc({
         'description': 'Stores the results of job execution. Job is marked as done.',
@@ -195,42 +222,37 @@ class JobResultResource(Resource):
 
         node_mapping = {}
 
-        with TemporaryFile(mode='w+b') as t_file:
-            for chunk in iter(partial(request.stream.read, 1024), b''):
-                t_file.write(chunk)
-
-            t_file.seek(0)
-
-            meta_results = next(ijson.items(t_file, 'meta_results'), None)
-            for key, val in meta_results.items():
-                if isinstance(val, Decimal):
-                    meta_results[key] = float(val)
-            result.meta_results = meta_results
-
-            t_file.seek(0)
-            nodes = ijson.items(t_file, 'node_list.item')
-
-            for node_name in nodes:
-                if not isinstance(node_name, str):
-                    abort(400)
-                else:
-                    node = Node(name=node_name, result=result)
-                    node_mapping[node_name] = node
-                    db.session.add(node)
-
-            t_file.seek(0)
-            edges = ijson.items(t_file, 'edge_list.item')
-            for edge in edges:
-                edge = Edge(from_node=node_mapping[edge['from_node']], to_node=node_mapping[edge['to_node']],
-                            result=result)
+        result_elements = items(request.stream, ['meta_results', 'node_list.item', 'edge_list.item', 'sepset_list.item'])
+        nodes_found = False
+        for prefix, element in result_elements:
+            if prefix == 'meta_results':
+                for key, val in element.items():
+                    if isinstance(val, Decimal):
+                        element[key] = float(val)
+                result.meta_results = element
+            if prefix == 'node_list.item':
+                node = Node(name=element, result=result)
+                node_mapping[element] = node
+                db.session.add(node)
+                nodes_found = True
+            if prefix in ['edge_list.item', 'sepset_list.item'] and nodes_found is False:
+                abort(400, message='Invalid input order. Node list has to be sent first!')
+            if prefix == 'edge_list.item':
+                edge = Edge(
+                    from_node=node_mapping[element['from_node']],
+                    to_node=node_mapping[element['to_node']],
+                    result=result
+                )
                 db.session.add(edge)
-
-            t_file.seek(0)
-            sepset_list = ijson.items(t_file, 'sepset_list.item')
-            for sepset in sepset_list:
-                sepset = Sepset(node_names=sepset['nodes'], statistic=sepset['statistic'],
-                                level=sepset['level'], from_node=node_mapping[sepset['from_node']],
-                                to_node=node_mapping[sepset['to_node']], result=result)
+            if prefix == 'sepset_list.item':
+                sepset = Sepset(
+                    node_names=element['nodes'],
+                    statistic=element['statistic'],
+                    level=element['level'],
+                    from_node=node_mapping[element['from_node']],
+                    to_node=node_mapping[element['to_node']],
+                    result=result
+                )
                 db.session.add(sepset)
 
         current_app.logger.info('Result {} created'.format(result.id))

@@ -197,7 +197,10 @@ class JobResultResource(Resource):
         t_file.write(request.get_data(cache=False))
         t_file.seek(0)
 
-        nodes = ijson.items(t_file, 'node_list')
+        result.meta_results = list(ijson.items(t_file, 'meta_results'))[0]
+
+        t_file.seek(0)
+        nodes = ijson.items(t_file, 'node_list.item')
 
         for node_name in nodes:
             if not isinstance(node_name, str):
@@ -206,17 +209,16 @@ class JobResultResource(Resource):
                 node = Node(name=node_name, result=result)
                 node_mapping[node_name] = node
                 db.session.add(node)
-                self.db.session.add()
 
         t_file.seek(0)
-        edges = ijson.items(request.get_data(), 'edge_list')
+        edges = ijson.items(t_file, 'edge_list.item')
         for edge in edges:
             edge = Edge(from_node=node_mapping[edge['from_node']], to_node=node_mapping[edge['to_node']],
                         result=result)
             db.session.add(edge)
 
         t_file.seek(0)
-        sepset_list = ijson.items(request.get_data(), 'sepset_list')
+        sepset_list = ijson.items(t_file, 'sepset_list.item')
         for sepset in sepset_list:
             sepset = Sepset(node_names=sepset['nodes'], statistic=sepset['statistic'],
                             level=sepset['level'], from_node=node_mapping[sepset['from_node']],

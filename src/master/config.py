@@ -44,4 +44,4 @@ if UWSGI_NUM_PROCESSES is None and os.path.isfile('uwsgi.ini'):
 
     UWSGI_NUM_PROCESSES = int(uwsgi_conf['uwsgi']['processes'])
 else:
-    UWSGI_NUM_PROCESSES = int(UWSGI_NUM_PROCESSES)
+    UWSGI_NUM_PROCESSES = int(UWSGI_NUM_PROCESSES or 0)

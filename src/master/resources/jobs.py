@@ -12,7 +12,7 @@ from marshmallow import fields, Schema
 import ijson
 
 from src.db import db
-from src.master.helpers.io import marshal, load_data, remove_logs, get_logfile_name
+from src.master.helpers.io import marshal, remove_logs, get_logfile_name
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
 from src.models.base import SwaggerMixin

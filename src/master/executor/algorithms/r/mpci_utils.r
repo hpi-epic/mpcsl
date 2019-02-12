@@ -7,7 +7,7 @@ options(error = function() {
     err <- stri_replace_all_regex(geterrmessage(), '\n', paste0('\n', ANSI_RED))
     colorize_log(ANSI_RED, err)
     colorize_log(ANSI_RED, 'Execution halted')
-    quit("no", status=1, runLast=FALSE)
+    quit(save='no', status=1, runLast=FALSE)
     })
 
 ANSI_RED <- '\033[31m'

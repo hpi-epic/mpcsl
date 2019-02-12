@@ -14,6 +14,7 @@ from src.models.swagger import SwaggerMixin
 class DistributionSchema(BaseSchema, SwaggerMixin):
     node = fields.Nested('NodeSchema')
     dataset = fields.Nested('DatasetSchema')
+    categorical = fields.Bool()
 
 
 class ContinuousDistributionSchema(DistributionSchema):

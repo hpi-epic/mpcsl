@@ -12,7 +12,7 @@ import ijson
 from ijson.common import ObjectBuilder
 
 from src.db import db
-from src.master.config import RESULT_READ_BUFF_SIZE
+from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET
 from src.master.helpers.io import marshal, remove_logs, get_logfile_name
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
@@ -217,6 +217,9 @@ class JobResultResource(Resource):
         result = Result(job=job, start_time=job.start_time,
                         end_time=datetime.now())
         db.session.add(result)
+        db.session.flush()
+
+        current_app.logger.info('Result {} is in creation for job {}'.format(result.id, job.id))
 
         node_mapping = {}
 
@@ -224,7 +227,9 @@ class JobResultResource(Resource):
             request.stream,
             ['meta_results', 'node_list.item', 'edge_list.item', 'sepset_list.item']
         )
-        nodes_found = False
+        edges = []
+        sepsets = []
+        flushed_nodes = False
         for prefix, element in result_elements:
             if prefix == 'meta_results':
                 for key, val in element.items():
@@ -232,34 +237,45 @@ class JobResultResource(Resource):
                         element[key] = float(val)
                 result.meta_results = element
             if prefix == 'node_list.item':
-                node = Node(name=element, result=result)
-                node_mapping[element] = node
+                node = Node(name=element, result_id=result.id)
                 db.session.add(node)
-                nodes_found = True
-            if prefix in ['edge_list.item', 'sepset_list.item'] and nodes_found is False:
-                abort(400, message='Invalid input order. Node list has to be sent first!')
+                node_mapping[element] = node
+            if prefix in ['edge_list.item', 'sepset_list.item']:
+                if len(node_mapping) == 0:
+                    current_app.logger.warn(
+                        'Result {} for job {} could not be stored. Node list was not first.'.format(result.id, job.id)
+                    )
+                    abort(400, message='Invalid input order. Node list has to be sent first!')
+                if flushed_nodes is False:
+                    db.session.flush()
+                    flushed_nodes = True
+                    current_app.logger.info('Flushing {} nodes'.format(len(node_mapping)))
             if prefix == 'edge_list.item':
                 edge = Edge(
-                    from_node=node_mapping[element['from_node']],
-                    to_node=node_mapping[element['to_node']],
-                    result=result
+                    from_node_id=node_mapping[element['from_node']].id,
+                    to_node_id=node_mapping[element['to_node']].id,
+                    result_id=result.id
                 )
-                db.session.add(edge)
-            if prefix == 'sepset_list.item':
+                edges.append(edge)
+            if prefix == 'sepset_list.item' and LOAD_SEPARATION_SET:
                 sepset = Sepset(
                     node_names=element['nodes'],
                     statistic=element['statistic'],
                     level=element['level'],
                     from_node=node_mapping[element['from_node']],
                     to_node=node_mapping[element['to_node']],
-                    result=result
+                    result_id=result.id
                 )
-                db.session.add(sepset)
+                sepsets.append(sepset)
 
-        current_app.logger.info('Result {} created'.format(result.id))
         job.status = JobStatus.done
+        db.session.bulk_save_objects(edges)
+        db.session.bulk_save_objects(sepsets)
         job.result_id = result.id
         db.session.commit()
+
+        current_app.logger.info('Result {} created for job {}'.format(result.id, job.id))
+
         return marshal(ResultSchema, result)
 
 

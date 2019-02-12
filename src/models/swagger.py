@@ -13,7 +13,7 @@ TYPE_MAP = {
     fields.Raw: 'object',
     fields.Dict: 'object',
     fields.List: 'array',
-    fields.Bool: 'bool'
+    fields.Bool: 'boolean'
 }
 
 FORMAT_MAP = {
@@ -26,7 +26,21 @@ FORMAT_MAP = {
     fields.Raw: 'object',
     fields.Dict: 'object',
     fields.List: 'array',
-    fields.Bool: 'bool'
+    fields.Bool: 'boolean',
+}
+
+PYTHON_TYPE_MAP = {
+    bool: 'boolean',
+    float: 'number',
+    str: 'string',
+    int: 'integer'
+}
+
+PYTHON_FORMAT_MAP = {
+    bool: 'boolean',
+    float: 'float',
+    str: 'string',
+    int: 'int64'
 }
 
 SWAGGER_SCHEMATA = {}
@@ -66,6 +80,11 @@ class SwaggerMixin(object):
                             'type': TYPE_MAP[type(field.container)],
                             'format': FORMAT_MAP[type(field.container)]
                         }
+                    }
+                elif type(field) == fields.Constant:
+                    definition = {
+                        'type': PYTHON_TYPE_MAP[type(field.constant)],
+                        'format': PYTHON_FORMAT_MAP[type(field.constant)]
                     }
                 else:
                     definition = {

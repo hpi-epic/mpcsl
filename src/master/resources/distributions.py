@@ -20,12 +20,12 @@ class DistributionSchema(BaseSchema, SwaggerMixin):
 class ContinuousDistributionSchema(DistributionSchema):
     bins = fields.List(fields.Int())
     bin_edges = fields.List(fields.Float())
-    categorical = False
+    categorical = fields.Constant(False, dump_only=True)
 
 
 class DiscreteDistributionSchema(DistributionSchema):
     bins = fields.Dict(values=fields.Int(), keys=fields.String())
-    categorical = True
+    categorical = fields.Constant(True, dump_only=True)
 
 
 class MarginalDistributionResource(Resource):

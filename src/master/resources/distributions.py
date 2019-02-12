@@ -14,15 +14,18 @@ from src.models.swagger import SwaggerMixin
 class DistributionSchema(BaseSchema, SwaggerMixin):
     node = fields.Nested('NodeSchema')
     dataset = fields.Nested('DatasetSchema')
+    categorical = fields.Bool()
 
 
 class ContinuousDistributionSchema(DistributionSchema):
     bins = fields.List(fields.Int())
     bin_edges = fields.List(fields.Float())
+    categorical = fields.Constant(False, dump_only=True)
 
 
 class DiscreteDistributionSchema(DistributionSchema):
     bins = fields.Dict(values=fields.Int(), keys=fields.String())
+    categorical = fields.Constant(True, dump_only=True)
 
 
 class MarginalDistributionResource(Resource):
@@ -61,7 +64,6 @@ class MarginalDistributionResource(Resource):
             return marshal(DiscreteDistributionSchema, {
                 'node': node,
                 'dataset': dataset,
-                'categorical': True,
                 'bins': bins
             })
         else:
@@ -69,7 +71,6 @@ class MarginalDistributionResource(Resource):
             return marshal(ContinuousDistributionSchema, {
                 'node': node,
                 'dataset': dataset,
-                'categorical': False,
                 'bins': hist,
                 'bin_edges': bin_edges
             })

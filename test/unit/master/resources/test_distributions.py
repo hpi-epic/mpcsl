@@ -36,6 +36,7 @@ class DistributionTest(BaseResourceTest):
         distribution = self.get(self.url_for(MarginalDistributionResource, node_id=node.id))
 
         # Then
+        assert distribution['categorical'] is False
         assert distribution['node']['id'] == node.id
         assert distribution['dataset']['id'] == ds.id
         bins, bin_edges = np.histogram(source[:, 0], bins='auto', density=False)
@@ -68,6 +69,7 @@ class DistributionTest(BaseResourceTest):
             distribution = self.get(self.url_for(MarginalDistributionResource, node_id=node.id))
 
             # Then
+            assert distribution['categorical'] is True
             assert distribution['node']['id'] == node.id
             assert distribution['dataset']['id'] == ds.id
             bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(source[:, 0], return_counts=True))])

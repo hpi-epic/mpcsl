@@ -69,7 +69,7 @@ class MarginalDistributionResource(Resource):
             return marshal(ContinuousDistributionSchema, {
                 'node': node,
                 'dataset': dataset,
-                'categorical': True,
+                'categorical': False,
                 'bins': hist,
                 'bin_edges': bin_edges
             })

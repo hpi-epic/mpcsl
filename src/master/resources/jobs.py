@@ -1,6 +1,7 @@
 import os
 import signal
 from datetime import datetime
+from decimal import Decimal
 from subprocess import Popen, PIPE
 from tempfile import TemporaryFile
 
@@ -197,7 +198,11 @@ class JobResultResource(Resource):
             t_file.write(request.get_data(cache=False))
             t_file.seek(0)
 
-            result.meta_results = list(ijson.items(t_file, 'meta_results'))[0]
+            meta_results = list(ijson.items(t_file, 'meta_results'))[0]
+            for key, val in meta_results.items():
+                if isinstance(val, Decimal):
+                    meta_results[key] = float(val)
+            result.meta_results = meta_results
 
             t_file.seek(0)
             nodes = ijson.items(t_file, 'node_list.item')

@@ -119,7 +119,7 @@ class JobTest(BaseResourceTest):
         db.session.commit()
         data = {
             'job_id': mock_job.id,
-            'meta_results': {'important_note': 'lol'},
+            'meta_results': {'important_note': 'lol', 'number': 123.123},
             'edge_list': [
                 {'from_node': 'X1', 'to_node': 'X2'}
             ],

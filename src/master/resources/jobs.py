@@ -198,7 +198,7 @@ class JobResultResource(Resource):
             t_file.write(request.get_data(cache=False))
             t_file.seek(0)
 
-            meta_results = list(ijson.items(t_file, 'meta_results'))[0]
+            meta_results = next(ijson.items(t_file, 'meta_results'), None)
             for key, val in meta_results.items():
                 if isinstance(val, Decimal):
                     meta_results[key] = float(val)

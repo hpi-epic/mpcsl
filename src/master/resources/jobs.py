@@ -3,10 +3,11 @@ import signal
 from datetime import datetime
 from subprocess import Popen, PIPE
 
-from flask import current_app, send_file, Response
+from flask import current_app, send_file, Response, request
 from flask_restful import Resource, abort, reqparse
 from flask_restful_swagger_2 import swagger
 from marshmallow import fields, Schema
+import ijson
 
 from src.db import db
 from src.master.helpers.io import marshal, load_data, remove_logs, get_logfile_name
@@ -183,28 +184,32 @@ class JobResultResource(Resource):
         'tags': ['Executor']
     })
     def post(self, job_id):
-        json = load_data(ResultEndpointSchema)
         job = Job.query.get_or_404(job_id)
 
         result = Result(job=job, start_time=job.start_time,
-                        end_time=datetime.now(),
-                        meta_results=json['meta_results'])
+                        end_time=datetime.now())
         db.session.add(result)
 
-        node_list = json['node_list']
         node_mapping = {}
-        for node_name in node_list:
-            node = Node(name=node_name, result=result)
-            node_mapping[node_name] = node
-            db.session.add(node)
 
-        edge_list = json['edge_list']
-        for edge in edge_list:
+        nodes = ijson.items(request.get_data(), 'node_list')
+
+        for node_name in nodes:
+            if not isinstance(node_name, str):
+                abort(400)
+            else:
+                node = Node(name=node_name, result=result)
+                node_mapping[node_name] = node
+                db.session.add(node)
+                self.db.session.add()
+
+        edges = ijson.items(request.get_data(), 'edge_list')
+        for edge in edges:
             edge = Edge(from_node=node_mapping[edge['from_node']], to_node=node_mapping[edge['to_node']],
                         result=result)
             db.session.add(edge)
 
-        sepset_list = json['sepset_list']
+        sepset_list = ijson.items(request.get_data(), 'sepset_list')
         for sepset in sepset_list:
             sepset = Sepset(node_names=sepset['nodes'], statistic=sepset['statistic'],
                             level=sepset['level'], from_node=node_mapping[sepset['from_node']],

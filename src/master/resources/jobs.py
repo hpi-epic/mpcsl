@@ -2,6 +2,7 @@ import os
 import signal
 from datetime import datetime
 from subprocess import Popen, PIPE
+from tempfile import TemporaryFile
 
 from flask import current_app, send_file, Response, request
 from flask_restful import Resource, abort, reqparse
@@ -192,7 +193,11 @@ class JobResultResource(Resource):
 
         node_mapping = {}
 
-        nodes = ijson.items(request.get_data(), 'node_list')
+        t_file = TemporaryFile(mode='w+b')
+        t_file.write(request.get_data(cache=False))
+        t_file.seek(0)
+
+        nodes = ijson.items(t_file, 'node_list')
 
         for node_name in nodes:
             if not isinstance(node_name, str):
@@ -203,12 +208,14 @@ class JobResultResource(Resource):
                 db.session.add(node)
                 self.db.session.add()
 
+        t_file.seek(0)
         edges = ijson.items(request.get_data(), 'edge_list')
         for edge in edges:
             edge = Edge(from_node=node_mapping[edge['from_node']], to_node=node_mapping[edge['to_node']],
                         result=result)
             db.session.add(edge)
 
+        t_file.seek(0)
         sepset_list = ijson.items(request.get_data(), 'sepset_list')
         for sepset in sepset_list:
             sepset = Sepset(node_names=sepset['nodes'], statistic=sepset['statistic'],

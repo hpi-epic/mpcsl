@@ -12,7 +12,8 @@ TYPE_MAP = {
     fields.Field: 'string',
     fields.Raw: 'object',
     fields.Dict: 'object',
-    fields.List: 'array'
+    fields.List: 'array',
+    fields.Bool: 'bool'
 }
 
 FORMAT_MAP = {
@@ -24,7 +25,8 @@ FORMAT_MAP = {
     fields.Field: 'string',
     fields.Raw: 'object',
     fields.Dict: 'object',
-    fields.List: 'array'
+    fields.List: 'array',
+    fields.Bool: 'bool'
 }
 
 SWAGGER_SCHEMATA = {}

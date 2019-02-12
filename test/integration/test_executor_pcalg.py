@@ -78,6 +78,8 @@ class BinaryExecutorTest(BaseIntegrationTest):
         assert len(nodes) == 3
 
 
+"""
+Sepset transfer disabled for now. If reintroduced, remove comment marks.
 class SepsetExecutorTest(BaseIntegrationTest):
 
     @pytest.mark.run(order=-1)
@@ -119,6 +121,7 @@ class SepsetExecutorTest(BaseIntegrationTest):
             assert (sepset.from_node.name, sepset.to_node.name, sepset.node_names) or \
                    (sepset.to_node.name, sepset.from_node.name, sepset.node_names) in sepset_set
         assert len(sepset_set) == len(sepsets)
+"""
 
 
 class ParamExecutorTest(BaseIntegrationTest):

@@ -193,37 +193,37 @@ class JobResultResource(Resource):
 
         node_mapping = {}
 
-        t_file = TemporaryFile(mode='w+b')
-        t_file.write(request.get_data(cache=False))
-        t_file.seek(0)
+        with TemporaryFile(mode='w+b') as t_file:
+            t_file.write(request.get_data(cache=False))
+            t_file.seek(0)
 
-        result.meta_results = list(ijson.items(t_file, 'meta_results'))[0]
+            result.meta_results = list(ijson.items(t_file, 'meta_results'))[0]
 
-        t_file.seek(0)
-        nodes = ijson.items(t_file, 'node_list.item')
+            t_file.seek(0)
+            nodes = ijson.items(t_file, 'node_list.item')
 
-        for node_name in nodes:
-            if not isinstance(node_name, str):
-                abort(400)
-            else:
-                node = Node(name=node_name, result=result)
-                node_mapping[node_name] = node
-                db.session.add(node)
+            for node_name in nodes:
+                if not isinstance(node_name, str):
+                    abort(400)
+                else:
+                    node = Node(name=node_name, result=result)
+                    node_mapping[node_name] = node
+                    db.session.add(node)
 
-        t_file.seek(0)
-        edges = ijson.items(t_file, 'edge_list.item')
-        for edge in edges:
-            edge = Edge(from_node=node_mapping[edge['from_node']], to_node=node_mapping[edge['to_node']],
-                        result=result)
-            db.session.add(edge)
+            t_file.seek(0)
+            edges = ijson.items(t_file, 'edge_list.item')
+            for edge in edges:
+                edge = Edge(from_node=node_mapping[edge['from_node']], to_node=node_mapping[edge['to_node']],
+                            result=result)
+                db.session.add(edge)
 
-        t_file.seek(0)
-        sepset_list = ijson.items(t_file, 'sepset_list.item')
-        for sepset in sepset_list:
-            sepset = Sepset(node_names=sepset['nodes'], statistic=sepset['statistic'],
-                            level=sepset['level'], from_node=node_mapping[sepset['from_node']],
-                            to_node=node_mapping[sepset['to_node']], result=result)
-            db.session.add(sepset)
+            t_file.seek(0)
+            sepset_list = ijson.items(t_file, 'sepset_list.item')
+            for sepset in sepset_list:
+                sepset = Sepset(node_names=sepset['nodes'], statistic=sepset['statistic'],
+                                level=sepset['level'], from_node=node_mapping[sepset['from_node']],
+                                to_node=node_mapping[sepset['to_node']], result=result)
+                db.session.add(sepset)
 
         current_app.logger.info('Result {} created'.format(result.id))
         job.status = JobStatus.done

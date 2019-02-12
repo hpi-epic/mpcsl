@@ -2,9 +2,7 @@ import os
 import signal
 from datetime import datetime
 from decimal import Decimal
-from functools import partial
 from subprocess import Popen, PIPE
-from tempfile import TemporaryFile
 
 from flask import current_app, send_file, Response, request
 from flask_restful import Resource, abort, reqparse
@@ -222,7 +220,10 @@ class JobResultResource(Resource):
 
         node_mapping = {}
 
-        result_elements = items(request.stream, ['meta_results', 'node_list.item', 'edge_list.item', 'sepset_list.item'])
+        result_elements = items(
+            request.stream,
+            ['meta_results', 'node_list.item', 'edge_list.item', 'sepset_list.item']
+        )
         nodes_found = False
         for prefix, element in result_elements:
             if prefix == 'meta_results':

@@ -124,7 +124,7 @@ class JobTest(BaseResourceTest):
             'edge_list': [
                 {'from_node': 'X1', 'to_node': 'X2'}
             ],
-                'sepset_list': [
+            'sepset_list': [
             ],
             'meta_results': {'important_note': 'lol', 'number': 123.123}
         }
@@ -159,8 +159,7 @@ class JobTest(BaseResourceTest):
             'node_list': [
                 'X1', 'X2', 'X3'
             ],
-                'sepset_list': [
-            ],
+            'sepset_list': [],
             'meta_results': {'important_note': 'lol', 'number': 123.123}
         }
 

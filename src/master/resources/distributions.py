@@ -80,6 +80,14 @@ class ConditionalParameterSchema(Schema, SwaggerMixin):
     conditions = fields.Dict(keys=fields.Int(), values=fields.Dict())  # Not enforced, just metadata in 2.x
 
 
+class ConditionalContinuousDistributionSchema(ContinuousDistributionSchema):
+    conditions = fields.Dict(keys=fields.Int(), values=fields.Dict())
+
+
+class ConditionalDiscreteDistributionSchema(DiscreteDistributionSchema):
+    conditions = fields.Dict(keys=fields.Int(), values=fields.Dict())
+
+
 class ConditionalDistributionResource(Resource):
 
     @swagger.doc({
@@ -113,6 +121,23 @@ class ConditionalDistributionResource(Resource):
         predicates = []
         for condition_node_id, condition in conditions.items():
             node_name = Node.query.get_or_404(condition_node_id).name
+
+            # Auto-generate ranges by picking largest frequency
+            if condition['auto']:
+                node_res = session.execute(f"SELECT \"{node_name}\" "
+                                           f"FROM ({dataset.load_query}) _subquery_")
+                node_data = [line[0] for line in node_res]
+                if len(np.unique(node_data)) <= 10:
+                    values, counts = np.unique(node_data, return_counts=True)
+                    condition['values'] = [values[np.argmax(counts)]]
+                    condition['categorical'] = True
+                else:
+                    hist, bin_edges = np.histogram(node_data, bins='auto', density=False)
+                    most_common = np.argmax(hist)
+                    condition['min_value'] = bin_edges[most_common]
+                    condition['max_value'] = bin_edges[most_common+1]
+                    condition['categorical'] = False
+
             if condition['categorical']:
                 predicates.append(f"\"{node_name}\" IN ({','.join(map(str, condition['values']))})")
             else:
@@ -121,20 +146,22 @@ class ConditionalDistributionResource(Resource):
         query = base_query if len(predicates) == 0 else base_query + " WHERE " + ' AND '.join(predicates)
 
         result = session.execute(query)
-        values = [line[0] for line in result]
+        data = [line[0] for line in result]
 
-        if len(np.unique(values)) <= 10:  # Categorical
-            bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(values, return_counts=True))])
-            return marshal(DiscreteDistributionSchema, {
+        if len(np.unique(data)) <= 10:  # Categorical
+            bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(data, return_counts=True))])
+            return marshal(ConditionalDiscreteDistributionSchema, {
                 'node': node,
                 'dataset': dataset,
-                'bins': bins
+                'bins': bins,
+                'conditions': conditions
             })
         else:
-            hist, bin_edges = np.histogram(values, bins='auto', density=False)
-            return marshal(ContinuousDistributionSchema, {
+            hist, bin_edges = np.histogram(data, bins='auto', density=False)
+            return marshal(ConditionalContinuousDistributionSchema, {
                 'node': node,
                 'dataset': dataset,
                 'bins': hist,
-                'bin_edges': bin_edges
+                'bin_edges': bin_edges,
+                'conditions': conditions
             })

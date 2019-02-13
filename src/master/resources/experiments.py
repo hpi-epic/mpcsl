@@ -56,10 +56,10 @@ class ExperimentResource(Resource):
 
 
 TYPE_MAP = {
-    'str': lambda: fields.String(required=True, validate=Length(min=0)),
-    'int': lambda: fields.Integer(required=True),
-    'float': lambda: fields.Float(required=True),
-    'bool': lambda: fields.Boolean(required=True),
+    'str': lambda required: fields.String(required=required, validate=Length(min=0)),
+    'int': lambda required: fields.Integer(required=required),
+    'float': lambda required: fields.Float(required=required),
+    'bool': lambda required: fields.Boolean(required=required),
 }
 
 
@@ -76,7 +76,8 @@ def generate_schema(fields):
     :return: Schema
     """
     return type('Schema', (Schema,), {
-        attribute: TYPE_MAP[fields[attribute]]() for attribute in fields.keys()
+        parameter_name: TYPE_MAP[fields[parameter_name]["type"]](fields[parameter_name].get('required', False))
+        for parameter_name, parameter_options in fields.items()
     })
 
 

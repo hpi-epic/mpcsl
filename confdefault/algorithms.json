@@ -32,8 +32,7 @@
       },
       "subset_size": {
         "type": "int",
-        "minimum": 0,
-        "default": -1
+        "minimum": -1
       }
     }
   },
@@ -71,7 +70,7 @@
       },
       "subset_size": {
         "type": "int",
-        "minimum": 0
+        "minimum": -1
       }
     }
   }

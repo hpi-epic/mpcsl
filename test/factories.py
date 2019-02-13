@@ -35,11 +35,9 @@ class AlgorithmFactory(BaseFactory):
     description = ''
     backend = 'R'
     valid_parameters = factory.LazyAttribute(lambda o: {
-        'alpha': 'float',
-        'independence_test': 'str',
-        'cores': 'int',
-        'verbose': 'int',
-        'subset_size': 'int'
+        'alpha': {'type': 'float', 'required': 'true'},
+        'independence_test': {'type': 'str', 'required': 'true'},
+        'cores': {'type': 'int', 'required': 'true'}
     })
 
 

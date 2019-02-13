@@ -63,21 +63,27 @@ TYPE_MAP = {
 }
 
 
-def generate_schema(fields):
+def generate_schema(parameters):
     """
     This function generates a marshmallow schema,
-    given a fields dicts.
+    given a valid_parameters dict.
     The dictionary should have the structure:
     {
-        *field name*: *One of the datatypes listed in TYPE_MAP*,
+        *field name*: {*type*: *One of the data types listed in TYPE_MAP*,
+                       *required*: *true*,  # optional
+                       ...
+                      }
         ...
     }
-    :param fields: List of fields, see above
+    Further examples could be found in confdefault/algorithms.json
+    :param parameters: Dict of valid parameters, see above
     :return: Schema
     """
     return type('Schema', (Schema,), {
-        parameter_name: TYPE_MAP[fields[parameter_name]["type"]](fields[parameter_name].get('required', False))
-        for parameter_name, parameter_options in fields.items()
+        parameter_name: TYPE_MAP[parameter_options['type']](
+            parameter_options.get('required', False),
+            )
+        for parameter_name, parameter_options in parameters.items()
     })
 
 

@@ -1,28 +1,76 @@
 [
-   {
-       "name": "pcalg",
-       "script_filename": "pcalg.r",
-       "backend": "R",
-       "description": "Standard pcalg R-implementation",
-       "valid_parameters": {
-           "alpha": "float",
-           "independence_test": "str",
-           "cores": "int",
-           "verbose": "int",
-           "subset_size": "int" 
-       }
-   },
-   {
-       "name": "parallelpc",
-       "script_filename": "parallelpc.r",
-       "backend": "R",
-       "description": "ParallelPC R-implementation",
-       "valid_parameters": {
-           "alpha": "float",
-           "independence_test": "str",
-           "cores": "int",
-           "verbose": "int",
-           "subset_size": "int" 
-       }
-   }
+  {
+    "name": "pcalg",
+    "script_filename": "pcalg.r",
+    "backend": "R",
+    "description": "Standard pcalg R-implementation",
+    "valid_parameters": {
+      "alpha": {
+        "type": "float",
+        "required": "true",
+        "min": "0",
+        "max": "1"
+      },
+      "independence_test": {
+        "type": "str",
+        "required": "true",
+        "values": [
+          "gaussCI",
+          "disCI",
+          "binCI"
+        ]
+      },
+      "cores": {
+        "type": "int",
+        "min": "1"
+      },
+      "verbose": {
+        "type": "int",
+        "min": "0",
+        "max": "1",
+        "default": "0"
+      },
+      "subset_size": {
+        "type": "int",
+        "min": "0"
+      }
+    }
+  },
+  {
+    "name": "parallelpc",
+    "script_filename": "parallelpc.r",
+    "backend": "R",
+    "description": "ParallelPC R-implementation",
+    "valid_parameters": {
+      "alpha": {
+        "type": "float",
+        "required": "true",
+        "min": "0",
+        "max": "1"
+      },
+      "independence_test": {
+        "type": "str",
+        "required": "true",
+        "values": [
+          "gaussCI",
+          "disCI",
+          "binCI"
+        ]
+      },
+      "cores": {
+        "type": "int",
+        "min": "2"
+      },
+      "verbose": {
+        "type": "int",
+        "min": "0",
+        "max": "1",
+        "default": "0"
+      },
+      "subset_size": {
+        "type": "int",
+        "min": "0"
+      }
+    }
+  }
 ]

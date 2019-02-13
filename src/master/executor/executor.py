@@ -10,6 +10,7 @@ from src.master.helpers.io import marshal
 from src.db import db
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, JobStatus, Experiment
+from src.master.helpers.database import check_dataset_hash
 
 
 class ExecutorResource(Resource):
@@ -31,6 +32,11 @@ class ExecutorResource(Resource):
     def post(self, experiment_id):
         current_app.logger.info('Got request')
         experiment = Experiment.query.get_or_404(experiment_id)
+
+        if not check_dataset_hash(experiment.dataset):
+            new_dataset = invalidate_dataset(experiment.dataset)
+            new_experiment = duplicate_experiment(experiment, new_dataset)
+            experiment = new_experiment
 
         algorithm = experiment.algorithm
 

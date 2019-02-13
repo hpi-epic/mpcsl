@@ -3,8 +3,8 @@ from src.models.base import BaseModel, BaseSchema
 
 
 class Node(BaseModel):
-    result_id = db.Column(db.Integer, db.ForeignKey('result.id'), nullable=False)
-    result = db.relationship('Result', backref=db.backref('nodes', cascade="all, delete-orphan"))
+    dataset_id = db.Column(db.Integer, db.ForeignKey('dataset.id'), nullable=False)
+    dataset = db.relationship('Dataset', backref=db.backref('nodes', cascade="all, delete-orphan"))
     name = db.Column(db.String)
 
 

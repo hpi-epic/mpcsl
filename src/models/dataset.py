@@ -13,6 +13,7 @@ class Dataset(BaseModel):
     load_query = db.Column(db.String)
     remote_db = db.Column(db.String)
     time_created = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    content_hash = db.Column(db.String, nullable=False)
 
 
 class DatasetSchema(BaseSchema):

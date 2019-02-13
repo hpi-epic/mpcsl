@@ -125,7 +125,7 @@ class ConditionalDistributionResource(Resource):
             # Auto-generate ranges by picking largest frequency
             if condition['auto']:
                 node_res = session.execute(f"SELECT \"{node_name}\" "
-                                           f"FROM ({dataset.load_query}) _subquery_")
+                                           f"FROM ({dataset.load_query}) _subquery_").fetchall()
                 node_data = [line[0] for line in node_res]
                 if len(np.unique(node_data)) <= 10:
                     values, counts = np.unique(node_data, return_counts=True)
@@ -145,7 +145,7 @@ class ConditionalDistributionResource(Resource):
                 predicates.append(f"\"{node_name}\" <= {condition['to_value']}")
         query = base_query if len(predicates) == 0 else base_query + " WHERE " + ' AND '.join(predicates)
 
-        result = session.execute(query)
+        result = session.execute(query).fetchall()
         data = [line[0] for line in result]
 
         if len(np.unique(data)) <= 10:  # Categorical

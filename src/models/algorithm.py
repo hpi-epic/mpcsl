@@ -5,6 +5,7 @@ from sqlalchemy.ext.mutable import MutableDict
 
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
+from src.models.swagger import SwaggerMixin
 
 
 class BackendType(str, enum.Enum):
@@ -18,11 +19,17 @@ class Algorithm(BaseModel):
     script_filename = db.Column(db.String)
     backend = db.Column(db.Enum(BackendType))
     description = db.Column(db.String)
-    valid_parameters = db.Column(MutableDict.as_mutable(db.JSON))
+
+    @property
+    def valid_parameters(self):
+        if len(self.valid_parameters) == 0:
+            return None
+        return sorted(self.valid_parameters, key=lambda x: x.name)
 
 
-class AlgorithmSchema(BaseSchema):
-    valid_parameters = fields.Dict()
+class AlgorithmSchema(BaseSchema, SwaggerMixin):
 
     class Meta(BaseSchema.Meta):
         model = Algorithm
+
+    valid_parameters = fields.Nested('ParameterSchema', many=True)

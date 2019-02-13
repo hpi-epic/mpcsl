@@ -7,10 +7,13 @@ from .result import Result, ResultSchema
 from .node import Node, NodeSchema
 from .edge import Edge, EdgeSchema
 from .sepset import Sepset, SepsetSchema
+from .parameter import Parameter, ParameterSchema
 
 __all__ = [
     'Algorithm',
     'AlgorithmSchema',
+    'Parameter',
+    'ParameterSchema',
     'BaseModel',
     'BaseSchema',
     'DatasetSchema',

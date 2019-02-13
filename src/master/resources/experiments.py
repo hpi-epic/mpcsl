@@ -80,10 +80,10 @@ def generate_schema(parameters):
     :return: Schema
     """
     return type('Schema', (Schema,), {
-        parameter_name: TYPE_MAP[parameter_options['type']](
-            parameter_options.get('required', False),
+        parameter_name: TYPE_MAP[parameters[parameter_name]['type']](
+            parameters[parameter_name].get('required', False),
             )
-        for parameter_name, parameter_options in parameters.items()
+        for parameter_name in parameters.keys()
     })
 
 

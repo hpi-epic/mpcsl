@@ -14,13 +14,25 @@ from src.models.swagger import SwaggerMixin
 class DistributionSchema(BaseSchema, SwaggerMixin):
     node = fields.Nested('NodeSchema')
     dataset = fields.Nested('DatasetSchema')
+    categorical = fields.Bool()
+
+
+class ContinuousDistributionSchema(DistributionSchema):
     bins = fields.List(fields.Int())
     bin_edges = fields.List(fields.Float())
+    categorical = fields.Constant(False, dump_only=True)
+
+
+class DiscreteDistributionSchema(DistributionSchema):
+    bins = fields.Dict(values=fields.Int(), keys=fields.String())
+    categorical = fields.Constant(True, dump_only=True)
 
 
 class MarginalDistributionResource(Resource):
     @swagger.doc({
-        'description': 'Returns the marginal distribution of an attribute as histogram values',
+        'description': 'Returns the marginal distribution of an attribute as histogram values. '
+                       'If the distribution is categorical, there is no bin_edges and bins '
+                       'is a dictionary mapping values to counts',
         'parameters': [
             {
                 'name': 'node_id',
@@ -30,7 +42,7 @@ class MarginalDistributionResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(DistributionSchema.get_swagger()),
+        'responses': get_default_response(ContinuousDistributionSchema.get_swagger()),
         'tags': ['Node', 'Distribution']
     })
     def get(self, node_id):
@@ -46,11 +58,19 @@ class MarginalDistributionResource(Resource):
 
         result = session.execute(f"SELECT \"{node.name}\" FROM ({dataset.load_query}) _subquery_")
         values = [line[0] for line in result]
-        hist, bin_edges = np.histogram(values, bins='auto', density=False)
 
-        return marshal(DistributionSchema, {
-            'node': node,
-            'dataset': dataset,
-            'bins': hist,
-            'bin_edges': bin_edges
-        })
+        if len(np.unique(values)) <= 10:  # Categorical
+            bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(values, return_counts=True))])
+            return marshal(DiscreteDistributionSchema, {
+                'node': node,
+                'dataset': dataset,
+                'bins': bins
+            })
+        else:
+            hist, bin_edges = np.histogram(values, bins='auto', density=False)
+            return marshal(ContinuousDistributionSchema, {
+                'node': node,
+                'dataset': dataset,
+                'bins': hist,
+                'bin_edges': bin_edges
+            })

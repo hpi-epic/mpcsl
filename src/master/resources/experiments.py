@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 from marshmallow import Schema, fields
-from marshmallow.validate import Length
+from marshmallow.validate import Length, Range, OneOf
 
 from src.db import db
 from src.master.helpers.io import load_data, marshal, InvalidInputData, remove_logs
@@ -56,10 +56,13 @@ class ExperimentResource(Resource):
 
 
 TYPE_MAP = {
-    'str': lambda required: fields.String(required=required, validate=Length(min=0)),
-    'int': lambda required: fields.Integer(required=required),
-    'float': lambda required: fields.Float(required=required),
-    'bool': lambda required: fields.Boolean(required=required),
+    'str': lambda required, minimum, maximum, values: fields.String(required=required, validate=Length(min=1)),
+    'enum': lambda required, minimum, maximum, values: fields.String(required=required, validate=OneOf(values)),
+    'int': lambda required, minimum, maximum, values:
+        fields.Integer(required=required, validate=Range(min=minimum, max=maximum)),
+    'float': lambda required, minimum, maximum, values:
+        fields.Float(required=required, validate=Range(min=minimum, max=maximum)),
+    'bool': lambda required, minimum, maximum, values: fields.Boolean(required=required, validate=OneOf([True, False])),
 }
 
 
@@ -80,10 +83,13 @@ def generate_schema(parameters):
     :return: Schema
     """
     return type('Schema', (Schema,), {
-        parameter_name: TYPE_MAP[parameters[parameter_name]['type']](
-            parameters[parameter_name].get('required', False),
-            )
-        for parameter_name in parameters.keys()
+        parameter_name: TYPE_MAP[parameter_options['type']](
+            parameter_options.get('required', False),
+            parameter_options.get('minimum', None),
+            parameter_options.get('maximum', None),
+            parameter_options.get('values', None)
+        )
+        for parameter_name, parameter_options in parameters.items()
     })
 
 

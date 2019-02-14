@@ -43,7 +43,7 @@ class AlgorithmTest(BaseResourceTest):
 
         # When
         result = self.post(self.url_for(AlgorithmListResource), json=data)
-        alg = db.session.query(Algorithm).first()
+        alg = db.session.query(Algorithm).get(result['id'])
 
         # Then
         assert alg.valid_parameters == data['valid_parameters'] == result['valid_parameters']

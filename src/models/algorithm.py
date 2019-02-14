@@ -25,7 +25,7 @@ class AlgorithmSchema(BaseSchema):
     valid_parameters = fields.Dict()
 
     @validates('valid_parameters')
-    def validate_params(params):
+    def validate_params(self, params):
         # Just for validation
         for key, val in params.items():
             if 'type' not in val or val['type'] not in ['str', 'enum', 'int', 'float', 'bool']:

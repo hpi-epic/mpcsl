@@ -23,7 +23,9 @@ def load_data(schema, location='json', *args, **kwargs):
     vals = getattr(request, location, None)
     data, errors = schema().load(vals, *args, **kwargs)
     if len(errors) > 0:
-        raise InvalidInputData(payload=errors)
+        exc = InvalidInputData(payload=errors)
+        print(exc.to_dict())
+        raise exc
     return data
 
 

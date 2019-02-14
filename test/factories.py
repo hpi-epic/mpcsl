@@ -35,8 +35,8 @@ class AlgorithmFactory(BaseFactory):
     description = ''
     backend = 'R'
     valid_parameters = factory.LazyAttribute(lambda o: {
-        'alpha': {'type': 'float', 'required': 'true', 'minimum': 0, 'maximum': 1},
-        'independence_test': {'type': 'enum', 'required': 'true', 'values': ['gaussCI', 'disCI', 'binCI']},
+        'alpha': {'type': 'float', 'required': True, 'minimum': 0.0, 'maximum': 1.0},
+        'independence_test': {'type': 'enum', 'required': True, 'values': ['gaussCI', 'disCI', 'binCI']},
         'cores': {'type': 'int', "minimum": 1},
         'verbose': {'type': 'int', 'minimum': 0, 'maximum': 1, 'default': 0},
         'subset_size': {'type': 'int', 'minimum': -1, 'default': -1}

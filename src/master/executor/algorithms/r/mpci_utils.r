@@ -2,6 +2,8 @@ library(httr, quietly = T)
 library(graph, quietly = T)
 library(jsonlite, quietly = T)
 library(stringi, quietly = T)
+library(causaleffect, quietly = T)
+library(infotheo, quietly = T)
 options(show.error.messages = FALSE)
 options(error = function() {
     err <- stri_replace_all_regex(geterrmessage(), '\n', paste0('\n', ANSI_RED))
@@ -41,21 +43,15 @@ get_dataset <- function(api_host, dataset_id, job_id) {
     return(df)
 }
 
-estimate_weight <- function(from_node, to_node, graph, df, regression=TRUE) {
-    if(regression) {
-        to_node_name <- colnames(df)[strtoi(to_node)]
-        from_node_name <- colnames(df)[strtoi(from_node)]
+estimate_weight <- function(from_node, to_node, graph, df, regression=FALSE) {
+    disc_df <- if(regression) discretize(df) else df
+    from_node_name <- colnames(df)[strtoi(from_node)]
+    to_node_name <- colnames(df)[strtoi(to_node)]
 
-        parents <- sapply(unlist(inEdges(to_node, graph)), function(x) colnames(df)[strtoi(x)])
-        frmla <- as.formula(paste(to_node_name, "~", paste(parents, collapse='+')))
-        mdl <- lm(frmla, data=df)
-        mdl$coefficients[[from_node_name]]
-    } else {
-        # Categorical values
-
-
-        
-    }
+    # expression <- causal.effect(to_node_name, from_node_name, G=igraph.from.graphNEL(graph), expr=FALSE)
+    parents <- sapply(unlist(inEdges(from_node, graph)), function(x) colnames(df)[strtoi(x)])
+    cmi <- condinformation(disc_df[[from_node_name]], disc_df[[to_node_name]], disc_df[parents])
+    return cmi
 }
 
 store_graph_result <- function(api_host, graph, sepsets, df, job_id, opt) {
@@ -70,7 +66,7 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, opt) {
             edge_list[['to_node']][[i]] <- colnames(df)[strtoi(edge)]
 
             weight <- estimate_weight(
-                node, edge, graph, df 
+                node, edge, graph, df,
                 regression=(opt$independence_test != 'binCI' && opt$independence_test != 'disCI')
             )
             edge_list[['weight']][[i]] <- weight

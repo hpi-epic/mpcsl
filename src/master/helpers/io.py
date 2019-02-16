@@ -1,22 +1,14 @@
 import os
 from flask import request
+from werkzeug.exceptions import BadRequest
+
 from src.master.config import LOGS_DIRECTORY
 
 
-class InvalidInputData(Exception):
-    status_code = 400
-
-    def __init__(self, message='Invalid input data.', status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = message
-        if status_code is not None:
-            self.status_code = status_code
+class InvalidInputData(BadRequest):
+    def __init__(self, message='Invalid input data.', payload=None):
         self.payload = payload
-
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
+        BadRequest.__init__(self, description=payload or message)
 
 
 def load_data(schema, location='json', *args, **kwargs):

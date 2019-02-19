@@ -23,6 +23,7 @@ class DatasetFactory(BaseFactory):
     name = factory.Faker('word')
     load_query = factory.Faker('file_path')
     description = factory.Faker('text')
+    content_hash = factory.Faker('text')
 
 
 class AlgorithmFactory(BaseFactory):
@@ -35,11 +36,11 @@ class AlgorithmFactory(BaseFactory):
     description = ''
     backend = 'R'
     valid_parameters = factory.LazyAttribute(lambda o: {
-        'alpha': 'float',
-        'independence_test': 'str',
-        'cores': 'int',
-        'verbose': 'int',
-        'subset_size': 'int'
+        'alpha': {'type': 'float', 'required': True, 'minimum': 0.0, 'maximum': 1.0},
+        'independence_test': {'type': 'enum', 'required': True, 'values': ['gaussCI', 'disCI', 'binCI']},
+        'cores': {'type': 'int', "minimum": 1},
+        'verbose': {'type': 'int', 'minimum': 0, 'maximum': 1, 'default': 0},
+        'subset_size': {'type': 'int', 'minimum': -1, 'default': -1}
     })
 
 
@@ -88,7 +89,7 @@ class NodeFactory(BaseFactory):
         model = Node
         sqlalchemy_session = db.session
 
-    result = factory.SubFactory(ResultFactory)
+    dataset = factory.SubFactory(DatasetFactory)
     name = factory.Faker('word')
 
 

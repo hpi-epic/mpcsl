@@ -1,13 +1,13 @@
 from src.master.resources import NodeResource, ResultNodeListResource, NodeContextResource
-from test.factories import ResultFactory, NodeFactory, EdgeFactory
+from test.factories import DatasetFactory, NodeFactory, EdgeFactory
 from .base import BaseResourceTest
 
 
 class NodeTest(BaseResourceTest):
     def test_returns_all_nodes_for_result(self):
         # Given
-        result = ResultFactory()
-        nodes = [NodeFactory(result=result) for _ in range(3)]
+        dataset = DatasetFactory()
+        nodes = [NodeFactory(dataset=dataset) for _ in range(3)]
 
         # When
         results = self.get(self.url_for(ResultNodeListResource, result_id=result.id))
@@ -30,7 +30,7 @@ class NodeTest(BaseResourceTest):
 
         # Then
         assert result['id'] == node.id
-        assert result['result_id'] == node.result_id
+        assert result['dataset_id'] == node.dataset_id
 
     def test_returns_node_context(self):
         # Given

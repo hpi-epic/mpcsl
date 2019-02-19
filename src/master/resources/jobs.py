@@ -194,9 +194,8 @@ class JobResultResource(Resource):
         node_list = json['node_list']
         node_mapping = {}
         for node_name in node_list:
-            node = Node(name=node_name, result=result)
+            node = Node.query().filter_by(dataset_id=job.experiment.dataset_id, name=node_name)
             node_mapping[node_name] = node
-            db.session.add(node)
 
         edge_list = json['edge_list']
         for edge in edge_list:

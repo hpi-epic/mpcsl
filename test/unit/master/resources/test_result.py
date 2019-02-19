@@ -1,5 +1,6 @@
 from src.db import db
 from src.master.resources.results import ResultListResource, ResultResource
+from src.master.resources.datasets import DatasetListResource
 from src.models import Node, Result
 from test.factories import ResultFactory, NodeFactory, EdgeFactory, SepsetFactory
 from .base import BaseResourceTest
@@ -22,7 +23,7 @@ class ResultTest(BaseResourceTest):
     def test_returns_my_job(self):
         # Given
         result = ResultFactory()
-        nodes = [NodeFactory(result=result) for _ in range(3)]
+        nodes = [NodeFactory(dataset=result.job.experiment.dataset) for _ in range(3)]
         edges = [EdgeFactory(result=result, from_node=nodes[i], to_node=nodes[j]) for i, j in [(0, 1), (1, 2)]]
         sepsets = [SepsetFactory(result=result, from_node=nodes[0], to_node=nodes[2], node_names=[nodes[1].name])]
 
@@ -50,15 +51,16 @@ class ResultTest(BaseResourceTest):
             sepset_ids.remove(sepset['id'])
         assert len(sepset_ids) == 0
 
-    def test_delete_job(self):
+    def test_delete_dataset(self):
         result = ResultFactory()
         for _ in range(3):
-            NodeFactory(result=result)
+            NodeFactory(dataset=result.job.experiment.dataset)
 
         assert len(db.session.query(Result).all()) == 1
         assert len(db.session.query(Node).all()) == 3
 
-        deleted_result = self.delete(self.url_for(ResultResource, result_id=result.id))
+        deleted_result = self.delete(self.url_for(DatasetListResource,
+                                                  dataset_id=result.job.experiment.dataset_id))
 
         assert deleted_result['id'] == result.id
         assert len(db.session.query(Result).all()) == 0

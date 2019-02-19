@@ -241,7 +241,7 @@ class JobResultResource(Resource):
                 node_mapping[element] = node
             if prefix in ['edge_list.item', 'sepset_list.item']:
                 if len(node_mapping) == 0:
-                    current_app.logger.warn(
+                    current_app.logger.warning(
                         'Result {} for job {} could not be stored. Node list was not first.'.format(result.id, job.id)
                     )
                     raise InvalidInputData({'node_list': ['has to be sent first!']})

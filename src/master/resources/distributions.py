@@ -77,19 +77,22 @@ class MarginalDistributionResource(Resource):
             })
 
 
+class DiscreteConditionSchema(Schema, SwaggerMixin):
+    categorical = fields.Constant(True)
+    values = fields.List(fields.String)
+
+
+class ContinuousConditionSchema(Schema, SwaggerMixin):
+    categorical = fields.Constant(False)
+    from_value = fields.Float()
+    to_value = fields.Float()
+
+
+class AutoConditionSchema(Schema, SwaggerMixin):
+    auto = fields.Constant(True)
+
+
 class ConditionalParameterSchema(Schema, SwaggerMixin):
-    class DiscreteConditionSchema(Schema, SwaggerMixin):
-        categorical = fields.Constant(True)
-        values = fields.List(fields.String)
-
-    class ContinuousConditionSchema(Schema, SwaggerMixin):
-        categorical = fields.Constant(False)
-        from_value = fields.Float()
-        to_value = fields.Float()
-
-    class AutoConditionSchema(Schema, SwaggerMixin):
-        auto = fields.Constant(True)
-
     conditions = fields.Dict(keys=fields.Int(), values=fields.Dict())  # Not enforced, just metadata in 2.x
 
     @validates('conditions')
@@ -135,6 +138,30 @@ class ConditionalDistributionResource(Resource):
                 'in': 'path',
                 'type': 'integer',
                 'required': True
+            },
+            {
+                'name': 'conditions',
+                'description': 'Dict of conditions',
+                'in': 'body',
+                'schema': {
+                    'type': 'object',
+                    'additionalProperties': oneOf([DiscreteConditionSchema, ContinuousConditionSchema,
+                                                   AutoConditionSchema]).get_swagger(True),
+                    'example': {
+                        '234': {
+                            'categorical': True,
+                            'values': ['3224', '43']
+                        },
+                        '4356': {
+                            'categorical': False,
+                            'from_value': 2.12,
+                            'to_value': 2.79
+                        },
+                        '95652': {
+                            'auto': True
+                        },
+                    }
+                }
             }
         ],
         'responses': get_default_response(oneOf([ConditionalDiscreteDistributionSchema,

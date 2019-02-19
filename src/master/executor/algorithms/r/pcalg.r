@@ -15,10 +15,10 @@ option_list_v <- list(
                                 help="This is a hyperparameter", metavar=""),
                     make_option(c("-c", "--cores"), type="integer", default=1,
                                 help="The number of cores to run the pc-algorithm on", metavar=""),
-                    make_option(c("-s", "--subset_size"), type="integer", default=Inf,
-                                help="The number of cores to run the pc-algorithm on", metavar=""),
+                    make_option(c("-s", "--subset_size"), type="integer", default=-1,
+                                help="The maximal size of the conditioning sets that are considered", metavar=""),
                     make_option(c("-v", "--verbose"), type="integer", default=0,
-                                help="The number of cores to run the pc-algorithm on", metavar="")
+                                help="More detailed output is provided (with impact on performance)", metavar="")
                     #make_option(c("--fixed_gaps"), type="character", default=NULL,
                     #            help="The connections that are removed via prior knowledge", metavar=""),
                     #make_option(c("--fixed_edges"), type="character", default=NULL,
@@ -53,4 +53,4 @@ result = pc(suffStat=sufficient_stats, verbose=verbose,
             indepTest=indepTestDict[[opt$independence_test]], m.max=subset_size,
             p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method="stable.fast")
 
-graph_request <- store_graph_result(opt$api_host, result@'graph', df, opt$job_id, opt)
+graph_request <- store_graph_result(opt$api_host, result@'graph', result@'sepset', df, opt$job_id, opt)

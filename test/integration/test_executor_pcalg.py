@@ -1,6 +1,10 @@
+import os
 import pytest
+import requests
 
 from src.db import db
+from src.master.resources import JobLogsResource
+from src.master.helpers.io import get_logfile_name
 from src.models import Node, Edge, Sepset
 from test.factories import ExperimentFactory
 from .base import BaseIntegrationTest
@@ -139,3 +143,49 @@ class ParamExecutorTest(BaseIntegrationTest):
         sepsets = db.session.query(Sepset).all()
         # If m.max=0, there can be no separation sets
         assert len(sepsets) == 0
+
+
+class LogExecutorTest(BaseIntegrationTest):
+
+    @pytest.mark.run(order=-6)
+    def test_logs(self):
+        # Given
+        ex = ExperimentFactory(dataset=self.setup_dataset_gauss())
+        ex.parameters['verbose'] = 1
+        db.session.commit()
+
+        # When
+        job, result = self.run_experiment(ex)
+
+        # Then
+        assert result.job_id == job.id
+
+        full_log = requests.get(self.url_for(JobLogsResource, job_id=job.id))
+        assert full_log.status_code == 200
+        assert 'Attaching package: ‘BiocGenerics’' in full_log.text
+        assert 'Load dataset from' in full_log.text
+        assert 'Successfully loaded dataset' in full_log.text
+        assert 'Casting arguments...' in full_log.text
+        assert 'Successfully executed job' in full_log.text
+
+        offset_log = requests.get(self.url_for(JobLogsResource, job_id=job.id, offset=23))
+        assert offset_log.status_code == 200
+        assert 'Attaching package: ‘BiocGenerics’' not in offset_log.text
+        assert 'Load dataset from' in offset_log.text
+        assert 'Successfully loaded dataset' in offset_log.text
+        assert 'Casting arguments...' in offset_log.text
+        assert 'Successfully executed job' in offset_log.text
+
+        limit_log = requests.get(self.url_for(JobLogsResource, job_id=job.id, limit=1))
+        assert limit_log.status_code == 200
+        assert 'Attaching package: ‘BiocGenerics’' not in limit_log.text
+        assert 'Load dataset from' not in limit_log.text
+        assert 'Successfully loaded dataset' not in limit_log.text
+        assert 'Casting arguments...' not in limit_log.text
+        assert 'Successfully executed job' in limit_log.text
+
+        logfile = get_logfile_name(job.id)
+        assert os.path.isfile(logfile)
+        delete_request = requests.delete(self.url_for(JobLogsResource, job_id=job.id))
+        assert delete_request.status_code == 200
+        assert not os.path.isfile(logfile)

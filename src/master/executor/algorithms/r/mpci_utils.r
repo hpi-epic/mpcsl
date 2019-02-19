@@ -1,11 +1,27 @@
 library(httr, quietly = T)
 library(graph, quietly = T)
 library(jsonlite, quietly = T)
+library(stringi, quietly = T)
+options(show.error.messages = FALSE)
+options(error = function() {
+    err <- stri_replace_all_regex(geterrmessage(), '\n', paste0('\n', ANSI_RED))
+    colorize_log(ANSI_RED, err)
+    colorize_log(ANSI_RED, 'Execution halted')
+    quit(save='no', status=1, runLast=FALSE)
+    })
 
+ANSI_RED <- '\033[31m'
+ANSI_GREEN <- '\033[32m'
+ANSI_RESET <- '\033[0m\n'
+
+colorize_log <- function(color, string) {
+    # ANSI coloring
+    cat(paste0(color, string, ANSI_RESET))
+}
 
 check_request <- function(api_host, request, job_id) {
     if (http_error(request)) {
-        save(request, file=paste0(job_id, '_error.RData'))
+        save(request, file=paste0('logs/job_', job_id, '_error.RData'))
         error_request <- PUT(paste0('http://', api_host, '/api/job/', job_id))
         warn_for_status(error_request)
         stop_for_status(request)
@@ -14,18 +30,18 @@ check_request <- function(api_host, request, job_id) {
 
 get_dataset <- function(api_host, dataset_id, job_id) {
     url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/load')
-    print(paste0('Load dataset from ', url))
+    colorize_log(ANSI_GREEN, paste0('Load dataset from ', url))
     start_time <- Sys.time()
-    df_request <- GET(url, progress())
+    df_request <- GET(url)
     check_request(api_host, df_request, job_id)
-    print(paste('Successfully loaded dataset (size ', headers(df_request)$`x-content-length`,
+    colorize_log(ANSI_GREEN, paste('Successfully loaded dataset (size ', headers(df_request)$`x-content-length`,
                 ' bytes) in', (Sys.time() - start_time), 'sec'))
 
     df <- read.csv(text=content(df_request, 'text'))
     return(df)
 }
 
-store_graph_result <- function(api_host, graph, df, job_id, opt) {
+store_graph_result <- function(api_host, graph, sepsets, df, job_id, opt) {
     edges <- edges(graph)
     edge_list <- list(from_node=c(), to_node=c())
     node_list <- c()
@@ -40,7 +56,6 @@ store_graph_result <- function(api_host, graph, df, job_id, opt) {
     }
     edge_list <- data.frame(edge_list)
     
-    sepsets <- result@'sepset'
     sepset_list <- list(from_node=c(), to_node=c(), statistic=c(), level=c())
     ss_nodes_list <- list()
     i <- 1
@@ -72,6 +87,6 @@ store_graph_result <- function(api_host, graph, df, job_id, opt) {
                                  body=result_json, 
                                  add_headers("Content-Type" = "application/json"))
     check_request(api_host, graph_request, job_id)
-
+    colorize_log(ANSI_GREEN, paste0('Successfully executed job ', job_id))
     return(graph_request)
 }

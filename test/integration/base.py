@@ -19,6 +19,8 @@ from test.factories import DatasetFactory
 
 class BaseIntegrationTest(TestCase):
 
+    PATCHES = {}
+
     @classmethod
     def setUpClass(cls):
         cls.factory = AppFactory()
@@ -35,6 +37,9 @@ class BaseIntegrationTest(TestCase):
         cls.db.engine.dispose()
 
     def setUp(self):
+        if len(self.PATCHES) > 0:
+            pass
+
         def run_func(app):
             app.run(host="0.0.0.0", port='5000', debug=True, use_reloader=False, threaded=True)
         self.app_thread = Process(target=run_func, args=(self.app, ))

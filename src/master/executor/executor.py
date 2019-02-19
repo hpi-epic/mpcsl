@@ -31,7 +31,6 @@ class ExecutorResource(Resource):
     })
     def post(self, experiment_id):
         experiment = Experiment.query.get_or_404(experiment_id)
-        print('Executor', LOAD_SEPARATION_SET)
         algorithm = experiment.algorithm
 
         new_job = Job(experiment=experiment, start_time=datetime.now(),

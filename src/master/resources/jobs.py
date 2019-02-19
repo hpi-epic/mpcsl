@@ -213,7 +213,6 @@ class JobResultResource(Resource):
     })
     def post(self, job_id):
         job = Job.query.get_or_404(job_id)
-        print('jobs', LOAD_SEPARATION_SET)
         result = Result(job=job, start_time=job.start_time,
                         end_time=datetime.now())
         db.session.add(result)
@@ -267,8 +266,8 @@ class JobResultResource(Resource):
                     node_names=element['nodes'],
                     statistic=element['statistic'],
                     level=element['level'],
-                    from_node=node_mapping[element['from_node']],
-                    to_node=node_mapping[element['to_node']],
+                    from_node_id=node_mapping[element['from_node']].id,
+                    to_node_id=node_mapping[element['to_node']].id,
                     result_id=result.id
                 )
                 sepsets.append(sepset)

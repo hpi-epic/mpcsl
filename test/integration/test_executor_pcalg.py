@@ -1,11 +1,13 @@
 import os
+from unittest.mock import patch
+
 import pytest
 import requests
 
 from src.db import db
 from src.master.resources import JobLogsResource
 from src.master.helpers.io import get_logfile_name
-from src.models import Node, Sepset
+from src.models import Node, Sepset, Edge
 from test.factories import ExperimentFactory
 from .base import BaseIntegrationTest
 
@@ -78,8 +80,6 @@ class BinaryExecutorTest(BaseIntegrationTest):
         assert len(nodes) == 3
 
 
-"""
-Sepset transfer disabled for now. If reintroduced, remove comment marks.
 class SepsetExecutorTest(BaseIntegrationTest):
 
     @pytest.mark.run(order=-1)
@@ -90,7 +90,8 @@ class SepsetExecutorTest(BaseIntegrationTest):
         db.session.commit()
 
         # When
-        job, result = self.run_experiment(ex)
+        with patch('src.master.executor.executor.LOAD_SEPARATION_SET', True):
+            job, result = self.run_experiment(ex)
 
         # Then
         assert result.job_id == job.id
@@ -121,7 +122,6 @@ class SepsetExecutorTest(BaseIntegrationTest):
             assert (sepset.from_node.name, sepset.to_node.name, sepset.node_names) or \
                    (sepset.to_node.name, sepset.from_node.name, sepset.node_names) in sepset_set
         assert len(sepset_set) == len(sepsets)
-"""
 
 
 class ParamExecutorTest(BaseIntegrationTest):

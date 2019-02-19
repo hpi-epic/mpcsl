@@ -56,7 +56,7 @@ class MarginalDistributionResource(Resource):
         else:
             session = db.session
 
-        result = session.execute(f"SELECT \"{node.name}\" FROM ({dataset.load_query}) _subquery_")
+        result = session.execute(f"SELECT \"{node.name}\" FROM ({dataset.load_query}) _subquery_").fetchall()
         values = [line[0] for line in result]
 
         if len(np.unique(values)) <= 10:  # Categorical

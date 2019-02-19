@@ -97,9 +97,7 @@ class SepsetExecutorTest(BaseIntegrationTest):
         db.session.commit()
 
         # When
-        with patch('src.master.resources.jobs.LOAD_SEPARATION_SET', True):
-            with patch('src.master.executor.executor.LOAD_SEPARATION_SET', True):
-                job, result = self.run_experiment(ex)
+        job, result = self.run_experiment(ex)
 
         # Then
         assert result.job_id == job.id

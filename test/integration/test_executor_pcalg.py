@@ -84,7 +84,7 @@ class SepsetExecutorTest(BaseIntegrationTest):
 
     PATCHES = {'src.master.resources.jobs.LOAD_SEPARATION_SET': True,
                'src.master.executor.executor.LOAD_SEPARATION_SET': True}
-    
+
     @pytest.mark.run(order=-1)
     def test_r_execution_with_sepsets(self):
         # Given
@@ -93,8 +93,7 @@ class SepsetExecutorTest(BaseIntegrationTest):
         db.session.commit()
 
         # When
-        with patch('src.master.executor.executor.LOAD_SEPARATION_SET', True):
-            job, result = self.run_experiment(ex)
+        job, result = self.run_experiment(ex)
 
         # Then
         assert result.job_id == job.id

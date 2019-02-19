@@ -128,7 +128,7 @@ class ConditionalDiscreteDistributionSchema(DiscreteDistributionSchema):
 class ConditionalDistributionResource(Resource):
 
     @swagger.doc({
-        'description': 'Returns the marginal distribution of an attribute as histogram values. '
+        'description': 'Returns the conditional distribution of an attribute as histogram values. '
                        'If the distribution is categorical, there is no bin_edges and bins '
                        'is a dictionary mapping values to counts',
         'parameters': [

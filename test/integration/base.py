@@ -41,7 +41,7 @@ class BaseIntegrationTest(TestCase):
     def setUp(self):
         patched = []
         if len(self.PATCHES) > 0:
-            for target, val in self.PATCHES:
+            for target, val in self.PATCHES.items():
                 single_patch = patch(target, val)
                 single_patch.__enter__()
                 patched.append(single_patch)

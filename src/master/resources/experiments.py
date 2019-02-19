@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 from marshmallow import Schema, fields
-from marshmallow.validate import Length
+from marshmallow.validate import Length, Range, OneOf
 
 from src.db import db
 from src.master.helpers.io import load_data, marshal, InvalidInputData, remove_logs
@@ -56,27 +56,40 @@ class ExperimentResource(Resource):
 
 
 TYPE_MAP = {
-    'str': lambda: fields.String(required=True, validate=Length(min=0)),
-    'int': lambda: fields.Integer(required=True),
-    'float': lambda: fields.Float(required=True),
-    'bool': lambda: fields.Boolean(required=True),
+    'str': lambda required, minimum, maximum, values: fields.String(required=required, validate=Length(min=1)),
+    'enum': lambda required, minimum, maximum, values: fields.String(required=required, validate=OneOf(values)),
+    'int': lambda required, minimum, maximum, values:
+        fields.Integer(required=required, validate=Range(min=minimum, max=maximum)),
+    'float': lambda required, minimum, maximum, values:
+        fields.Float(required=required, validate=Range(min=minimum, max=maximum)),
+    'bool': lambda required, minimum, maximum, values: fields.Boolean(required=required, validate=OneOf([True, False])),
 }
 
 
-def generate_schema(fields):
+def generate_schema(parameters):
     """
     This function generates a marshmallow schema,
-    given a fields dicts.
+    given a valid_parameters dict.
     The dictionary should have the structure:
     {
-        *field name*: *One of the datatypes listed in TYPE_MAP*,
+        *field name*: {*type*: *One of the data types listed in TYPE_MAP*,
+                       *required*: *true*,  # optional
+                       ...
+                      }
         ...
     }
-    :param fields: List of fields, see above
+    Further examples could be found in confdefault/algorithms.json
+    :param parameters: Dict of valid parameters, see above
     :return: Schema
     """
     return type('Schema', (Schema,), {
-        attribute: TYPE_MAP[fields[attribute]]() for attribute in fields.keys()
+        parameter_name: TYPE_MAP[parameter_options['type']](
+            parameter_options.get('required', False),
+            parameter_options.get('minimum', None),
+            parameter_options.get('maximum', None),
+            parameter_options.get('values', None)
+        )
+        for parameter_name, parameter_options in parameters.items()
     })
 
 

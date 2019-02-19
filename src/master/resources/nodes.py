@@ -4,7 +4,7 @@ from marshmallow import fields
 
 from src.master.helpers.io import marshal
 from src.master.helpers.swagger import get_default_response
-from src.models import Node, NodeSchema, BaseSchema
+from src.models import Node, NodeSchema, BaseSchema, Result
 from src.models.swagger import SwaggerMixin
 
 
@@ -36,7 +36,8 @@ class ResultNodeListResource(Resource):
         'tags': ['Node']
     })
     def get(self, result_id):
-        nodes = Node.query.filter(Node.result_id == result_id).all()
+        result = Result.query.get_or_404(result_id)
+        nodes = Node.query.filter(Node.dataset_id == result.job.experiment.dataset_id).all()
 
         return marshal(NodeSchema, nodes, many=True)
 

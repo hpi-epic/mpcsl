@@ -7,7 +7,7 @@ class EdgeTest(BaseResourceTest):
     def test_returns_all_edges_for_result(self):
         # Given
         result = ResultFactory()
-        nodes = [NodeFactory(dataset=result.experiment.dataset) for _ in range(3)]
+        nodes = [NodeFactory(dataset=result.job.experiment.dataset) for _ in range(3)]
         edges = [EdgeFactory(result=result, from_node=nodes[i], to_node=nodes[j]) for i, j in [(0, 1), (1, 2)]]
 
         # When

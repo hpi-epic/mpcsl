@@ -1,15 +1,19 @@
 import os
 import signal
 from datetime import datetime
+from decimal import Decimal
 from subprocess import Popen, PIPE
 
-from flask import current_app, send_file, Response
+from flask import current_app, send_file, Response, request
 from flask_restful import Resource, abort, reqparse
 from flask_restful_swagger_2 import swagger
 from marshmallow import fields, Schema
+import ijson
+from ijson.common import ObjectBuilder
 
 from src.db import db
-from src.master.helpers.io import marshal, load_data, remove_logs, get_logfile_name
+from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET, RESULT_WRITE_BUFF_SIZE
+from src.master.helpers.io import marshal, remove_logs, get_logfile_name, InvalidInputData
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
 from src.models.base import SwaggerMixin
@@ -161,6 +165,31 @@ class ResultEndpointSchema(Schema, SwaggerMixin):
     sepset_list = fields.Nested(SepsetResultEndpointSchema, many=True)
 
 
+def ijson_parse_items(file, prefixes):
+    '''
+    An iterator returning native Python objects constructed from the events
+    under a list of given prefixes.
+    '''
+    prefixed_events = iter(ijson.parse(file, buf_size=RESULT_READ_BUFF_SIZE))
+    try:
+        while True:
+            current, event, value = next(prefixed_events)
+            matches = [prefix for prefix in prefixes if current == prefix]
+            if len(matches) > 0:
+                prefix = matches[0]
+                if event in ('start_map', 'start_array'):
+                    builder = ObjectBuilder()
+                    end_event = event.replace('start', 'end')
+                    while (current, event) != (prefix, end_event):
+                        builder.event(event, value)
+                        current, event, value = next(prefixed_events)
+                    yield prefix, builder.value
+                else:
+                    yield prefix, value
+    except StopIteration:
+        pass
+
+
 class JobResultResource(Resource):
     @swagger.doc({
         'description': 'Stores the results of job execution. Job is marked as done.',
@@ -183,37 +212,78 @@ class JobResultResource(Resource):
         'tags': ['Executor']
     })
     def post(self, job_id):
-        json = load_data(ResultEndpointSchema)
         job = Job.query.get_or_404(job_id)
-
         result = Result(job=job, start_time=job.start_time,
-                        end_time=datetime.now(),
-                        meta_results=json['meta_results'])
+                        end_time=datetime.now())
         db.session.add(result)
+        db.session.flush()
 
-        node_list = json['node_list']
+        current_app.logger.info('Result {} is in creation for job {}'.format(result.id, job.id))
+
         node_mapping = {}
-        for node_name in node_list:
-            node = Node.query().filter_by(dataset_id=job.experiment.dataset_id, name=node_name)
-            node_mapping[node_name] = node
 
-        edge_list = json['edge_list']
-        for edge in edge_list:
-            edge = Edge(from_node=node_mapping[edge['from_node']], to_node=node_mapping[edge['to_node']],
-                        result=result)
-            db.session.add(edge)
+        result_elements = ijson_parse_items(
+            request.stream,
+            ['meta_results', 'node_list.item', 'edge_list.item', 'sepset_list.item']
+        )
+        edges = []
+        sepsets = []
+        flushed_nodes = False
+        for prefix, element in result_elements:
+            if prefix == 'meta_results':
+                for key, val in element.items():
+                    if isinstance(val, Decimal):
+                        element[key] = float(val)
+                result.meta_results = element
+            if prefix == 'node_list.item':
+                node = Node.query.filter_by(dataset_id=job.experiment.dataset_id, name=element).first()
+                node_mapping[element] = node
+            if prefix in ['edge_list.item', 'sepset_list.item']:
+                if len(node_mapping) == 0:
+                    current_app.logger.warning(
+                        'Result {} for job {} could not be stored. Node list was not first.'.format(result.id, job.id)
+                    )
+                    raise InvalidInputData({'node_list': ['has to be sent first!']})
+                if flushed_nodes is False:
+                    db.session.flush()
+                    flushed_nodes = True
+                    current_app.logger.info('Flushing {} nodes'.format(len(node_mapping)))
+            if prefix == 'edge_list.item':
+                edge = Edge(
+                    from_node_id=node_mapping[element['from_node']].id,
+                    to_node_id=node_mapping[element['to_node']].id,
+                    result_id=result.id
+                )
+                edges.append(edge)
 
-        sepset_list = json['sepset_list']
-        for sepset in sepset_list:
-            sepset = Sepset(node_names=sepset['nodes'], statistic=sepset['statistic'],
-                            level=sepset['level'], from_node=node_mapping[sepset['from_node']],
-                            to_node=node_mapping[sepset['to_node']], result=result)
-            db.session.add(sepset)
+                if len(edges) > RESULT_WRITE_BUFF_SIZE:
+                    db.session.bulk_save_objects(edges)
+                    edges = []
 
-        current_app.logger.info('Result {} created'.format(result.id))
+            if prefix == 'sepset_list.item' and LOAD_SEPARATION_SET:
+                sepset = Sepset(
+                    statistic=element['statistic'],
+                    level=element['level'],
+                    from_node_id=node_mapping[element['from_node']].id,
+                    to_node_id=node_mapping[element['to_node']].id,
+                    result_id=result.id
+                )
+                sepsets.append(sepset)
+
+                if len(sepsets) > RESULT_WRITE_BUFF_SIZE:
+                    db.session.bulk_save_objects(sepsets)
+                    sepsets = []
+
         job.status = JobStatus.done
+        if len(edges) > 0:
+            db.session.bulk_save_objects(edges)
+        if len(sepsets) > 0:
+            db.session.bulk_save_objects(sepsets)
         job.result_id = result.id
         db.session.commit()
+
+        current_app.logger.info('Result {} created for job {}'.format(result.id, job.id))
+
         return marshal(ResultSchema, result)
 
 

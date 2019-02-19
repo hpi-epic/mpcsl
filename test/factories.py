@@ -23,7 +23,7 @@ class DatasetFactory(BaseFactory):
     name = factory.Faker('word')
     load_query = factory.Faker('file_path')
     description = factory.Faker('text')
-    content_hash = factory.Faker('text')
+    content_hash = factory.Faker('word')
 
 
 class AlgorithmFactory(BaseFactory):
@@ -114,4 +114,4 @@ class SepsetFactory(BaseFactory):
 
     level = random.randint(1, 5)
     statistic = random.random()
-    node_names = factory.List([factory.Faker('word') for _ in range(random.randint(1, 5))])
+#    node_names = factory.List([factory.Faker('word') for _ in range(random.randint(1, 5))])

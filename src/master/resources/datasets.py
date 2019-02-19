@@ -87,7 +87,7 @@ class DatasetListResource(Resource):
 
         db.session.add(ds)
 
-        add_dataset_nodes(ds)
+#        add_dataset_nodes(ds)
 
         db.session.commit()
 

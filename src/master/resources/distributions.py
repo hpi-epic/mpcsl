@@ -48,7 +48,7 @@ class MarginalDistributionResource(Resource):
     def get(self, node_id):
         node = Node.query.get_or_404(node_id)
 
-        dataset = node.result.job.experiment.dataset
+        dataset = node.dataset
         if dataset.remote_db is not None:
             session = data_source_connections.get(dataset.remote_db, None)
             if session is None:

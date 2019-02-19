@@ -7,7 +7,7 @@ from unittest.mock import patch
 from src.db import db
 from src.master.resources.jobs import JobListResource, JobResource, JobResultResource, ExperimentJobListResource
 from src.models import Result, Node, Edge, JobStatus
-from test.factories import ExperimentFactory, JobFactory, DatasetFactory
+from test.factories import ExperimentFactory, JobFactory, DatasetFactory, NodeFactory
 from .base import BaseResourceTest
 
 
@@ -116,23 +116,28 @@ class JobTest(BaseResourceTest):
         db.session.add(mock_experiment)
         mock_job = JobFactory(experiment=mock_experiment, start_time=datetime.now())
         db.session.add(mock_job)
+        nodes = [NodeFactory(name="X" + str(i + 1), dataset=ds) for i in range(3)]
+        for node in nodes:
+            db.session.add(node)
         db.session.commit()
         data = {
-            'job_id': mock_job.id,
-            'meta_results': {'important_note': 'lol'},
-            'edge_list': [
-                {'from_node': 'X1', 'to_node': 'X2'}
-            ],
             'node_list': [
                 'X1', 'X2', 'X3'
             ],
+            'edge_list': [
+                {'from_node': 'X1', 'to_node': 'X2'}
+            ],
             'sepset_list': [
-            ]
+            ],
+            'meta_results': {'important_note': 'lol', 'number': 123.123}
         }
 
         # When
         result = self.post(self.url_for(JobResultResource, job_id=mock_job.id), json=data)
         db_result = db.session.query(Result).first()
+
+        print(result)
+        print(db_result)
 
         # Then
         assert db_result.meta_results == data['meta_results'] == result['meta_results']
@@ -144,3 +149,28 @@ class JobTest(BaseResourceTest):
             ).filter(
                 Edge.to_node.has(name=edge['to_node'])
             ).first() is not None
+
+    def test_submit_results_with_invalid_order(self):
+        # Given
+        ds = DatasetFactory()
+        mock_experiment = ExperimentFactory(dataset=ds)
+        db.session.add(mock_experiment)
+        mock_job = JobFactory(experiment=mock_experiment, start_time=datetime.now())
+        db.session.add(mock_job)
+        db.session.commit()
+        data = {
+            'edge_list': [
+                {'from_node': 'X1', 'to_node': 'X2'}
+            ],
+            'node_list': [
+                'X1', 'X2', 'X3'
+            ],
+            'sepset_list': [],
+            'meta_results': {'important_note': 'lol', 'number': 123.123}
+        }
+
+        # When
+        result = self.post(self.url_for(JobResultResource, job_id=mock_job.id), json=data, parse_result=False)
+
+        # Then
+        assert result.status_code == 400

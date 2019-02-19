@@ -12,8 +12,8 @@ import ijson
 from ijson.common import ObjectBuilder
 
 from src.db import db
-from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET
-from src.master.helpers.io import marshal, remove_logs, get_logfile_name
+from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET, RESULT_WRITE_BUFF_SIZE
+from src.master.helpers.io import marshal, remove_logs, get_logfile_name, InvalidInputData
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
 from src.models.base import SwaggerMixin
@@ -165,7 +165,7 @@ class ResultEndpointSchema(Schema, SwaggerMixin):
     sepset_list = fields.Nested(SepsetResultEndpointSchema, many=True)
 
 
-def items(file, prefixes):
+def ijson_parse_items(file, prefixes):
     '''
     An iterator returning native Python objects constructed from the events
     under a list of given prefixes.
@@ -223,7 +223,7 @@ class JobResultResource(Resource):
 
         node_mapping = {}
 
-        result_elements = items(
+        result_elements = ijson_parse_items(
             request.stream,
             ['meta_results', 'node_list.item', 'edge_list.item', 'sepset_list.item']
         )
@@ -245,7 +245,7 @@ class JobResultResource(Resource):
                     current_app.logger.warn(
                         'Result {} for job {} could not be stored. Node list was not first.'.format(result.id, job.id)
                     )
-                    abort(400, message='Invalid input order. Node list has to be sent first!')
+                    raise InvalidInputData({'node_list': ['has to be sent first!']})
                 if flushed_nodes is False:
                     db.session.flush()
                     flushed_nodes = True
@@ -257,6 +257,11 @@ class JobResultResource(Resource):
                     result_id=result.id
                 )
                 edges.append(edge)
+
+                if len(edges) > RESULT_WRITE_BUFF_SIZE:
+                    db.session.bulk_save_objects(edges)
+                    edges = []
+
             if prefix == 'sepset_list.item' and LOAD_SEPARATION_SET:
                 sepset = Sepset(
                     node_names=element['nodes'],
@@ -268,9 +273,15 @@ class JobResultResource(Resource):
                 )
                 sepsets.append(sepset)
 
+                if len(sepsets) > RESULT_WRITE_BUFF_SIZE:
+                    db.session.bulk_save_objects(sepsets)
+                    sepsets = []
+
         job.status = JobStatus.done
-        db.session.bulk_save_objects(edges)
-        db.session.bulk_save_objects(sepsets)
+        if len(edges) > 0:
+            db.session.bulk_save_objects(edges)
+        if len(sepsets) > 0:
+            db.session.bulk_save_objects(sepsets)
         job.result_id = result.id
         db.session.commit()
 

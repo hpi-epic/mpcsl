@@ -164,7 +164,7 @@ class JobTest(BaseResourceTest):
         }
 
         # When
-        result = self.post(self.url_for(JobResultResource, job_id=mock_job.id), json=data, dont_parse=True)
+        result = self.post(self.url_for(JobResultResource, job_id=mock_job.id), json=data, parse_result=False)
 
         # Then
         assert result.status_code == 400

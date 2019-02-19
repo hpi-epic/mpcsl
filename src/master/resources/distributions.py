@@ -1,12 +1,12 @@
 import numpy as np
 from flask_restful_swagger_2 import swagger
 from flask_restful import Resource, abort
-from marshmallow import fields, Schema
+from marshmallow import fields, validates, Schema, ValidationError
 
 from src.db import db
 from src.master.db import data_source_connections
 from src.master.helpers.io import marshal, load_data
-from src.master.helpers.swagger import get_default_response
+from src.master.helpers.swagger import get_default_response, oneOf
 from src.models import Node, BaseSchema
 from src.models.swagger import SwaggerMixin
 
@@ -42,7 +42,8 @@ class MarginalDistributionResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(ContinuousDistributionSchema.get_swagger()),
+        'responses': get_default_response(oneOf([DiscreteDistributionSchema,
+                                                 ContinuousDistributionSchema]).get_swagger()),
         'tags': ['Node', 'Distribution']
     })
     def get(self, node_id):
@@ -79,6 +80,27 @@ class MarginalDistributionResource(Resource):
 class ConditionalParameterSchema(Schema, SwaggerMixin):
     conditions = fields.Dict(keys=fields.Int(), values=fields.Dict())  # Not enforced, just metadata in 2.x
 
+    @validates('conditions')
+    def validate_params(self, conds):
+        for key, val in conds.items():
+            if not isinstance(val.get('auto', False), bool):
+                raise ValidationError(f'Field `auto` must be bool for key {key}')
+
+            if not val.get('auto', False):
+                if 'categorical' not in val or not isinstance(val['categorical'], bool):
+                    raise ValidationError(f'Field `categorical` must be bool for key {key}')
+
+                if val['categorical']:
+                    if 'values' not in val or not isinstance(val['values'], list):
+                        raise ValidationError(f'Field `values` must be list for key {key}')
+                else:
+                    if 'from_value' not in val or not (
+                            isinstance(val['from_value'], int) or isinstance(val['from_value'], float)):
+                        raise ValidationError(f'Field `min_value` must be numeric for key {key}')
+                    if 'to_value' not in val or not (
+                            isinstance(val['to_value'], int) or isinstance(val['to_value'], float)):
+                        raise ValidationError(f'Field `max_value` must be numeric for key {key}')
+
 
 class ConditionalContinuousDistributionSchema(ContinuousDistributionSchema):
     conditions = fields.Dict(keys=fields.Int(), values=fields.Dict())
@@ -103,7 +125,8 @@ class ConditionalDistributionResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(ContinuousDistributionSchema.get_swagger()),
+        'responses': get_default_response(oneOf([ConditionalDiscreteDistributionSchema,
+                                                 ConditionalContinuousDistributionSchema]).get_swagger()),
         'tags': ['Node', 'Distribution']
     })
     def get(self, node_id):
@@ -123,7 +146,7 @@ class ConditionalDistributionResource(Resource):
             node_name = Node.query.get_or_404(condition_node_id).name
 
             # Auto-generate ranges by picking largest frequency
-            if condition['auto']:
+            if condition.get('auto', False):
                 node_res = session.execute(f"SELECT \"{node_name}\" "
                                            f"FROM ({dataset.load_query}) _subquery_").fetchall()
                 node_data = [line[0] for line in node_res]
@@ -134,8 +157,8 @@ class ConditionalDistributionResource(Resource):
                 else:
                     hist, bin_edges = np.histogram(node_data, bins='auto', density=False)
                     most_common = np.argmax(hist)
-                    condition['min_value'] = bin_edges[most_common]
-                    condition['max_value'] = bin_edges[most_common+1]
+                    condition['from_value'] = bin_edges[most_common]
+                    condition['to_value'] = bin_edges[most_common+1]
                     condition['categorical'] = False
 
             if condition['categorical']:

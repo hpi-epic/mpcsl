@@ -6,7 +6,7 @@ from flask_restful_swagger_2 import swagger
 from flask import current_app
 from flask_restful import Resource, abort
 
-from src.master.config import API_HOST
+from src.master.config import API_HOST, LOAD_SEPARATION_SET
 from src.master.helpers.io import marshal, get_logfile_name
 from src.db import db
 from src.master.helpers.swagger import get_default_response
@@ -31,7 +31,6 @@ class ExecutorResource(Resource):
     })
     def post(self, experiment_id):
         experiment = Experiment.query.get_or_404(experiment_id)
-
         algorithm = experiment.algorithm
 
         new_job = Job(experiment=experiment, start_time=datetime.now(),
@@ -57,7 +56,8 @@ class ExecutorResource(Resource):
                     'Rscript', 'src/master/executor/algorithms/r/' + algorithm.script_filename,
                     '-j', str(new_job.id),
                     '-d', str(experiment.dataset_id),
-                    '--api_host', str(API_HOST)
+                    '--api_host', str(API_HOST),
+                    '--send_sepsets', str(int(LOAD_SEPARATION_SET))
                 ] + params, start_new_session=True, stdout=logfile, stderr=logfile)
             new_job.pid = r_process.pid
             db.session.commit()

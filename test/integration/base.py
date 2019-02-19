@@ -1,4 +1,6 @@
 import os
+from unittest.mock import patch
+
 import requests
 import pandas as pd
 import numpy as np
@@ -19,6 +21,8 @@ from test.factories import DatasetFactory
 
 class BaseIntegrationTest(TestCase):
 
+    PATCHES = {}
+
     @classmethod
     def setUpClass(cls):
         cls.factory = AppFactory()
@@ -35,6 +39,13 @@ class BaseIntegrationTest(TestCase):
         cls.db.engine.dispose()
 
     def setUp(self):
+        patched = []
+        if len(self.PATCHES) > 0:
+            for target, val in self.PATCHES.items():
+                single_patch = patch(target, val)
+                single_patch.__enter__()
+                patched.append(single_patch)
+
         def run_func(app):
             app.run(host="0.0.0.0", port='5000', debug=True, use_reloader=False, threaded=True)
         self.app_thread = Process(target=run_func, args=(self.app, ))
@@ -50,6 +61,10 @@ class BaseIntegrationTest(TestCase):
                 timeout = 0
             except URLError:
                 timeout -= 1
+
+        if len(self.PATCHES) > 0:
+            for single_patch in patched:
+                single_patch.__exit__()
 
     def tearDown(self):
         self.remove_logs()

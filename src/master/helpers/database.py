@@ -21,3 +21,18 @@ def check_dataset_hash(dataset):
 
     return hash.hexdigest() == dataset.content_hash
 
+
+def add_dataset_nodes(dataset):
+    if dataset.remote_db is not None:
+        session = data_source_connections.get(dataset.remote_db, None)
+        if session is None:
+            return None
+    else:
+        session = db.session
+
+    result = session.execute(dataset.load_query)
+
+    result = result.fetchall()
+
+    print(result)
+

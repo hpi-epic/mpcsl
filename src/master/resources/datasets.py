@@ -9,6 +9,7 @@ from src.db import db
 from src.master.db import data_source_connections
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
+from src.master.helpers.database import add_dataset_nodes
 from src.models import Dataset, DatasetSchema
 
 
@@ -85,6 +86,9 @@ class DatasetListResource(Resource):
         ds = Dataset(**data)
 
         db.session.add(ds)
+
+        add_dataset_nodes(ds)
+
         db.session.commit()
 
         return marshal(DatasetSchema, ds)

@@ -213,7 +213,7 @@ class JobResultResource(Resource):
     })
     def post(self, job_id):
         job = Job.query.get_or_404(job_id)
-
+        print('jobs', LOAD_SEPARATION_SET)
         result = Result(job=job, start_time=job.start_time,
                         end_time=datetime.now())
         db.session.add(result)

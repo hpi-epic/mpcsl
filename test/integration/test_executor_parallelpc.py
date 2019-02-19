@@ -85,6 +85,9 @@ class BinaryExecutorTest(BaseIntegrationTest):
 
 class SepsetExecutorTest(BaseIntegrationTest):
 
+    PATCHES = {'src.master.resources.jobs.LOAD_SEPARATION_SET': True,
+               'src.master.executor.executor.LOAD_SEPARATION_SET': True}
+
     @pytest.mark.run(order=-9)
     def test_r_execution_with_sepsets(self):
         # Given
@@ -94,8 +97,9 @@ class SepsetExecutorTest(BaseIntegrationTest):
         db.session.commit()
 
         # When
-        with patch('src.master.executor.executor.LOAD_SEPARATION_SET', True):
-            job, result = self.run_experiment(ex)
+        with patch('src.master.resources.jobs.LOAD_SEPARATION_SET', True):
+            with patch('src.master.executor.executor.LOAD_SEPARATION_SET', True):
+                job, result = self.run_experiment(ex)
 
         # Then
         assert result.job_id == job.id

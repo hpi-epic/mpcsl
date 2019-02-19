@@ -58,7 +58,7 @@ class ExecutorResource(Resource):
                     '-j', str(new_job.id),
                     '-d', str(experiment.dataset_id),
                     '--api_host', str(API_HOST),
-                    '--send_sepsets', int(LOAD_SEPARATION_SET)
+                    '--send_sepsets', str(int(LOAD_SEPARATION_SET))
                 ] + params, start_new_session=True, stdout=logfile, stderr=logfile)
             new_job.pid = r_process.pid
             db.session.commit()

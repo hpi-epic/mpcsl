@@ -130,7 +130,7 @@ class ConditionalDistributionResource(Resource):
     @swagger.doc({
         'description': 'Returns the conditional distribution of an attribute as histogram values. '
                        'If the distribution is categorical, there is no bin_edges and bins '
-                       'is a dictionary mapping values to counts',
+                       'is a dictionary mapping values to counts. ',
         'parameters': [
             {
                 'name': 'node_id',
@@ -141,7 +141,10 @@ class ConditionalDistributionResource(Resource):
             },
             {
                 'name': 'conditions',
-                'description': 'Dict of conditions',
+                'description': 'Dictionary mapping from node id to condition. There are three types of conditions, '
+                               'continuous, discrete and automatic ones where the most common value or interval '
+                               'is picked. For continuous conditions, from_value and to_value represent an inclusive'
+                               'interval.',
                 'in': 'body',
                 'schema': {
                     'type': 'object',

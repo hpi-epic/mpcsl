@@ -120,7 +120,7 @@ class SepsetExecutorTest(BaseIntegrationTest):
             from_name, to_name = edge.from_node.name, edge.to_node.name
 
             assert (from_name, to_name) in edge_set
-            self.assertAlmostEqual(edge.weight, edge_set[(from_name, to_name)])
+            self.assertAlmostEqual(edge.weight, edge_set[(from_name, to_name)], places=2)
 
             del edge_set[(edge.from_node.name, edge.to_node.name)]
         assert len(edge_set) == 0

@@ -1,4 +1,5 @@
 import io
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
@@ -7,7 +8,8 @@ from sqlalchemy import inspect
 from marshmallow.utils import from_iso
 
 from src.db import db
-from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource
+from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource, \
+    DatasetAvailableSourcesResource
 from src.models import Dataset
 from test.factories import DatasetFactory
 from .base import BaseResourceTest
@@ -96,3 +98,14 @@ class DatasetTest(BaseResourceTest):
         # Then
         assert result['id'] == ex.id
         assert inspect(ex).detached is True
+
+    def test_datasource(self):
+        # Given
+        data_sources = {'HANA': 'hana://'}
+
+        # When
+        with patch('src.master.resources.datasets.DATA_SOURCE_CONNECTIONS', data_sources):
+            result = self.get(self.url_for(DatasetAvailableSourcesResource))
+
+        # Then
+        assert result['data_sources'] == ['HANA']

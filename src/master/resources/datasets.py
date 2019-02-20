@@ -147,7 +147,7 @@ class DataSourceListSchema(Schema, SwaggerMixin):
     data_sources = fields.List(fields.String())
 
 
-class DatasetAvailableSourceEndpoint(Resource):
+class DatasetAvailableSourcesResource(Resource):
     @swagger.doc({
         'description': 'Returns a list of available data sources.',
         'responses': get_default_response(DataSourceListSchema.get_swagger()),

@@ -12,7 +12,6 @@ services:
       - conf/backend.env
     environment:
       - API_HOST=localhost:5000
-    restart: on-failure
   database:
     image: postgres:latest
     volumes:

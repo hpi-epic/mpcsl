@@ -102,9 +102,11 @@ class ConditionalDistributionTest(BaseResourceTest):
 
             exp = ExperimentFactory(dataset=ds)
             job = JobFactory(experiment=exp)
-            result = ResultFactory(job=job)
-            node = NodeFactory(dataset=job.experiment.dataset, name='MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
-            node2 = NodeFactory(dataset=job.experiment.dataset, name='Copy-MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
+            ResultFactory(job=job)
+            node = NodeFactory(dataset=job.experiment.dataset,
+                               name='MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
+            node2 = NodeFactory(dataset=job.experiment.dataset,
+                                name='Copy-MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
 
             data = {
                 'conditions': {
@@ -114,7 +116,6 @@ class ConditionalDistributionTest(BaseResourceTest):
                     }
                 }
             }
-            print(data)
 
             # When
             distribution = self.get(self.url_for(ConditionalDistributionResource, node_id=node.id), json=data)

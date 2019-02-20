@@ -13,10 +13,12 @@ def check_dataset_hash(dataset):
     else:
         session = db.session
 
-    result = session.execute(dataset.load_query).fetchall()
+    result = session.execute(dataset.load_query).fetchone()
 
     hash = blake2b()
     hash.update(str(result).encode())
+
+
 
     return str(hash.hexdigest()) == dataset.content_hash
 

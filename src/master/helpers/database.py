@@ -13,9 +13,7 @@ def check_dataset_hash(dataset):
     else:
         session = db.session
 
-    result = session.execute(dataset.load_query)
-
-    result = result.fetchall()
+    result = session.execute(dataset.load_query).fetchall()
 
     hash = blake2b()
     hash.update(str(result).encode())

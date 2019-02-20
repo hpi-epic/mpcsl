@@ -4,6 +4,8 @@ import io
 from flask_restful_swagger_2 import swagger
 from flask import Response
 from flask_restful import Resource, abort
+from sqlalchemy.exc import DatabaseError
+from werkzeug.exceptions import BadRequest
 
 from src.db import db
 from src.master.db import data_source_connections
@@ -83,13 +85,16 @@ class DatasetListResource(Resource):
     def post(self):
         data = load_data(DatasetSchema)
 
-        ds = Dataset(**data)
+        try:
+            ds = Dataset(**data)
 
-        db.session.add(ds)
+            db.session.add(ds)
 
-        add_dataset_nodes(ds)
+            add_dataset_nodes(ds)
 
-        db.session.commit()
+            db.session.commit()
+        except DatabaseError:
+            raise BadRequest("Could not execute Query.")
 
         return marshal(DatasetSchema, ds)
 

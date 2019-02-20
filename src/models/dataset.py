@@ -19,9 +19,7 @@ def create_dataset_hash(context):
     else:
         session = db.session
 
-    result = session.execute(context.get_current_parameters()['load_query'])
-
-    result = result.fetchall()
+    result = session.execute(context.get_current_parameters()['load_query']).fetchone()
 
     hash = blake2b()
     hash.update(str(result).encode())

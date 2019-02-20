@@ -114,4 +114,3 @@ class SepsetFactory(BaseFactory):
 
     level = random.randint(1, 5)
     statistic = random.random()
-#    node_names = factory.List([factory.Faker('word') for _ in range(random.randint(1, 5))])

@@ -35,9 +35,6 @@ class ExecutorResource(Resource):
 
         if not check_dataset_hash(experiment.dataset):
             abort(409)
-#            new_dataset = invalidate_dataset(experiment.dataset)
-#            new_experiment = duplicate_experiment(experiment, new_dataset)
-#            experiment = new_experiment
 
         algorithm = experiment.algorithm
 

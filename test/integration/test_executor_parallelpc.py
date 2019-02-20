@@ -111,12 +111,24 @@ class SepsetExecutorTest(BaseIntegrationTest):
         assert len(node_set) == 0
 
         edges = db.session.query(Edge).all()
-        edge_set = {('V1', 'V3'), ('V2', 'V3'), ('V4', 'V2'), ('V4', 'V5'), ('V4', 'V6'),
-                    ('V5', 'V4'), ('V6', 'V4')}
+        edge_set = {
+            ('V1', 'V3'): 0.4803,
+            ('V2', 'V3'): 0.2127,
+            ('V4', 'V2'): 0.8004,
+            ('V4', 'V5'): 1.5227,
+            ('V4', 'V6'): 1.5653,
+            ('V5', 'V4'): 1.5227,
+            ('V6', 'V4'): 1.5653
+        }
         for edge in edges:
-            assert (edge.from_node.name, edge.to_node.name) in edge_set
-            edge_set.remove((edge.from_node.name, edge.to_node.name))
+            from_name, to_name = edge.from_node.name, edge.to_node.name
+
+            assert (from_name, to_name) in edge_set
+            self.assertAlmostEqual(edge.weight, edge_set[(from_name, to_name)])
+
+            del edge_set[(edge.from_node.name, edge.to_node.name)]
         assert len(edge_set) == 0
+        assert False
 
         sepsets = db.session.query(Sepset).all()
         sepset_set = [('V4', 'V1', ['V5']), ('V4', 'V3', ['V5', 'V6']),

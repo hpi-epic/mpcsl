@@ -2,7 +2,6 @@ library(httr, quietly = T)
 library(graph, quietly = T)
 library(jsonlite, quietly = T)
 library(stringi, quietly = T)
-library(causaleffect, quietly = T)
 library(infotheo, quietly = T)
 options(show.error.messages = FALSE)
 options(error = function() {
@@ -44,7 +43,7 @@ get_dataset <- function(api_host, dataset_id, job_id) {
 }
 
 estimate_weight <- function(from_node, to_node, graph, df, continuous=FALSE) {
-    disc_df <- if(regression) discretize(df) else df
+    disc_df <- if(continuous) discretize(df) else df
     from_node_name <- colnames(df)[strtoi(from_node)]
     to_node_name <- colnames(df)[strtoi(to_node)]
 
@@ -54,7 +53,7 @@ estimate_weight <- function(from_node, to_node, graph, df, continuous=FALSE) {
     # Only mutual information for now
     mi <- round(mutinformation(disc_df[[from_node_name]], disc_df[[to_node_name]]), digits = 4)
     # cmi <- condinformation(disc_df[[from_node_name]], disc_df[[to_node_name]], disc_df[parents])
-    return mi
+    return(mi)
 }
 
 store_graph_result <- function(api_host, graph, sepsets, df, job_id, send_sepsets, opt) {

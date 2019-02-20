@@ -14,6 +14,8 @@ class Edge(BaseModel):
     to_node = db.relationship('Node', foreign_keys=[to_node_id],
                               backref=db.backref('edge_tos', cascade="all, delete-orphan"))
 
+    weight = db.Column(db.Float)
+
 
 class EdgeSchema(BaseSchema):
     class Meta(BaseSchema.Meta):

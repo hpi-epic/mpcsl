@@ -43,15 +43,18 @@ get_dataset <- function(api_host, dataset_id, job_id) {
     return(df)
 }
 
-estimate_weight <- function(from_node, to_node, graph, df, regression=FALSE) {
+estimate_weight <- function(from_node, to_node, graph, df, continuous=FALSE) {
     disc_df <- if(regression) discretize(df) else df
     from_node_name <- colnames(df)[strtoi(from_node)]
     to_node_name <- colnames(df)[strtoi(to_node)]
 
     # expression <- causal.effect(to_node_name, from_node_name, G=igraph.from.graphNEL(graph), expr=FALSE)
-    parents <- sapply(unlist(inEdges(from_node, graph)), function(x) colnames(df)[strtoi(x)])
-    cmi <- condinformation(disc_df[[from_node_name]], disc_df[[to_node_name]], disc_df[parents])
-    return cmi
+    # parents <- sapply(unlist(inEdges(from_node, graph)), function(x) colnames(df)[strtoi(x)])
+
+    # Only mutual information for now
+    mi <- round(mutinformation(disc_df[[from_node_name]], disc_df[[to_node_name]]), digits = 4)
+    # cmi <- condinformation(disc_df[[from_node_name]], disc_df[[to_node_name]], disc_df[parents])
+    return mi
 }
 
 store_graph_result <- function(api_host, graph, sepsets, df, job_id, opt) {
@@ -67,7 +70,7 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, opt) {
 
             weight <- estimate_weight(
                 node, edge, graph, df,
-                regression=(opt$independence_test != 'binCI' && opt$independence_test != 'disCI')
+                continuous=(opt$independence_test != 'binCI' && opt$independence_test != 'disCI')
             )
             edge_list[['weight']][[i]] <- weight
 

@@ -2,6 +2,7 @@ from hashlib import blake2b
 
 from src.db import db
 from src.master.db import data_source_connections
+from src.models import Node
 
 
 def check_dataset_hash(dataset):
@@ -17,9 +18,9 @@ def check_dataset_hash(dataset):
     result = result.fetchall()
 
     hash = blake2b()
-    hash.update(result)
+    hash.update(str(result).encode())
 
-    return hash.hexdigest() == dataset.content_hash
+    return str(hash.hexdigest()) == dataset.content_hash
 
 
 def add_dataset_nodes(dataset):
@@ -32,7 +33,9 @@ def add_dataset_nodes(dataset):
 
     result = session.execute(dataset.load_query)
 
-    result = result.fetchall()
+    result = result.fetchone()
 
-    print(result)
-
+    for key in result.keys():
+        node = Node(name=key, dataset=dataset)
+        db.session.add(node)
+        db.session.commit()

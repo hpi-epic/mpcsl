@@ -33,7 +33,8 @@ class ExecutorResource(Resource):
     def post(self, experiment_id):
         experiment = Experiment.query.get_or_404(experiment_id)
 
-#        if not check_dataset_hash(experiment.dataset):
+        if not check_dataset_hash(experiment.dataset):
+            abort(409)
 #            new_dataset = invalidate_dataset(experiment.dataset)
 #            new_experiment = duplicate_experiment(experiment, new_dataset)
 #            experiment = new_experiment

@@ -1,5 +1,5 @@
 from src.master.resources import NodeResource, ResultNodeListResource, NodeContextResource
-from test.factories import DatasetFactory, NodeFactory, EdgeFactory, ResultFactory
+from test.factories import NodeFactory, EdgeFactory, ResultFactory
 from .base import BaseResourceTest
 
 

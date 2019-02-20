@@ -1,6 +1,5 @@
 from src.db import db
 from src.master.resources.results import ResultListResource, ResultResource
-from src.master.resources.datasets import DatasetListResource
 from src.models import Node, Result, Edge
 from test.factories import ResultFactory, NodeFactory, EdgeFactory, SepsetFactory
 from .base import BaseResourceTest
@@ -63,7 +62,6 @@ class ResultTest(BaseResourceTest):
 
         deleted_result = self.delete(self.url_for(ResultResource,
                                                   result_id=result.id))
-
 
         assert deleted_result['id'] == result.id
         assert len(db.session.query(Result).all()) == 0

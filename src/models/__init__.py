@@ -13,6 +13,8 @@ __all__ = [
     'AlgorithmSchema',
     'BaseModel',
     'BaseSchema',
+    'Node',
+    'NodeSchema',
     'DatasetSchema',
     'Dataset',
     'Edge',
@@ -23,8 +25,6 @@ __all__ = [
     'ResultSchema',
     'Sepset',
     'SepsetSchema',
-    'Node',
-    'NodeSchema',
     'Job',
     'JobSchema',
     'JobStatus'

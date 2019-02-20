@@ -30,6 +30,15 @@ class SepsetResource(Resource):
 class ResultSepsetListResource(Resource):
     @swagger.doc({
         'description': 'Returns all sepsets for one result',
+        'parameters': [
+            {
+                'name': 'result_id',
+                'description': 'Result identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
         'responses': get_default_response(SepsetSchema.get_swagger().array()),
         'tags': ['Sepset']
     })

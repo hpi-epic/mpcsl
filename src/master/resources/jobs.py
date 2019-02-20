@@ -236,8 +236,7 @@ class JobResultResource(Resource):
                         element[key] = float(val)
                 result.meta_results = element
             if prefix == 'node_list.item':
-                node = Node(name=element, result_id=result.id)
-                db.session.add(node)
+                node = Node.query.filter_by(dataset_id=job.experiment.dataset_id, name=element).first()
                 node_mapping[element] = node
             if prefix in ['edge_list.item', 'sepset_list.item']:
                 if len(node_mapping) == 0:
@@ -264,7 +263,6 @@ class JobResultResource(Resource):
 
             if prefix == 'sepset_list.item' and LOAD_SEPARATION_SET:
                 sepset = Sepset(
-                    node_names=element['nodes'],
                     statistic=element['statistic'],
                     level=element['level'],
                     from_node_id=node_mapping[element['from_node']].id,

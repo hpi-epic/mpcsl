@@ -3,6 +3,7 @@ import numpy as np
 from src.master.appfactory import AppFactory
 from src.db import db
 from src.models import Algorithm, Experiment, Dataset
+from src.master.helpers.database import add_dataset_nodes
 
 
 def add_experiment(db, dataset_id):
@@ -24,9 +25,6 @@ def add_experiment(db, dataset_id):
 
 
 def add_dataset(db):
-    new_dataset = Dataset(name="Example dataset", load_query="SELECT * FROM test_data")
-    db.session.add(new_dataset)
-
     db.session.execute("""
         CREATE TABLE IF NOT EXISTS test_data (
             a float,
@@ -41,6 +39,11 @@ def add_dataset(db):
     for l in source:
         db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
     db.session.commit()
+
+    new_dataset = Dataset(name="Example dataset", load_query="SELECT * FROM test_data")
+    db.session.add(new_dataset)
+
+    add_dataset_nodes(new_dataset)
 
     return new_dataset.id
 

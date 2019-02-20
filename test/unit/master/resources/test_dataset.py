@@ -43,7 +43,21 @@ class DatasetTest(BaseResourceTest):
 
     def test_create_new_data_set(self):
         # Given
+        db.session.execute("""
+            CREATE TABLE IF NOT EXISTS test_data (
+                a float,
+                b float,
+                c float
+            );
+        """)
+        mean = [0, 5, 10]
+        cov = [[1, 0, 0], [0, 10, 0], [0, 0, 20]]
+        source = np.random.multivariate_normal(mean, cov, size=50)
+        for l in source:
+            db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+
         data = factory.build(dict, FACTORY_CLASS=DatasetFactory)
+        data['load_query'] = 'SELECT * FROM test_data'
 
         # When
         result = self.post(self.url_for(DatasetListResource), json=data)

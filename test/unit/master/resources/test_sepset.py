@@ -7,8 +7,8 @@ class SepsetTest(BaseResourceTest):
     def test_returns_all_sepsets_for_result(self):
         # Given
         result = ResultFactory()
-        nodes = [NodeFactory(result=result) for _ in range(3)]
-        sepsets = [SepsetFactory(result=result, from_node=nodes[0], to_node=nodes[2], node_names=[nodes[1].name])]
+        nodes = [NodeFactory(dataset=result.job.experiment.dataset) for _ in range(3)]
+        sepsets = [SepsetFactory(result=result, from_node=nodes[0], to_node=nodes[2])]
 
         # When
         results = self.get(self.url_for(ResultSepsetListResource, result_id=result.id))

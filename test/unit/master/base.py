@@ -8,7 +8,7 @@ class BaseTest(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.factory = AppFactory()
-        cls.app = cls.factory.up()
+        cls.app = cls.factory.up(no_daemon=True)
         cls.api = cls.factory.api
         cls.app_context = cls.app.app_context()
         cls.app_context.push()

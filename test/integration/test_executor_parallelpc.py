@@ -1,6 +1,10 @@
+import os
 import pytest
+import requests
 
 from src.db import db
+from src.master.resources import JobLogsResource
+from src.master.helpers.io import get_logfile_name
 from src.models import Node, Edge, Sepset
 from test.factories import ExperimentFactory
 from .base import BaseIntegrationTest
@@ -8,7 +12,7 @@ from .base import BaseIntegrationTest
 
 class GaussExecutorTest(BaseIntegrationTest):
 
-    @pytest.mark.run(order=-10)
+    @pytest.mark.run(order=-12)
     def test_r_execution_gauss(self):
         # Given
         ex = ExperimentFactory(dataset=self.setup_dataset_gauss(), algorithm__script_filename='parallelpc.r')
@@ -31,7 +35,7 @@ class GaussExecutorTest(BaseIntegrationTest):
 
 class DiscreteExecutorTest(BaseIntegrationTest):
 
-    @pytest.mark.run(order=-9)
+    @pytest.mark.run(order=-11)
     def test_r_execution_discrete(self):
         # Given
         ex = ExperimentFactory(dataset=self.setup_dataset_discrete(), algorithm__script_filename='parallelpc.r')
@@ -55,7 +59,7 @@ class DiscreteExecutorTest(BaseIntegrationTest):
 
 class BinaryExecutorTest(BaseIntegrationTest):
 
-    @pytest.mark.run(order=-8)
+    @pytest.mark.run(order=-10)
     def test_r_execution_binary(self):
         # Given
         ex = ExperimentFactory(dataset=self.setup_dataset_binary(), algorithm__script_filename='parallelpc.r')
@@ -79,7 +83,7 @@ class BinaryExecutorTest(BaseIntegrationTest):
 
 class SepsetExecutorTest(BaseIntegrationTest):
 
-    @pytest.mark.run(order=-7)
+    @pytest.mark.run(order=-9)
     def test_r_execution_with_sepsets(self):
         # Given
         ex = ExperimentFactory(dataset=self.setup_dataset_cooling_house(), algorithm__script_filename='parallelpc.r')
@@ -123,7 +127,7 @@ class SepsetExecutorTest(BaseIntegrationTest):
 
 class ParamExecutorTest(BaseIntegrationTest):
 
-    @pytest.mark.run(order=-6)
+    @pytest.mark.run(order=-8)
     def test_r_execution_with_fixed_subset_size(self):
         # Given
         ex = ExperimentFactory(dataset=self.setup_dataset_cooling_house(), algorithm__script_filename='parallelpc.r')
@@ -144,3 +148,47 @@ class ParamExecutorTest(BaseIntegrationTest):
         sepsets = db.session.query(Sepset).all()
         # If m.max=0, there can be no separation sets
         assert len(sepsets) == 0
+
+
+class LogExecutorTest(BaseIntegrationTest):
+
+    @pytest.mark.run(order=-7)
+    def test_logs(self):
+        # Given
+        ex = ExperimentFactory(dataset=self.setup_dataset_gauss(), algorithm__script_filename='parallelpc.r')
+        ex.parameters['cores'] = 2
+        ex.parameters['verbose'] = 1
+        db.session.commit()
+
+        # When
+        job, result = self.run_experiment(ex)
+
+        # Then
+        assert result.job_id == job.id
+
+        full_log = requests.get(self.url_for(JobLogsResource, job_id=job.id))
+        assert full_log.status_code == 200
+        assert 'Attaching package: ‘BiocGenerics’' in full_log.text
+        assert 'Load dataset from' in full_log.text
+        assert 'Successfully loaded dataset' in full_log.text
+        assert 'Successfully executed job' in full_log.text
+
+        offset_log = requests.get(self.url_for(JobLogsResource, job_id=job.id, offset=23))
+        assert offset_log.status_code == 200
+        assert 'Attaching package: ‘BiocGenerics’' not in offset_log.text
+        assert 'Load dataset from' in offset_log.text
+        assert 'Successfully loaded dataset' in offset_log.text
+        assert 'Successfully executed job' in offset_log.text
+
+        limit_log = requests.get(self.url_for(JobLogsResource, job_id=job.id, limit=1))
+        assert limit_log.status_code == 200
+        assert 'Attaching package: ‘BiocGenerics’' not in limit_log.text
+        assert 'Load dataset from' not in limit_log.text
+        assert 'Successfully loaded dataset' not in limit_log.text
+        assert 'Successfully executed job' in limit_log.text
+
+        logfile = get_logfile_name(job.id)
+        assert os.path.isfile(logfile)
+        delete_request = requests.delete(self.url_for(JobLogsResource, job_id=job.id))
+        assert delete_request.status_code == 200
+        assert not os.path.isfile(logfile)

@@ -19,7 +19,7 @@ def create_dataset_hash(context):
     else:
         session = db.session
 
-    result = session.execute(context.get_current_parameters()['load_query'] )
+    result = session.execute(context.get_current_parameters()['load_query'])
 
     result = result.fetchall()
 

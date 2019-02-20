@@ -32,6 +32,15 @@ class NodeResource(Resource):
 class ResultNodeListResource(Resource):
     @swagger.doc({
         'description': 'Returns all nodes for one result',
+        'parameters': [
+            {
+                'name': 'result_id',
+                'description': 'Result identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
         'responses': get_default_response(NodeSchema.get_swagger().array()),
         'tags': ['Node']
     })
@@ -50,6 +59,15 @@ class NodeContextSchema(BaseSchema, SwaggerMixin):
 class NodeContextResource(Resource):
     @swagger.doc({
         'description': 'Returns all nodes for one result',
+        'parameters': [
+            {
+                'name': 'node_id',
+                'description': 'Node identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
         'responses': get_default_response(NodeContextSchema.get_swagger()),
         'tags': ['Node']
     })

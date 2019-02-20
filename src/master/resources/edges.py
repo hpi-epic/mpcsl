@@ -30,6 +30,15 @@ class EdgeResource(Resource):
 class ResultEdgeListResource(Resource):
     @swagger.doc({
         'description': 'Returns all edges for one result',
+        'parameters': [
+            {
+                'name': 'result_id',
+                'description': 'Result identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
         'responses': get_default_response(EdgeSchema.get_swagger().array()),
         'tags': ['Edge']
     })

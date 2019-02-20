@@ -103,8 +103,8 @@ class ConditionalDistributionTest(BaseResourceTest):
             exp = ExperimentFactory(dataset=ds)
             job = JobFactory(experiment=exp)
             result = ResultFactory(job=job)
-            node = NodeFactory(result=result, name='MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
-            node2 = NodeFactory(result=result, name='Copy-MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
+            node = NodeFactory(dataset=job.experiment.dataset, name='MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
+            node2 = NodeFactory(dataset=job.experiment.dataset, name='Copy-MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
 
             data = {
                 'conditions': {

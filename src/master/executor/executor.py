@@ -27,14 +27,26 @@ class ExecutorResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(JobSchema.get_swagger()),
-        'tags': ['Experiment']
+        'responses': {
+            '200': {
+                'description': 'Success',
+            },
+            '400': {
+                'description': 'Invalid input data'
+            },
+            '409': {
+                'description': 'Conflict: The underlying data has been modified'
+            },
+            '500': {
+                'description': 'Internal server error'
+            }
+        },        'tags': ['Experiment']
     })
     def post(self, experiment_id):
         experiment = Experiment.query.get_or_404(experiment_id)
 
         if not check_dataset_hash(experiment.dataset):
-            abort(409)
+            abort(409, message='The underlying data has been modified')
 
         algorithm = experiment.algorithm
 

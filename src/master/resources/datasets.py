@@ -71,7 +71,6 @@ class DatasetListResource(Resource):
 
     @swagger.doc({
         'description': 'Creates a dataset',
-        'responses': get_default_response(DatasetSchema.get_swagger()),
         'parameters': [
             {
                 'name': 'dataset',
@@ -80,6 +79,17 @@ class DatasetListResource(Resource):
                 'schema': DatasetSchema.get_swagger(True)
             }
         ],
+        'responses': {
+            '200': {
+                'description': 'Success',
+            },
+            '400': {
+                'description': 'Invalid input data'
+            },
+            '500': {
+                'description': 'Internal server error'
+            }
+        },
         'tags': ['Dataset']
     })
     def post(self):
@@ -94,7 +104,7 @@ class DatasetListResource(Resource):
 
             db.session.commit()
         except DatabaseError:
-            raise BadRequest("Could not execute Query.")
+            raise BadRequest(f'Could not execute query {ds.load_query} on database "{ds.remote_db}"')
 
         return marshal(DatasetSchema, ds)
 

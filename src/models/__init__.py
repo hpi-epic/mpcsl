@@ -6,6 +6,7 @@ from .job import Job, JobSchema, JobStatus
 from .result import Result, ResultSchema
 from .node import Node, NodeSchema
 from .edge import Edge, EdgeSchema
+from .edge_information import EdgeAnnotation, EdgeInformation, EdgeInformationSchema
 from .sepset import Sepset, SepsetSchema
 
 __all__ = [
@@ -27,5 +28,8 @@ __all__ = [
     'SepsetSchema',
     'Job',
     'JobSchema',
-    'JobStatus'
+    'JobStatus',
+    'EdgeAnnotation',
+    'EdgeInformation',
+    'EdgeInformationSchema'
 ]

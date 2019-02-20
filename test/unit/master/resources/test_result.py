@@ -50,7 +50,7 @@ class ResultTest(BaseResourceTest):
             sepset_ids.remove(sepset['id'])
         assert len(sepset_ids) == 0
 
-    def test_delete_dataset(self):
+    def test_delete_result(self):
         result = ResultFactory()
         nodes = [NodeFactory(dataset=result.job.experiment.dataset) for _ in range(3)]
 
@@ -59,6 +59,7 @@ class ResultTest(BaseResourceTest):
 
         assert len(db.session.query(Result).all()) == 1
         assert len(db.session.query(Node).all()) == 3
+        assert len(db.session.query(Edge).all()) == 3
 
         deleted_result = self.delete(self.url_for(ResultResource,
                                                   result_id=result.id))

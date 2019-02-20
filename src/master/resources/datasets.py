@@ -156,6 +156,6 @@ class DatasetAvailableSourcesResource(Resource):
     })
     def get(self):
         val = {
-            'data_sources': DATA_SOURCE_CONNECTIONS.keys()
+            'data_sources': list(DATA_SOURCE_CONNECTIONS.keys())
         }
-        return val
+        return marshal(DataSourceListSchema, val)

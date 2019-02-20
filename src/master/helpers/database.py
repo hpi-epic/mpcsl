@@ -18,8 +18,6 @@ def check_dataset_hash(dataset):
     hash = blake2b()
     hash.update(str(result).encode())
 
-
-
     return str(hash.hexdigest()) == dataset.content_hash
 
 

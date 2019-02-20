@@ -4,12 +4,15 @@ import io
 from flask_restful_swagger_2 import swagger
 from flask import Response
 from flask_restful import Resource, abort
+from marshmallow import Schema, fields
 
 from src.db import db
+from src.master.config import DATA_SOURCE_CONNECTIONS
 from src.master.db import data_source_connections
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
 from src.models import Dataset, DatasetSchema
+from src.models.swagger import SwaggerMixin
 
 
 class DatasetResource(Resource):
@@ -138,3 +141,21 @@ class DatasetLoadResource(Resource):
         resp = Response(f.getvalue(), mimetype='text/csv')
         resp.headers.add("X-Content-Length", f.tell())
         return resp
+
+
+class DataSourceListSchema(Schema, SwaggerMixin):
+    data_sources = fields.List(fields.String())
+
+
+class DatasetAvailableSourceEndpoint(Resource):
+    @swagger.doc({
+        'description': 'Returns a list of available data sources.',
+        'responses': get_default_response(DataSourceListSchema.get_swagger()),
+        'produces': ['application/csv'],
+        'tags': ['Executor']
+    })
+    def get(self):
+        val = {
+            'data_sources': DATA_SOURCE_CONNECTIONS.keys()
+        }
+        return val

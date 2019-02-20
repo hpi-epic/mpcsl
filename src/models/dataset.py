@@ -1,5 +1,4 @@
 from hashlib import blake2b
-
 from marshmallow.validate import Length, OneOf
 from marshmallow_sqlalchemy import field_for
 from sqlalchemy.sql import func
@@ -43,5 +42,5 @@ class DatasetSchema(BaseSchema):
     remote_db = field_for(Dataset, 'remote_db', validate=OneOf(list(DATA_SOURCE_CONNECTIONS.keys())))
 
     class Meta(BaseSchema.Meta):
-        dump_only = ['time_created']
+        dump_only = ['time_created', 'content_hash']
         model = Dataset

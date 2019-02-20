@@ -136,9 +136,6 @@ class JobTest(BaseResourceTest):
         result = self.post(self.url_for(JobResultResource, job_id=mock_job.id), json=data)
         db_result = db.session.query(Result).first()
 
-        print(result)
-        print(db_result)
-
         # Then
         assert db_result.meta_results == data['meta_results'] == result['meta_results']
         for node in db.session.query(Node):

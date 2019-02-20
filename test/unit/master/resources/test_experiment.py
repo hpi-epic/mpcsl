@@ -44,7 +44,6 @@ class ExperimentTest(BaseResourceTest):
         data.pop('algorithm')
         data['algorithm_id'] = alg.id
         data['dataset_id'] = ds.id
-        print(data)
 
         # When
         result = self.post(self.url_for(ExperimentListResource), json=data)

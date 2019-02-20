@@ -14,6 +14,7 @@ Flask-RESTful==0.3.6
 flask-restful-swagger-2==0.35
 Flask-SQLAlchemy==2.3.2
 idna==2.7
+ijson==2.3
 itsdangerous==1.1.0
 Jinja2==2.10
 Mako==1.0.7

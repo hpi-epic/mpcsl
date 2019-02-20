@@ -57,7 +57,7 @@ estimate_weight <- function(from_node, to_node, graph, df, continuous=FALSE) {
     return mi
 }
 
-store_graph_result <- function(api_host, graph, sepsets, df, job_id, opt) {
+store_graph_result <- function(api_host, graph, sepsets, df, job_id, send_sepsets, opt) {
     edges <- edges(graph)
     edge_list <- list(from_node=c(), to_node=c())
     node_list <- c()
@@ -78,25 +78,31 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, opt) {
         }
     }
     edge_list <- data.frame(edge_list)
-    
+
     sepset_list <- list(from_node=c(), to_node=c(), statistic=c(), level=c())
-    ss_nodes_list <- list()
-    i <- 1
-    for(from_node in 1:length(sepsets)){
-        for(to_node in 1:length(sepsets)){
-            sepset <- sapply(sepsets[[from_node]][[to_node]], (function (x) colnames(df)[x]))
-            if(length(sepset) > 0){
-                sepset_list[['from_node']][[i]] <- colnames(df)[from_node]
-                sepset_list[['to_node']][[i]] <- colnames(df)[to_node]
-                ss_nodes_list[[i]] <- if(length(sepset) > 1) sepset else list(sepset)
-                sepset_list[['statistic']][[i]] <- 0
-                sepset_list[['level']][[i]] <- length(sepset)
-                i <- i + 1
+
+    if (send_sepsets > 0) {
+        ss_nodes_list <- list()
+        i <- 1
+        for(from_node in 1:length(sepsets)){
+            for(to_node in 1:length(sepsets)){
+                sepset <- sapply(sepsets[[from_node]][[to_node]], (function (x) colnames(df)[x]))
+                if(length(sepset) > 0){
+                    sepset_list[['from_node']][[i]] <- colnames(df)[from_node]
+                    sepset_list[['to_node']][[i]] <- colnames(df)[to_node]
+                    ss_nodes_list[[i]] <- if(length(sepset) > 1) sepset else list(sepset)
+                    sepset_list[['statistic']][[i]] <- 0
+                    sepset_list[['level']][[i]] <- length(sepset)
+                    i <- i + 1
+                }
             }
         }
     }
     sepset_list <- data.frame(sepset_list)
-    sepset_list$nodes <- ss_nodes_list
+
+    if (send_sepsets > 0) {
+        sepset_list$nodes <- ss_nodes_list
+    }
     
     result_json <- jsonlite::toJSON(list(
         job_id=strtoi(job_id),

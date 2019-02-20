@@ -111,10 +111,10 @@ class ConditionalParameterSchema(Schema, SwaggerMixin):
                 else:
                     if 'from_value' not in val or not (
                             isinstance(val['from_value'], int) or isinstance(val['from_value'], float)):
-                        raise ValidationError(f'Field `min_value` must be numeric for key {key}')
+                        raise ValidationError(f'Field `from_value` must be numeric for key {key}')
                     if 'to_value' not in val or not (
                             isinstance(val['to_value'], int) or isinstance(val['to_value'], float)):
-                        raise ValidationError(f'Field `max_value` must be numeric for key {key}')
+                        raise ValidationError(f'Field `to_value` must be numeric for key {key}')
 
 
 class ConditionalContinuousDistributionSchema(ContinuousDistributionSchema):

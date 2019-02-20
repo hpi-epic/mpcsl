@@ -1,5 +1,4 @@
 from hashlib import blake2b
-
 from marshmallow.validate import Length, OneOf
 from marshmallow_sqlalchemy import field_for
 from sqlalchemy.sql import func

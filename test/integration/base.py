@@ -15,6 +15,7 @@ from src.master.appfactory import AppFactory
 from src.db import db
 from src.master.executor import ExecutorResource
 from src.master.helpers.io import remove_logs
+from src.master.helpers.database import add_dataset_nodes
 from src.models import Result, Job
 from test.factories import DatasetFactory
 
@@ -105,9 +106,6 @@ class BaseIntegrationTest(TestCase):
 
     @staticmethod
     def setup_dataset_gauss():
-        ds = DatasetFactory(
-            load_query="SELECT * FROM test_data"
-        )
         db.session.execute("""
                 CREATE TABLE IF NOT EXISTS test_data (
                     a float,
@@ -120,13 +118,17 @@ class BaseIntegrationTest(TestCase):
         source = np.random.multivariate_normal(mean, cov, size=50)
         for l in source:
             db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+
+        ds = DatasetFactory(
+            load_query="SELECT * FROM test_data",
+            content_hash=None
+        )
+
+        add_dataset_nodes(ds)
         return ds
 
     @staticmethod
     def setup_dataset_discrete():
-        ds = DatasetFactory(
-            load_query="SELECT * FROM test_data"
-        )
         db.session.execute("""
             CREATE TABLE IF NOT EXISTS test_data (
                 a int,
@@ -137,13 +139,17 @@ class BaseIntegrationTest(TestCase):
         source = np.random.randint(0, 10, (50, 3))
         for l in source:
             db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+
+        ds = DatasetFactory(
+            load_query="SELECT * FROM test_data",
+            content_hash=None
+        )
+
+        add_dataset_nodes(ds)
         return ds
 
     @staticmethod
     def setup_dataset_binary():
-        ds = DatasetFactory(
-            load_query="SELECT * FROM test_data"
-        )
         db.session.execute("""
             CREATE TABLE IF NOT EXISTS test_data (
                 a int,
@@ -154,15 +160,26 @@ class BaseIntegrationTest(TestCase):
         source = np.random.randint(0, 2, (50, 3))
         for l in source:
             db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+
+        ds = DatasetFactory(
+            load_query="SELECT * FROM test_data",
+            content_hash=None
+        )
+
+        add_dataset_nodes(ds)
         return ds
 
     @staticmethod
     def setup_dataset_cooling_house():
-        ds = DatasetFactory(
-            load_query="SELECT * FROM test_data"
-        )
         df = pd.read_csv('test/fixtures/coolinghouse_1k.csv', index_col=0)
         df.to_sql('test_data', con=db.engine, index=False)
+
+        ds = DatasetFactory(
+            load_query="SELECT * FROM test_data",
+            content_hash=None
+        )
+
+        add_dataset_nodes(ds)
         return ds
 
     def run_experiment(self, experiment):

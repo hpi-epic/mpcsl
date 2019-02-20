@@ -11,6 +11,7 @@ from src.master.helpers.io import marshal, get_logfile_name
 from src.db import db
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, JobStatus, Experiment
+from src.master.helpers.database import check_dataset_hash
 
 
 class ExecutorResource(Resource):
@@ -31,6 +32,10 @@ class ExecutorResource(Resource):
     })
     def post(self, experiment_id):
         experiment = Experiment.query.get_or_404(experiment_id)
+
+        if not check_dataset_hash(experiment.dataset):
+            abort(409)
+
         algorithm = experiment.algorithm
 
         new_job = Job(experiment=experiment, start_time=datetime.now(),

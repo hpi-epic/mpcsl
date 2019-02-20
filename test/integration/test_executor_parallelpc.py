@@ -28,7 +28,7 @@ class GaussExecutorTest(BaseIntegrationTest):
         assert result.job.experiment_id == ex.id
         assert result.start_time == job.start_time
 
-        nodes = db.session.query(Node).all()
+        nodes = db.session.query(Node).filter_by(dataset_id=job.experiment.dataset_id).all()
         for node in nodes:
             assert node.name in ['a', 'b', 'c']
         assert len(nodes) == 3
@@ -52,7 +52,7 @@ class DiscreteExecutorTest(BaseIntegrationTest):
         assert result.job.experiment_id == ex.id
         assert result.start_time == job.start_time
 
-        nodes = db.session.query(Node).all()
+        nodes = db.session.query(Node).filter_by(dataset_id=job.experiment.dataset_id).all()
         for node in nodes:
             assert node.name in ['a', 'b', 'c']
         assert len(nodes) == 3
@@ -76,7 +76,7 @@ class BinaryExecutorTest(BaseIntegrationTest):
         assert result.job.experiment_id == ex.id
         assert result.start_time == job.start_time
 
-        nodes = db.session.query(Node).all()
+        nodes = db.session.query(Node).filter_by(dataset_id=job.experiment.dataset_id).all()
         for node in nodes:
             assert node.name in ['a', 'b', 'c']
         assert len(nodes) == 3
@@ -103,7 +103,7 @@ class SepsetExecutorTest(BaseIntegrationTest):
         assert result.job.experiment_id == ex.id
         assert result.start_time == job.start_time
 
-        nodes = db.session.query(Node).all()
+        nodes = db.session.query(Node).filter_by(dataset_id=job.experiment.dataset_id).all()
         node_set = {'V1', 'V2', 'V3', 'V4', 'V5', 'V6'}
         for node in nodes:
             assert node.name in node_set
@@ -124,8 +124,8 @@ class SepsetExecutorTest(BaseIntegrationTest):
                       ('V6', 'V1', ['V4']), ('V6', 'V2', ['V3', 'V4']),
                       ('V6', 'V3', ['V1', 'V4']), ('V6', 'V5', ['V4'])]
         for sepset in sepsets:
-            assert (sepset.from_node.name, sepset.to_node.name, sepset.node_names) or \
-                   (sepset.to_node.name, sepset.from_node.name, sepset.node_names) in sepset_set
+            assert (sepset.from_node.name, sepset.to_node.name) or \
+                   (sepset.to_node.name, sepset.from_node.name) in sepset_set
         assert len(sepset_set) == len(sepsets)
 
 

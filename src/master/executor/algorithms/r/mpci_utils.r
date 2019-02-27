@@ -56,7 +56,7 @@ estimate_weight <- function(from_node, to_node, graph, df, continuous=FALSE) {
     return(mi)
 }
 
-store_graph_result <- function(api_host, graph, sepsets, df, job_id, send_sepsets, opt) {
+store_graph_result <- function(api_host, graph, sepsets, df, job_id, independence_test, send_sepsets, meta_results) {
     edges <- edges(graph)
     edge_list <- list(from_node=c(), to_node=c())
     node_list <- c()
@@ -69,7 +69,7 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, send_sepset
 
             weight <- estimate_weight(
                 node, edge, graph, df,
-                continuous=(opt$independence_test != 'binCI' && opt$independence_test != 'disCI')
+                continuous=(independence_test != 'binCI' && independence_test != 'disCI')
             )
             edge_list[['weight']][[i]] <- weight
 
@@ -107,7 +107,7 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, send_sepset
         job_id=strtoi(job_id),
         node_list=node_list,
         edge_list=if(nrow(edge_list) == 0) list() else edge_list,
-        meta_results=opt,
+        meta_results=meta_results,
         sepset_list=if(nrow(sepset_list) == 0) list() else sepset_list
     ), auto_unbox=TRUE)
     

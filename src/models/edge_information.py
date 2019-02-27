@@ -17,7 +17,7 @@ class EdgeInformation(BaseModel):
     )
 
     experiment = db.relationship('Experiment',
-                                 backref=db.backref('jobs',
+                                 backref=db.backref('edge_informations',
                                                     cascade="all, delete-orphan"))
 
     annotation = db.Column(db.Enum(EdgeAnnotation), nullable=False)

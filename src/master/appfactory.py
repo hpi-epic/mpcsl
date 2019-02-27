@@ -9,7 +9,7 @@ from werkzeug.serving import is_running_from_reloader
 
 from src.db import db
 from src.master.config import UWSGI_NUM_PROCESSES
-from src.master.executor.daemon import JobDaemon
+from src.master.helpers.daemon import JobDaemon
 from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
 from src.models import Algorithm, AlgorithmSchema

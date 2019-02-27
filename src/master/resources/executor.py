@@ -6,7 +6,8 @@ from flask_restful_swagger_2 import swagger
 from flask import current_app
 from flask_restful import Resource, abort
 
-from src.master.config import API_HOST, LOAD_SEPARATION_SET
+from src.master.config import API_HOST, LOAD_SEPARATION_SET, DOCKER_EXECUTION_NETWORK
+from src.master.helpers.docker import get_client
 from src.master.helpers.io import marshal, get_logfile_name
 from src.db import db
 from src.master.helpers.swagger import get_default_response
@@ -43,29 +44,26 @@ class ExecutorResource(Resource):
         db.session.add(new_job)
         db.session.flush()
 
-        logfile = get_logfile_name(new_job.id)
-        if os.path.isfile(logfile):
-            # backup log files that are already existing
-            renamed_logfile = f'{logfile[:-4]}_{datetime.now()}.log'
-            try:
-                os.rename(logfile, renamed_logfile)
-            except OSError:
-                current_app.logger.warn(f'Could not rename existing log file {logfile} to {renamed_logfile}')
-        if algorithm.backend == 'R':
-            params = []
-            for k, v in experiment.parameters.items():
-                params.append('--' + k)
-                params.append(str(v))
-            with open(logfile, 'a') as logfile:
-                r_process = Popen([
-                    'Rscript', 'src/master/executor/algorithms/r/' + algorithm.script_filename,
-                    '-j', str(new_job.id),
-                    '-d', str(experiment.dataset_id),
-                    '--api_host', str(API_HOST),
-                    '--send_sepsets', str(int(LOAD_SEPARATION_SET))
-                ] + params, start_new_session=True, stdout=logfile, stderr=logfile)
-            new_job.pid = r_process.pid
-            db.session.commit()
-        else:
-            abort(501)
+        params = [
+            '-j', str(new_job.id),
+            '-d', str(experiment.dataset_id),
+            '--api_host', str(API_HOST),
+            '--send_sepsets', str(int(LOAD_SEPARATION_SET))
+        ]
+        for k, v in experiment.parameters.items():
+            params.append('--' + k)
+            params.append(str(v))
+
+        client = get_client()
+        command = algorithm.script_filename + " " + " ".join(params)
+        container = client.containers.run(
+            algorithm.docker_image,
+            command,
+            detach=True,
+            network=DOCKER_EXECUTION_NETWORK
+        )
+
+        new_job.container_id = container.id
+        db.session.commit()
+
         return marshal(JobSchema, new_job)

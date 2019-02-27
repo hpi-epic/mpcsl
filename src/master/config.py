@@ -49,3 +49,5 @@ else:
 RESULT_READ_BUFF_SIZE = int(os.environ.get('RESULT_READ_BUFF_SIZE', 1024))
 RESULT_WRITE_BUFF_SIZE = int(os.environ.get('RESULT_WRITE_BUFF_SIZE', 1024))
 LOAD_SEPARATION_SET = os.environ.get('LOAD_SEPARATION_SET', 'false').lower() == 'true'
+
+DOCKER_EXECUTION_NETWORK = os.environ.get('DOCKER_EXECUTION_NETWORK', 'mpci_default')

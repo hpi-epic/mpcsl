@@ -1,9 +1,11 @@
 import time
 from threading import Thread
 import psutil
+import docker
 
 from src.db import db
 from src.master.config import DAEMON_CYCLE_TIME
+from src.master.helpers.docker import get_client
 from src.models import Job, JobStatus
 
 
@@ -26,20 +28,23 @@ class JobDaemon(Thread):
         self.stopped = True
 
     def run(self):
+        client = get_client()
         while not self.stopped:
             time.sleep(DAEMON_CYCLE_TIME)
 
             with self.app.app_context():
                 self.app.logger.info('Daemon cycle')
-                self.app.logger.info(psutil.pids())
-
                 jobs = db.session.query(Job).filter(Job.status == JobStatus.running)
 
                 for job in jobs:
-                    if not check_pid(job.pid):
-                        self.app.logger.warning('Job ' + str(job.id) + ' failed')
+                    try:
+                        container = client.containers.get(job.container_id)
+                        if not container.status != "running":
+                            self.app.logger.warning('Job ' + str(job.id) + ' failed')
+                            job.status = JobStatus.error
+                    except docker.errors.NotFound:
+                        self.app.logger.warning('Job ' + str(job.id) + ' disappeared')
                         job.status = JobStatus.error
-
                 db.session.commit()
 
         with self.app.app_context():

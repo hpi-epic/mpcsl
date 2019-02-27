@@ -13,6 +13,7 @@ from ijson.common import ObjectBuilder
 
 from src.db import db
 from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET, RESULT_WRITE_BUFF_SIZE
+from src.master.helpers.docker import get_client
 from src.master.helpers.io import marshal, remove_logs, get_logfile_name, InvalidInputData
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
@@ -327,9 +328,6 @@ class JobLogsResource(Resource):
     })
     def get(self, job_id):
         job = Job.query.get_or_404(job_id)
-        logfile = get_logfile_name(job.id)
-        if not os.path.isfile(logfile):
-            abort(404)
 
         parser = reqparse.RequestParser()
         parser.add_argument('offset', required=False, type=int, store_missing=False)
@@ -338,41 +336,16 @@ class JobLogsResource(Resource):
         offset = args.get('offset', 0)
         limit = args.get('limit', 0)
 
-        def run(cmd):
-            p = Popen(cmd.split(), stdout=PIPE, universal_newlines=True)
-            stdout, stderr = p.communicate()
-            return stdout
+        client = get_client()
+        log = client.containers.get(job.container_id).logs().decode()
 
+        log = log.split('\n')
+        if offset > 0 and limit > 0:
+            log = log[offset:limit]
         if offset > 0 and limit == 0:
-            log = run(f'tail --lines +{offset} {logfile}')  # return all lines starting from 'offset'
-            return Response(log, mimetype='text/plain')
-        elif limit > 0 and offset == 0:
-            command = f'tail --lines {limit} {logfile}'  # return last 'limit' lines
-            return Response(run(command), mimetype='text/plain')
-        elif limit > 0 and offset > 0:
-            abort(501)
-        else:
-            return send_file(logfile, mimetype='text/plain')
+            log = log[offset:]
+        if offset == 0 and limit > 0:
+            log = log[:limit]
+        log = "\n".join(log)
 
-    @swagger.doc({
-        'description': 'Removes the associated log files',
-        'parameters': [
-            {
-                'name': 'job_id',
-                'description': 'Job identifier',
-                'in': 'path',
-                'type': 'integer',
-                'required': True
-            }
-        ],
-        'responses': get_default_response(JobSchema.get_swagger()),
-        'tags': ['Job']
-    })
-    def delete(self, job_id):
-        job = Job.query.get_or_404(job_id)
-
-        if job.status == JobStatus.running:
-            abort(403)
-        else:
-            remove_logs(job_id)
-        return marshal(JobSchema, job)
+        return Response(log, mimetype='text/plain')

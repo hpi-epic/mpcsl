@@ -34,7 +34,7 @@ class AlgorithmFactory(BaseFactory):
     name = factory.Faker('word')
     script_filename = 'pcalg.r'
     description = ''
-    backend = 'R'
+    docker_image = 'mpci_execution_r'
     valid_parameters = factory.LazyAttribute(lambda o: {
         'alpha': {'type': 'float', 'required': True, 'minimum': 0.0, 'maximum': 1.0},
         'independence_test': {'type': 'enum', 'required': True, 'values': ['gaussCI', 'disCI', 'binCI']},

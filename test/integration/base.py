@@ -13,7 +13,7 @@ from urllib.request import urlopen
 
 from src.master.appfactory import AppFactory
 from src.db import db
-from src.master.executor import ExecutorResource
+from src.master.resources import ExecutorResource
 from src.master.helpers.io import remove_logs
 from src.master.helpers.database import add_dataset_nodes
 from src.models import Result, Job

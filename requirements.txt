@@ -5,6 +5,8 @@ attrs==18.2.0
 certifi==2018.11.29
 chardet==3.0.4
 Click==7.0
+docker==3.7.0
+docker-pycreds==0.4.0
 factory-boy==2.11.1
 Faker==1.0.0
 flake8==3.6.0
@@ -45,4 +47,5 @@ sqlalchemy-hana==0.3.0
 text-unidecode==1.2
 urllib3==1.24.1
 uWSGI==2.0.17.1
+websocket-client==0.55.0
 Werkzeug==0.14.1

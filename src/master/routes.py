@@ -5,8 +5,7 @@ from .resources import DatasetLoadResource, DatasetListResource, \
     AlgorithmResource, AlgorithmListResource, \
     ResultNodeListResource, ResultEdgeListResource, ResultSepsetListResource, \
     NodeResource, EdgeResource, SepsetResource, NodeContextResource, MarginalDistributionResource, \
-    ConditionalDistributionResource
-from src.master.executor.executor import ExecutorResource
+    ConditionalDistributionResource, ExecutorResource
 
 
 def base_url(url):

@@ -2,6 +2,7 @@ library(httr, quietly = T)
 library(graph, quietly = T)
 library(jsonlite, quietly = T)
 library(stringi, quietly = T)
+library(infotheo, quietly = T)
 options(show.error.messages = FALSE)
 options(error = function() {
     err <- stri_replace_all_regex(geterrmessage(), '\n', paste0('\n', ANSI_RED))
@@ -41,7 +42,21 @@ get_dataset <- function(api_host, dataset_id, job_id) {
     return(df)
 }
 
-store_graph_result <- function(api_host, graph, sepsets, df, job_id, send_sepsets, opt) {
+estimate_weight <- function(from_node, to_node, graph, df, continuous=FALSE) {
+    disc_df <- if(continuous) discretize(df) else df
+    from_node_name <- colnames(df)[strtoi(from_node)]
+    to_node_name <- colnames(df)[strtoi(to_node)]
+
+    # expression <- causal.effect(to_node_name, from_node_name, G=igraph.from.graphNEL(graph), expr=FALSE)
+    # parents <- sapply(unlist(inEdges(from_node, graph)), function(x) colnames(df)[strtoi(x)])
+
+    # Only mutual information for now
+    mi <- round(mutinformation(disc_df[[from_node_name]], disc_df[[to_node_name]]), digits = 4)
+    # cmi <- condinformation(disc_df[[from_node_name]], disc_df[[to_node_name]], disc_df[parents])
+    return(mi)
+}
+
+store_graph_result <- function(api_host, graph, sepsets, df, job_id, independence_test, send_sepsets, meta_results) {
     edges <- edges(graph)
     edge_list <- list(from_node=c(), to_node=c())
     node_list <- c()
@@ -51,6 +66,13 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, send_sepset
         for (edge in edges[[node]]){
             edge_list[['from_node']][[i]] <- colnames(df)[strtoi(node)]
             edge_list[['to_node']][[i]] <- colnames(df)[strtoi(edge)]
+
+            weight <- estimate_weight(
+                node, edge, graph, df,
+                continuous=(independence_test != 'binCI' && independence_test != 'disCI')
+            )
+            edge_list[['weight']][[i]] <- weight
+
             i <- i + 1
         }
     }
@@ -85,7 +107,7 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, send_sepset
         job_id=strtoi(job_id),
         node_list=node_list,
         edge_list=if(nrow(edge_list) == 0) list() else edge_list,
-        meta_results=opt,
+        meta_results=meta_results,
         sepset_list=if(nrow(sepset_list) == 0) list() else sepset_list
     ), auto_unbox=TRUE)
     

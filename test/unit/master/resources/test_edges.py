@@ -15,11 +15,12 @@ class EdgeTest(BaseResourceTest):
 
         # Then
         assert len(results) == len(edges)
-        edge_ids = {e.id for e in edges}
+        edge_ids = {e.id: e for e in edges}
         for edge in results:
             assert edge['result_id'] == result.id
-            assert edge['id'] in edge_ids
-            edge_ids.remove(edge['id'])
+            assert edge['id'] in edge_ids.keys()
+            assert edge['weight'] == edge_ids[edge['id']].weight
+            del edge_ids[edge['id']]
         assert len(edge_ids) == 0
 
     def test_returns_my_edge(self):
@@ -32,3 +33,4 @@ class EdgeTest(BaseResourceTest):
         # Then
         assert result['id'] == edge.id
         assert result['result_id'] == edge.result_id
+        assert result['weight'] == edge.weight

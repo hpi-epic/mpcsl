@@ -29,9 +29,11 @@ class GaussExecutorTest(BaseIntegrationTest):
         assert result.start_time == job.start_time
 
         nodes = db.session.query(Node).filter_by(dataset_id=job.experiment.dataset_id).all()
-        for node in nodes:
-            assert node.name in ['a', 'b', 'c']
-        assert len(nodes) == 3
+        edges = db.session.query(Edge).filter_by(result=result).all()
+        for edge in edges:
+            assert edge.from_node in nodes
+            assert edge.from_node in nodes
+        assert len(edges) > 0  # TODO
 
 
 class DiscreteExecutorTest(BaseIntegrationTest):
@@ -53,9 +55,11 @@ class DiscreteExecutorTest(BaseIntegrationTest):
         assert result.start_time == job.start_time
 
         nodes = db.session.query(Node).filter_by(dataset_id=job.experiment.dataset_id).all()
-        for node in nodes:
-            assert node.name in ['a', 'b', 'c']
-        assert len(nodes) == 3
+        edges = db.session.query(Edge).filter_by(result=result).all()
+        for edge in edges:
+            assert edge.from_node in nodes
+            assert edge.from_node in nodes
+        assert len(edges) > 0  # TODO
 
 
 class BinaryExecutorTest(BaseIntegrationTest):
@@ -77,9 +81,11 @@ class BinaryExecutorTest(BaseIntegrationTest):
         assert result.start_time == job.start_time
 
         nodes = db.session.query(Node).filter_by(dataset_id=job.experiment.dataset_id).all()
-        for node in nodes:
-            assert node.name in ['a', 'b', 'c']
-        assert len(nodes) == 3
+        edges = db.session.query(Edge).filter_by(result=result).all()
+        for edge in edges:
+            assert edge.from_node in nodes
+            assert edge.from_node in nodes
+        assert len(edges) > 0  # TODO
 
 
 class SepsetExecutorTest(BaseIntegrationTest):
@@ -110,7 +116,7 @@ class SepsetExecutorTest(BaseIntegrationTest):
             node_set.remove(node.name)
         assert len(node_set) == 0
 
-        edges = db.session.query(Edge).all()
+        edges = db.session.query(Edge).filter_by(result=result).all()
         edge_set = {
             ('V1', 'V3'): 0.4803,
             ('V2', 'V3'): 0.2127,

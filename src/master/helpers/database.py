@@ -29,9 +29,7 @@ def add_dataset_nodes(dataset):
     else:
         session = db.session
 
-    result = session.execute(dataset.load_query)
-
-    result = result.fetchone()
+    result = session.execute(dataset.load_query).fetchone()
 
     for key in result.keys():
         node = Node(name=key, dataset=dataset)

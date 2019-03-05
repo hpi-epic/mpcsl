@@ -32,7 +32,6 @@ class GaussExecutorTest(BaseIntegrationTest):
         for edge in edges:
             assert edge.from_node in nodes
             assert edge.from_node in nodes
-        assert len(edges) > 0  # TODO
 
 
 class DiscreteExecutorTest(BaseIntegrationTest):
@@ -57,7 +56,6 @@ class DiscreteExecutorTest(BaseIntegrationTest):
         for edge in edges:
             assert edge.from_node in nodes
             assert edge.from_node in nodes
-        assert len(edges) > 0  # TODO
 
 
 class BinaryExecutorTest(BaseIntegrationTest):
@@ -82,7 +80,6 @@ class BinaryExecutorTest(BaseIntegrationTest):
         for edge in edges:
             assert edge.from_node in nodes
             assert edge.from_node in nodes
-        assert len(edges) > 0  # TODO
 
 
 class SepsetExecutorTest(BaseIntegrationTest):

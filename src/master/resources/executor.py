@@ -1,14 +1,11 @@
-import os
 from datetime import datetime
-from subprocess import Popen
 from flask_restful_swagger_2 import swagger
 
-from flask import current_app
 from flask_restful import Resource, abort
 
 from src.master.config import API_HOST, LOAD_SEPARATION_SET, DOCKER_EXECUTION_NETWORK
 from src.master.helpers.docker import get_client
-from src.master.helpers.io import marshal, get_logfile_name
+from src.master.helpers.io import marshal
 from src.db import db
 from src.models import Job, JobSchema, JobStatus, Experiment
 from src.master.helpers.database import check_dataset_hash

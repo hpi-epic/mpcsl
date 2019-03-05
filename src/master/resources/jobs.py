@@ -1,10 +1,7 @@
-import os
-import signal
 from datetime import datetime
 from decimal import Decimal
-from subprocess import Popen, PIPE
 
-from flask import current_app, send_file, Response, request
+from flask import current_app, Response, request
 from flask_restful import Resource, abort, reqparse
 from flask_restful_swagger_2 import swagger
 from marshmallow import fields, Schema
@@ -14,7 +11,7 @@ from ijson.common import ObjectBuilder
 from src.db import db
 from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET, RESULT_WRITE_BUFF_SIZE
 from src.master.helpers.docker import get_client
-from src.master.helpers.io import marshal, remove_logs, get_logfile_name, InvalidInputData
+from src.master.helpers.io import marshal, InvalidInputData
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
 from src.models.base import SwaggerMixin

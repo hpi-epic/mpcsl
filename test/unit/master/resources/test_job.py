@@ -1,6 +1,4 @@
 from datetime import datetime
-import signal
-import factory
 from unittest.mock import patch, MagicMock
 
 from src.db import db

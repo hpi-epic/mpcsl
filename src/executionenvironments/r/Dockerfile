@@ -1,10 +1,6 @@
-FROM r-base
+FROM danthe1/mpci_r
 
-RUN apt-get update && apt-get install -y libv8-dev libcurl4-openssl-dev libssl-dev
-RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
-
-COPY ./requirements.r /scripts/requirements.r
-WORKDIR ./scripts
+COPY ./requirements.r ./requirements.r
 RUN Rscript requirements.r
 COPY . /scripts
 ENTRYPOINT ["Rscript"]

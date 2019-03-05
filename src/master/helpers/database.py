@@ -17,11 +17,13 @@ def check_dataset_hash(dataset):
 
     try:
         result = session.execute(dataset.load_query).fetchone()
+        num_of_obs = session.execute(f"SELECT COUNT(*) FROM ({dataset.load_query}) _subquery_").fetchone()[0]
     except DatabaseError:
         raise BadRequest(f'Could not execute query "{dataset.load_query}" on database "{dataset.remote_db}"')
 
     hash = blake2b()
-    hash.update(str(result).encode())
+    concatenated_result = str(result) + str(num_of_obs)
+    hash.update(concatenated_result.encode())
 
     return str(hash.hexdigest()) == dataset.content_hash
 

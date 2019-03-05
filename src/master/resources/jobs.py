@@ -297,13 +297,13 @@ class JobLogsResource(Resource):
             },
             {
                 'name': 'offset',
-                'description': 'Output logs starting with line OFFSET',
+                'description': 'Output logs starting with line n',
                 'in': 'query',
                 'type': 'integer',
             },
             {
-                'name': 'limit',
-                'description': 'Output only the last LIMIT lines',
+                'name': 'last',
+                'description': 'Output only the last n lines',
                 'in': 'query',
                 'type': 'integer'
             }
@@ -327,21 +327,19 @@ class JobLogsResource(Resource):
 
         parser = reqparse.RequestParser()
         parser.add_argument('offset', required=False, type=int, store_missing=False)
-        parser.add_argument('limit', required=False, type=int, store_missing=False)
+        parser.add_argument('last', required=False, type=int, store_missing=False)
         args = parser.parse_args()
         offset = args.get('offset', 0)
-        limit = args.get('limit', 0)
+        last = args.get('last', 0)
 
         client = get_client()
         log = client.containers.get(job.container_id).logs().decode()
 
         log = log.split('\n')
-        if offset > 0 and limit > 0:
-            log = log[offset:limit]
-        if offset > 0 and limit == 0:
+        if offset > 0 and last == 0:
             log = log[offset:]
-        if offset == 0 and limit > 0:
-            log = log[:limit]
+        if offset == 0 and last > 0:
+            log = log[-last:]
         log = "\n".join(log)
 
         return Response(log, mimetype='text/plain')

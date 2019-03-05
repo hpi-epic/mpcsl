@@ -6,7 +6,7 @@ services:
   - docker
 install:
   - cp confdefault/* conf/
-  - docker-compose build
+  - ./build.sh
 script:
   - docker-compose run backend flake8
   - docker-compose run backend flask db upgrade

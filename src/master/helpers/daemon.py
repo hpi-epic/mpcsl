@@ -39,7 +39,8 @@ class JobDaemon(Thread):
                 for job in jobs:
                     try:
                         container = client.containers.get(job.container_id)
-                        if not container.status != "running":
+                        self.app.logger.info("Job {} ({}) is in state {}".format(job.id, job.container_id, container.status))
+                        if container.status == "exited":
                             self.app.logger.warning('Job ' + str(job.id) + ' failed')
                             job.status = JobStatus.error
                     except docker.errors.NotFound:

@@ -7,10 +7,29 @@ from sqlalchemy import inspect
 from marshmallow.utils import from_iso
 
 from src.db import db
+from src.master.helpers.database import add_dataset_nodes
 from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource
-from src.models import Dataset
+from src.models import Dataset, Node
 from test.factories import DatasetFactory
 from .base import BaseResourceTest
+
+
+def create_database_table():
+    db.session.execute("""
+                CREATE TABLE IF NOT EXISTS test_data (
+                    a float,
+                    b float,
+                    c float
+                );
+            """)
+
+    mean = [0, 5, 10]
+    cov = [[1, 0, 0], [0, 10, 0], [0, 0, 20]]
+    source = np.random.multivariate_normal(mean, cov, size=50)
+    for l in source:
+        db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+    db.session.commit()
+    return source
 
 
 class DatasetTest(BaseResourceTest):
@@ -43,21 +62,11 @@ class DatasetTest(BaseResourceTest):
 
     def test_create_new_data_set(self):
         # Given
-        db.session.execute("""
-            CREATE TABLE IF NOT EXISTS test_data (
-                a float,
-                b float,
-                c float
-            );
-        """)
-        mean = [0, 5, 10]
-        cov = [[1, 0, 0], [0, 10, 0], [0, 0, 20]]
-        source = np.random.multivariate_normal(mean, cov, size=50)
-        for l in source:
-            db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+        create_database_table()
 
         data = factory.build(dict, FACTORY_CLASS=DatasetFactory)
         data['load_query'] = 'SELECT * FROM test_data'
+        assert len(db.session.query(Node).all()) == 0
 
         # When
         result = self.post(self.url_for(DatasetListResource), json=data)
@@ -66,27 +75,15 @@ class DatasetTest(BaseResourceTest):
         # Then
         assert ds.load_query == data['load_query'] == result['load_query']
 
+        nodes = db.session.query(Node).filter_by(dataset=ds).all()
+        for node in nodes:
+            assert node.name in ['a', 'b', 'c']
+        assert len(nodes) == 3
+
     def test_returns_the_correct_dataset(self):
         # Given
-        ds = DatasetFactory(
-            load_query="SELECT * FROM test_data"
-        )
-
-        db.session.execute("""
-            CREATE TABLE IF NOT EXISTS test_data (
-                a float,
-                b float,
-                c float
-            );
-        """)
-
-        mean = [0, 5, 10]
-        cov = [[1, 0, 0], [0, 10, 0], [0, 0, 20]]
-        source = np.random.multivariate_normal(mean, cov, size=50)
-        for l in source:
-            db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
-
-        db.session.commit()
+        ds = DatasetFactory(load_query="SELECT * FROM test_data")
+        source = create_database_table()
 
         # When
         result = self.test_client.get(self.url_for(DatasetLoadResource, dataset_id=ds.id))
@@ -102,11 +99,17 @@ class DatasetTest(BaseResourceTest):
 
     def test_delete_dataset(self):
         # Given
-        ex = DatasetFactory()
+        create_database_table()
+        dataset = DatasetFactory(
+            load_query="SELECT * FROM test_data"
+        )
+        add_dataset_nodes(dataset)
+        assert len(db.session.query(Node).all()) == 3
 
         # When
-        result = self.delete(self.url_for(DatasetResource, dataset_id=ex.id))
+        result = self.delete(self.url_for(DatasetResource, dataset_id=dataset.id))
 
         # Then
-        assert result['id'] == ex.id
-        assert inspect(ex).detached is True
+        assert result['id'] == dataset.id
+        assert inspect(dataset).detached is True
+        assert len(db.session.query(Node).all()) == 0

@@ -125,7 +125,7 @@ class JobTest(BaseResourceTest):
                 'X1', 'X2', 'X3'
             ],
             'edge_list': [
-                {'from_node': 'X1', 'to_node': 'X2'}
+                {'from_node': 'X1', 'to_node': 'X2', 'weight': 1.23}
             ],
             'sepset_list': [
             ],
@@ -141,11 +141,13 @@ class JobTest(BaseResourceTest):
         for node in db.session.query(Node):
             assert node.name in data['node_list']
         for edge in data['edge_list']:
-            assert db.session.query(Edge).filter(
+            db_edge = db.session.query(Edge).filter(
                 Edge.from_node.has(name=edge['from_node'])
             ).filter(
                 Edge.to_node.has(name=edge['to_node'])
-            ).first() is not None
+            ).first()
+            assert db_edge is not None
+            assert db_edge.weight == edge['weight']
 
     def test_submit_results_with_invalid_order(self):
         # Given

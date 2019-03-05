@@ -253,7 +253,8 @@ class JobResultResource(Resource):
                 edge = Edge(
                     from_node_id=node_mapping[element['from_node']].id,
                     to_node_id=node_mapping[element['to_node']].id,
-                    result_id=result.id
+                    result_id=result.id,
+                    weight=element.get('weight', None)
                 )
                 edges.append(edge)
 

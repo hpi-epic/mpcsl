@@ -70,7 +70,7 @@ class JobFactory(BaseFactory):
 
     experiment = factory.SubFactory(ExperimentFactory)
     start_time = factory.Faker('date_time')
-    pid = factory.Faker('pyint')
+    container_id = factory.Faker('md5')
     status = JobStatus.running
 
 

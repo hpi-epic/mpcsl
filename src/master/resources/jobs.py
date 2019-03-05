@@ -84,10 +84,8 @@ class JobResource(Resource):
         job = Job.query.get_or_404(job_id)
 
         if job.status == JobStatus.running:
-            try:
-                os.killpg(os.getpgid(job.pid), signal.SIGTERM)
-            except ProcessLookupError:
-                pass
+            client = get_client()
+            client.containers.get(job.container_id).kill()
             job.status = JobStatus.cancelled
         else:
             job.status = JobStatus.hidden

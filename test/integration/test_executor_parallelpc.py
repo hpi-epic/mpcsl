@@ -1,4 +1,5 @@
 import os
+import socket
 
 import pytest
 import requests
@@ -88,10 +89,11 @@ class BinaryExecutorTest(BaseIntegrationTest):
 class SepsetExecutorTest(BaseIntegrationTest):
 
     PATCHES = {'src.master.resources.jobs.LOAD_SEPARATION_SET': True,
-               'src.master.executor.executor.LOAD_SEPARATION_SET': True}
+               'src.master.resources.executor.LOAD_SEPARATION_SET': True}
 
     @pytest.mark.run(order=-9)
     def test_r_execution_with_sepsets(self):
+        print(socket.gethostname())
         # Given
         ex = ExperimentFactory(dataset=self.setup_dataset_cooling_house(), algorithm__script_filename='parallelpc.r')
         ex.parameters['alpha'] = 0.05

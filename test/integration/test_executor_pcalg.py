@@ -85,7 +85,7 @@ class BinaryExecutorTest(BaseIntegrationTest):
 class SepsetExecutorTest(BaseIntegrationTest):
 
     PATCHES = {'src.master.resources.jobs.LOAD_SEPARATION_SET': True,
-               'src.master.executor.executor.LOAD_SEPARATION_SET': True}
+               'src.master.resources.executor.LOAD_SEPARATION_SET': True}
 
     @pytest.mark.run(order=-1)
     def test_r_execution_with_sepsets(self):

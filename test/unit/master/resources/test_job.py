@@ -1,8 +1,7 @@
 from datetime import datetime
 import signal
 import factory
-from unittest.mock import patch
-
+from unittest.mock import patch, MagicMock
 
 from src.db import db
 from src.master.resources.jobs import JobListResource, JobResource, JobResultResource, ExperimentJobListResource
@@ -55,7 +54,7 @@ class JobTest(BaseResourceTest):
 
         # Then
         assert result['id'] == job.id
-        assert result['pid'] == job.pid
+        assert result['container_id'] == job.container_id
 
     def test_returns_jobs_for_experiment(self):
         # Given
@@ -83,19 +82,17 @@ class JobTest(BaseResourceTest):
         # Given
         job = JobFactory()
         job.status = JobStatus.running
-        job_pgid = factory.Faker('pyint')
 
         # When
-        with patch('src.master.resources.jobs.os.getpgid', return_value=job_pgid) as mock_pgid:
-            with patch('src.master.resources.jobs.os.killpg') as mock_killpg:
-                result = self.delete(self.url_for(JobResource, job_id=job.id))
-
-                mock_pgid.assert_called_once_with(job.pid)
-                mock_killpg.assert_called_once_with(job_pgid, signal.SIGTERM)
+        m = MagicMock()
+        with patch('src.master.resources.jobs.get_client', m):
+            result = self.delete(self.url_for(JobResource, job_id=job.id))
 
         # Then
         assert result['id'] == job.id
         assert result['status'] == JobStatus.cancelled
+        m.assert_called_once()
+        m.return_value.containers.get.assert_called_once_with(job.container_id)
 
     def test_hide_job(self):
         # Given

@@ -1,4 +1,3 @@
-import os
 import socket
 
 import pytest
@@ -6,7 +5,6 @@ import requests
 
 from src.db import db
 from src.master.resources import JobLogsResource
-from src.master.helpers.io import get_logfile_name
 from src.models import Node, Sepset, Edge
 from test.factories import ExperimentFactory
 from .base import BaseIntegrationTest

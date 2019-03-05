@@ -87,7 +87,7 @@ class AppFactory(object):
                                     .filter(Algorithm.name == data['name']).one_or_none():
                                 alg = Algorithm(**data)
                                 self.db.session.add(alg)
-                                self.db.session.commit()
+                        self.db.session.commit()
 
     def set_up_daemon(self, force=False):
         """

@@ -53,7 +53,7 @@ docker-compose up
 
 ### Setup with user interface
 
-As the user interface files are stored in a different repository (https://github.com/threxx/mpci-frontend),
+As the user interface files are stored in a different [repository](https://github.com/VictorKuenstler/mpci-frontend),
 you have to clone the repo using:
 
 ```

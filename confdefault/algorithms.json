@@ -8,8 +8,8 @@
       "alpha": {
         "type": "float",
         "required": true,
-        "minimum": 0,
-        "maximum": 1
+        "minimum": 0.0,
+        "maximum": 1.0
       },
       "independence_test": {
         "type": "enum",
@@ -45,8 +45,8 @@
       "alpha": {
         "type": "float",
         "required": true,
-        "minimum": 0,
-        "maximum": 1
+        "minimum": 0.0,
+        "maximum": 1.0
       },
       "independence_test": {
         "type": "enum",

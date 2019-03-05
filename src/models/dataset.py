@@ -18,10 +18,13 @@ def create_dataset_hash(context):
     else:
         session = db.session
 
-    result = session.execute(context.get_current_parameters()['load_query']).fetchone()
+    load_query = context.get_current_parameters()['load_query']
+    result = session.execute(load_query).fetchone()
+    num_of_obs = session.execute(f"SELECT COUNT(*) FROM ({load_query}) _subquery_").fetchone()[0]
 
     hash = blake2b()
-    hash.update(str(result).encode())
+    concatenated_result = str(result) + str(num_of_obs)
+    hash.update(concatenated_result.encode())
 
     return str(hash.hexdigest())
 

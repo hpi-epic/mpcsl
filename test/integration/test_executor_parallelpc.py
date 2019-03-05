@@ -209,9 +209,3 @@ class LogExecutorTest(BaseIntegrationTest):
         assert 'Load dataset from' not in limit_log.text
         assert 'Successfully loaded dataset' not in limit_log.text
         assert 'Successfully executed job' in limit_log.text
-
-        logfile = get_logfile_name(job.id)
-        assert os.path.isfile(logfile)
-        delete_request = requests.delete(self.url_for(JobLogsResource, job_id=job.id))
-        assert delete_request.status_code == 200
-        assert not os.path.isfile(logfile)

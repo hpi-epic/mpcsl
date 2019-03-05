@@ -104,7 +104,7 @@ class DatasetListResource(Resource):
 
             db.session.commit()
         except DatabaseError:
-            raise BadRequest(f'Could not execute query {ds.load_query} on database "{ds.remote_db}"')
+            raise BadRequest(f'Could not execute query "{ds.load_query}" on database "{ds.remote_db}"')
 
         return marshal(DatasetSchema, ds)
 

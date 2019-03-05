@@ -1,7 +1,9 @@
-from flask_restful import Resource
+from flask import Response
+from flask_restful import Resource, reqparse
 from flask_restful_swagger_2 import swagger
 from marshmallow import fields
 import networkx as nx
+from werkzeug.exceptions import BadRequest
 
 from src.db import db
 from src.master.helpers.io import marshal
@@ -85,6 +87,14 @@ class GraphExportResource(Resource):
                 'in': 'path',
                 'type': 'integer',
                 'required': True
+            },
+            {
+                'name': 'format',
+                'description': 'Graph export format',
+                'in': 'query',
+                'type': 'string',
+                'enum': ['GEXF', 'GraphML', 'GML'],
+                'default': 'GEXF'
             }
         ],
         'responses': get_default_response(ResultLoadSchema.get_swagger()),
@@ -92,15 +102,27 @@ class GraphExportResource(Resource):
     })
     def get(self, result_id):
         result = Result.query.get_or_404(result_id)
-        result_json = marshal(ResultLoadSchema, result)
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('format', required=False, type=str, store_missing=False)
+        args = parser.parse_args()
+        format_type = args.get('format', 'gexf').lower()
+        supported_types = ['gexf', 'graphml', 'gml']
+        if format_type not in supported_types:
+            raise BadRequest(f'Graph format `{format_type}` is not supported. Supported types are: {supported_types}')
+
         nodes = Node.query.filter_by(dataset_id=result.job.experiment.dataset_id).all()
         edges = Edge.query.filter_by(result_id=result_id).all()
 
-        # result_json['nodes'] = marshal(NodeSchema, nodes, many=True)
-
-        graph = nx.Graph()
+        graph = nx.DiGraph()
         for node in nodes:
             graph.add_node(node.id, name=node.name)
-        for edge in result_json.edges:
+        for edge in edges:
             graph.add_edge(edge.from_node, edge.to_node, weight=edge.weight)
-        return nx.write_gexf(graph, f'result_{result_id}.gexf')
+
+        if format_type == 'gexf':
+            return Response(nx.generate_gexf(graph), mimetype='text/xml')
+        elif format_type == 'graphml':
+            return Response(nx.generate_graphml(graph), mimetype='text/xml')
+        elif format_type == 'gml':
+            return Response(nx.generate_gml(graph, nx.readwrite.gml.literal_stringizer), mimetype='text/plain')

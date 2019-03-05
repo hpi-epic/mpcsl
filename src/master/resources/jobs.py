@@ -1,5 +1,6 @@
 import os
 import signal
+from codecs import getreader
 from datetime import datetime
 from decimal import Decimal
 from subprocess import Popen, PIPE

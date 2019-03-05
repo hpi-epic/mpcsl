@@ -19,7 +19,7 @@ def check_dataset_hash(dataset):
         result = session.execute(dataset.load_query).fetchone()
         num_of_obs = session.execute(f"SELECT COUNT(*) FROM ({dataset.load_query}) _subquery_").fetchone()[0]
     except DatabaseError:
-        raise BadRequest(f'Could not execute query {dataset.load_query} on database "{dataset.remote_db}"')
+        raise BadRequest(f'Could not execute query "{dataset.load_query}" on database "{dataset.remote_db}"')
 
     hash = blake2b()
     concatenated_result = str(result) + str(num_of_obs)
@@ -39,7 +39,7 @@ def add_dataset_nodes(dataset):
     try:
         result = session.execute(dataset.load_query).fetchone()
     except DatabaseError:
-        raise BadRequest(f'Could not execute query {dataset.load_query} on database "{dataset.remote_db}"')
+        raise BadRequest(f'Could not execute query "{dataset.load_query}" on database "{dataset.remote_db}"')
 
     for key in result.keys():
         node = Node(name=key, dataset=dataset)

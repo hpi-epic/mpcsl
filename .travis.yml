@@ -6,7 +6,10 @@ services:
   - docker
 install:
   - cp confdefault/* conf/
-  - ./build.sh
+  - cd src/executionenvironments/r
+  - docker build -t mpci_execution_r .
+  - cd ../../..
+  - docker-compose build
 script:
   - docker-compose run backend flake8
   - docker-compose run backend flask db upgrade

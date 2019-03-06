@@ -125,4 +125,4 @@ class DatasetTest(BaseResourceTest):
             result = self.get(self.url_for(DatasetAvailableSourcesResource))
 
         # Then
-        assert result['data_sources'] == ['HANA']
+        assert result['data_sources'] == ['HANA', 'postgres']

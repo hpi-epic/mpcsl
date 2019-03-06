@@ -1,4 +1,5 @@
 import io
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
@@ -8,8 +9,9 @@ from marshmallow.utils import from_iso
 
 from src.db import db
 from src.master.helpers.database import add_dataset_nodes
-from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource
 from src.models import Dataset, Node
+from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource, \
+    DatasetAvailableSourcesResource
 from test.factories import DatasetFactory
 from .base import BaseResourceTest
 
@@ -113,3 +115,14 @@ class DatasetTest(BaseResourceTest):
         assert result['id'] == dataset.id
         assert inspect(dataset).detached is True
         assert len(db.session.query(Node).all()) == 0
+
+    def test_datasource(self):
+        # Given
+        data_sources = {'HANA': 'hana+pyhdb://'}
+
+        # When
+        with patch('src.master.resources.datasets.DATA_SOURCE_CONNECTIONS', data_sources):
+            result = self.get(self.url_for(DatasetAvailableSourcesResource))
+
+        # Then
+        assert result['data_sources'] == ['HANA', 'postgres']

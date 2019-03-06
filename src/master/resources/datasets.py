@@ -6,13 +6,16 @@ from flask import Response
 from flask_restful import Resource, abort
 from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import BadRequest
+from marshmallow import Schema, fields
 
 from src.db import db
+from src.master.config import DATA_SOURCE_CONNECTIONS
 from src.master.db import data_source_connections
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
 from src.master.helpers.database import add_dataset_nodes
 from src.models import Dataset, DatasetSchema
+from src.models.swagger import SwaggerMixin
 
 
 class DatasetResource(Resource):
@@ -104,7 +107,7 @@ class DatasetListResource(Resource):
 
             db.session.commit()
         except DatabaseError:
-            raise BadRequest(f'Could not execute query "{ds.load_query}" on database "{ds.remote_db}"')
+            raise BadRequest(f'Could not execute query "{ds.load_query}" on database "{ds.data_source}"')
 
         return marshal(DatasetSchema, ds)
 
@@ -138,8 +141,8 @@ class DatasetLoadResource(Resource):
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
 
-        if ds.remote_db is not None:
-            session = data_source_connections.get(ds.remote_db, None)
+        if ds.data_source != 'postgres':
+            session = data_source_connections.get(ds.data_source, None)
             if session is None:
                 abort(400)
         else:
@@ -157,3 +160,21 @@ class DatasetLoadResource(Resource):
         resp = Response(f.getvalue(), mimetype='text/csv')
         resp.headers.add("X-Content-Length", f.tell())
         return resp
+
+
+class DataSourceListSchema(Schema, SwaggerMixin):
+    data_sources = fields.List(fields.String())
+
+
+class DatasetAvailableSourcesResource(Resource):
+    @swagger.doc({
+        'description': 'Returns a list of available data sources.',
+        'responses': get_default_response(DataSourceListSchema.get_swagger()),
+        'produces': ['application/csv'],
+        'tags': ['Executor']
+    })
+    def get(self):
+        val = {
+            'data_sources': list(DATA_SOURCE_CONNECTIONS.keys()) + ["postgres"]
+        }
+        return marshal(DataSourceListSchema, val)

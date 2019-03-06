@@ -4,6 +4,8 @@ import io
 from flask_restful_swagger_2 import swagger
 from flask import Response
 from flask_restful import Resource, abort
+from sqlalchemy.exc import DatabaseError
+from werkzeug.exceptions import BadRequest
 from marshmallow import Schema, fields
 
 from src.db import db
@@ -11,6 +13,7 @@ from src.master.config import DATA_SOURCE_CONNECTIONS
 from src.master.db import data_source_connections
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
+from src.master.helpers.database import add_dataset_nodes
 from src.models import Dataset, DatasetSchema
 from src.models.swagger import SwaggerMixin
 
@@ -71,7 +74,6 @@ class DatasetListResource(Resource):
 
     @swagger.doc({
         'description': 'Creates a dataset',
-        'responses': get_default_response(DatasetSchema.get_swagger()),
         'parameters': [
             {
                 'name': 'dataset',
@@ -80,15 +82,32 @@ class DatasetListResource(Resource):
                 'schema': DatasetSchema.get_swagger(True)
             }
         ],
+        'responses': {
+            '200': {
+                'description': 'Success',
+            },
+            '400': {
+                'description': 'Invalid input data'
+            },
+            '500': {
+                'description': 'Internal server error'
+            }
+        },
         'tags': ['Dataset']
     })
     def post(self):
         data = load_data(DatasetSchema)
 
-        ds = Dataset(**data)
+        try:
+            ds = Dataset(**data)
 
-        db.session.add(ds)
-        db.session.commit()
+            db.session.add(ds)
+
+            add_dataset_nodes(ds)
+
+            db.session.commit()
+        except DatabaseError:
+            raise BadRequest(f'Could not execute query "{ds.load_query}" on database "{ds.remote_db}"')
 
         return marshal(DatasetSchema, ds)
 

@@ -1,5 +1,6 @@
 import os
 import signal
+from codecs import getreader
 from datetime import datetime
 from decimal import Decimal
 from subprocess import Popen, PIPE
@@ -170,7 +171,7 @@ def ijson_parse_items(file, prefixes):
     An iterator returning native Python objects constructed from the events
     under a list of given prefixes.
     '''
-    prefixed_events = iter(ijson.parse(file, buf_size=RESULT_READ_BUFF_SIZE))
+    prefixed_events = iter(ijson.parse(getreader('utf-8')(file), buf_size=RESULT_READ_BUFF_SIZE))
     try:
         while True:
             current, event, value = next(prefixed_events)
@@ -236,8 +237,7 @@ class JobResultResource(Resource):
                         element[key] = float(val)
                 result.meta_results = element
             if prefix == 'node_list.item':
-                node = Node(name=element, result_id=result.id)
-                db.session.add(node)
+                node = Node.query.filter_by(dataset_id=job.experiment.dataset_id, name=element).first()
                 node_mapping[element] = node
             if prefix in ['edge_list.item', 'sepset_list.item']:
                 if len(node_mapping) == 0:
@@ -253,7 +253,8 @@ class JobResultResource(Resource):
                 edge = Edge(
                     from_node_id=node_mapping[element['from_node']].id,
                     to_node_id=node_mapping[element['to_node']].id,
-                    result_id=result.id
+                    result_id=result.id,
+                    weight=element.get('weight', None)
                 )
                 edges.append(edge)
 
@@ -263,7 +264,6 @@ class JobResultResource(Resource):
 
             if prefix == 'sepset_list.item' and LOAD_SEPARATION_SET:
                 sepset = Sepset(
-                    node_names=element['nodes'],
                     statistic=element['statistic'],
                     level=element['level'],
                     from_node_id=node_mapping[element['from_node']].id,

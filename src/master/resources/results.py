@@ -5,7 +5,7 @@ from marshmallow import fields
 from src.db import db
 from src.master.helpers.io import marshal
 from src.master.helpers.swagger import get_default_response
-from src.models import Result, ResultSchema
+from src.models import Result, ResultSchema, Node, NodeSchema
 from src.models.swagger import SwaggerMixin
 
 
@@ -45,8 +45,11 @@ class ResultResource(Resource):
     })
     def get(self, result_id):
         result = Result.query.get_or_404(result_id)
+        result_json = marshal(ResultLoadSchema, result)
+        nodes = Node.query.filter_by(dataset_id=result.job.experiment.dataset_id).all()
+        result_json['nodes'] = marshal(NodeSchema, nodes, many=True)
 
-        return marshal(ResultLoadSchema, result)
+        return result_json
 
     @swagger.doc({
         'description': 'Deletes a single result',

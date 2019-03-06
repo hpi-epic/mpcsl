@@ -141,7 +141,7 @@ class DatasetLoadResource(Resource):
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
 
-        if ds.remote_db is not None:
+        if ds.remote_db != 'postgres':
             session = data_source_connections.get(ds.remote_db, None)
             if session is None:
                 abort(400)
@@ -175,6 +175,6 @@ class DatasetAvailableSourcesResource(Resource):
     })
     def get(self):
         val = {
-            'data_sources': list(DATA_SOURCE_CONNECTIONS.keys())
+            'data_sources': list(DATA_SOURCE_CONNECTIONS.keys()) + ["postgres"]
         }
         return marshal(DataSourceListSchema, val)

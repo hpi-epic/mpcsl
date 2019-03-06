@@ -5,6 +5,7 @@ from marshmallow import fields, validates, Schema, ValidationError
 
 from src.db import db
 from src.master.db import data_source_connections
+from src.master.helpers.database import get_db_session
 from src.master.helpers.io import marshal, load_data
 from src.master.helpers.swagger import get_default_response, oneOf
 from src.models import Node, BaseSchema
@@ -50,12 +51,7 @@ class MarginalDistributionResource(Resource):
         node = Node.query.get_or_404(node_id)
 
         dataset = node.dataset
-        if dataset.remote_db is not None:
-            session = data_source_connections.get(dataset.remote_db, None)
-            if session is None:
-                abort(400)
-        else:
-            session = db.session
+        session = get_db_session(dataset)
 
         result = session.execute(f"SELECT \"{node.name}\" FROM ({dataset.load_query}) _subquery_").fetchall()
         values = [line[0] for line in result]
@@ -174,12 +170,7 @@ class ConditionalDistributionResource(Resource):
     def get(self, node_id):
         node = Node.query.get_or_404(node_id)
         dataset = node.dataset
-        if dataset.remote_db is not None:
-            session = data_source_connections.get(dataset.remote_db, None)
-            if session is None:
-                abort(400)
-        else:
-            session = db.session
+        session = get_db_session(dataset)
 
         conditions = load_data(ConditionalParameterSchema)['conditions']
         base_query = f"SELECT \"{node.name}\" FROM ({dataset.load_query}) _subquery_"

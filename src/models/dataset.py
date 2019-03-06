@@ -10,7 +10,7 @@ from src.models.base import BaseModel, BaseSchema
 
 
 def create_dataset_hash(context):
-    if context.get_current_parameters()['remote_db'] is not None:
+    if context.get_current_parameters()['remote_db'] != "postgres":
         session = data_source_connections.get(context.get_current_parameters()['remote_db'],
                                               None)
         if session is None:
@@ -33,7 +33,7 @@ class Dataset(BaseModel):
     name = db.Column(db.String)
     description = db.Column(db.String)
     load_query = db.Column(db.String)
-    remote_db = db.Column(db.String)
+    remote_db = db.Column(db.String, nullable=False, default="postgres")
     time_created = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
     content_hash = db.Column(db.String, nullable=False, default=create_dataset_hash)
 
@@ -42,7 +42,7 @@ class DatasetSchema(BaseSchema):
     name = field_for(Dataset, 'name', required=True, validate=Length(min=1))
     description = field_for(Dataset, 'description', required=False, allow_none=True, default='')
     load_query = field_for(Dataset, 'load_query', required=True, validate=Length(min=1))
-    remote_db = field_for(Dataset, 'remote_db', validate=OneOf(list(DATA_SOURCE_CONNECTIONS.keys())))
+    remote_db = field_for(Dataset, 'remote_db', validate=OneOf(list(DATA_SOURCE_CONNECTIONS.keys()) + ["postgres"]))
 
     class Meta(BaseSchema.Meta):
         dump_only = ['time_created', 'content_hash']

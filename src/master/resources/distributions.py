@@ -1,10 +1,8 @@
 import numpy as np
 from flask_restful_swagger_2 import swagger
-from flask_restful import Resource, abort
+from flask_restful import Resource
 from marshmallow import fields, validates, Schema, ValidationError
 
-from src.db import db
-from src.master.db import data_source_connections
 from src.master.helpers.database import get_db_session
 from src.master.helpers.io import marshal, load_data
 from src.master.helpers.swagger import get_default_response, oneOf

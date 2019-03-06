@@ -24,6 +24,7 @@ class DatasetFactory(BaseFactory):
     load_query = factory.Faker('file_path')
     description = factory.Faker('text')
     content_hash = factory.Faker('word')
+    data_source = 'postgres'
 
 
 class AlgorithmFactory(BaseFactory):

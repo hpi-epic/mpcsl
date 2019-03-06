@@ -40,7 +40,7 @@ def add_dataset(db):
         db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
     db.session.commit()
 
-    new_dataset = Dataset(name="Example dataset", load_query="SELECT * FROM test_data")
+    new_dataset = Dataset(name="Example dataset", load_query="SELECT * FROM test_data", data_source="postgres")
     db.session.add(new_dataset)
 
     add_dataset_nodes(new_dataset)

@@ -107,7 +107,7 @@ class DatasetListResource(Resource):
 
             db.session.commit()
         except DatabaseError:
-            raise BadRequest(f'Could not execute query "{ds.load_query}" on database "{ds.remote_db}"')
+            raise BadRequest(f'Could not execute query "{ds.load_query}" on database "{ds.data_source}"')
 
         return marshal(DatasetSchema, ds)
 
@@ -141,8 +141,8 @@ class DatasetLoadResource(Resource):
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
 
-        if ds.remote_db != 'postgres':
-            session = data_source_connections.get(ds.remote_db, None)
+        if ds.data_source != 'postgres':
+            session = data_source_connections.get(ds.data_source, None)
             if session is None:
                 abort(400)
         else:

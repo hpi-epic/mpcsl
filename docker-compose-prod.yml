@@ -4,6 +4,7 @@ services:
     container_name: backend
     volumes:
      - ./:/app
+     - /var/run/docker.sock:/var/run/docker.sock
     build: .
     depends_on:
       - database
@@ -23,3 +24,11 @@ services:
     ports:
     - 5000:5000
     restart: on-failure
+  database:
+    container_name: db
+    image: postgres:latest
+    volumes:
+      - /var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 'postgres'

@@ -19,7 +19,6 @@ services:
     image: postgres:latest
     volumes:
       - /var/lib/postgresql/data
-      - /var/run/docker.sock:/var/run/docker.sock
     restart: always
     environment:
       POSTGRES_PASSWORD: 'postgres'

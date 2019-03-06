@@ -101,7 +101,7 @@ class DatasetTest(BaseResourceTest):
 
     def test_datasource(self):
         # Given
-        data_sources = {'HANA': 'hana://'}
+        data_sources = {'HANA': 'hana+pyhdb://'}
 
         # When
         with patch('src.master.resources.datasets.DATA_SOURCE_CONNECTIONS', data_sources):

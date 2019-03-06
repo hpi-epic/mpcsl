@@ -1,3 +1,4 @@
+from codecs import getreader
 from datetime import datetime
 from decimal import Decimal
 
@@ -166,7 +167,7 @@ def ijson_parse_items(file, prefixes):
     An iterator returning native Python objects constructed from the events
     under a list of given prefixes.
     '''
-    prefixed_events = iter(ijson.parse(file, buf_size=RESULT_READ_BUFF_SIZE))
+    prefixed_events = iter(ijson.parse(getreader('utf-8')(file), buf_size=RESULT_READ_BUFF_SIZE))
     try:
         while True:
             current, event, value = next(prefixed_events)

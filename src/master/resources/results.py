@@ -2,8 +2,9 @@ from flask import Response
 from flask_restful import Resource, reqparse
 from flask_restful_swagger_2 import swagger
 from marshmallow import fields
-import networkx as nx
 from werkzeug.exceptions import BadRequest
+import json
+import networkx as nx
 
 from src.db import db
 from src.master.helpers.io import marshal
@@ -93,7 +94,7 @@ class GraphExportResource(Resource):
                 'description': 'Graph export format',
                 'in': 'query',
                 'type': 'string',
-                'enum': ['GEXF', 'GraphML', 'GML'],
+                'enum': ['GEXF', 'GraphML'],
                 'default': 'GEXF'
             }
         ],
@@ -107,7 +108,7 @@ class GraphExportResource(Resource):
         parser.add_argument('format', required=False, type=str, store_missing=False)
         args = parser.parse_args()
         format_type = args.get('format', 'gexf').lower()
-        supported_types = ['gexf', 'graphml', 'gml']
+        supported_types = ['gexf', 'graphml']
         if format_type not in supported_types:
             raise BadRequest(f'Graph format `{format_type}` is not supported. Supported types are: {supported_types}')
 
@@ -120,9 +121,8 @@ class GraphExportResource(Resource):
         for edge in edges:
             graph.add_edge(edge.from_node, edge.to_node, weight=edge.weight)
 
+        headers = {'Content-Disposition': f'attachment;filename=Graph_{result_id}.{format_type}'}
         if format_type == 'gexf':
-            return Response(nx.generate_gexf(graph), mimetype='text/xml')
+            return Response(nx.generate_gexf(graph), mimetype='text/xml', headers=headers)
         elif format_type == 'graphml':
-            return Response(nx.generate_graphml(graph), mimetype='text/xml')
-        elif format_type == 'gml':
-            return Response(nx.generate_gml(graph, nx.readwrite.gml.literal_stringizer), mimetype='text/plain')
+            return Response(nx.generate_graphml(graph), mimetype='text/xml', headers=headers)

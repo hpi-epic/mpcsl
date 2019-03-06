@@ -10,8 +10,18 @@ services:
       - database
     env_file:
       - conf/backend.env
+    environment:
+      - API_HOST=ui:5000
     restart: on-failure
     command: "uwsgi --ini /app/uwsgi.ini"
+  database:
+    container_name: db
+    image: postgres:latest
+    volumes:
+      - /var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 'postgres'
   ui:
     container_name: ui
     build:
@@ -24,11 +34,3 @@ services:
     ports:
     - 5000:5000
     restart: on-failure
-  database:
-    container_name: db
-    image: postgres:latest
-    volumes:
-      - /var/lib/postgresql/data
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: 'postgres'

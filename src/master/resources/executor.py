@@ -1,7 +1,10 @@
 from datetime import datetime
+
+import docker
 from flask_restful_swagger_2 import swagger
 
 from flask_restful import Resource, abort
+from werkzeug.exceptions import BadRequest
 
 from src.master.config import API_HOST, LOAD_SEPARATION_SET, DOCKER_EXECUTION_NETWORK
 from src.master.helpers.docker import get_client
@@ -65,12 +68,17 @@ class ExecutorResource(Resource):
 
         client = get_client()
         command = algorithm.script_filename + " " + " ".join(params)
-        container = client.containers.run(
-            algorithm.docker_image,
-            command,
-            detach=True,
-            network=DOCKER_EXECUTION_NETWORK
-        )
+        try:
+            container = client.containers.run(
+                algorithm.docker_image,
+                command,
+                detach=True,
+                network=DOCKER_EXECUTION_NETWORK
+            )
+        except docker.errors.ImageNotFound:
+            raise BadRequest(
+                f'Image {algorithm.docker_image} not found. Did you build '
+                f'the containers available in /src/executionenvironments?')
 
         new_job.container_id = container.id
         db.session.commit()

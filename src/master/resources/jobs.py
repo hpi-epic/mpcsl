@@ -11,7 +11,7 @@ from ijson.common import ObjectBuilder
 
 from src.db import db
 from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET, RESULT_WRITE_BUFF_SIZE
-from src.master.helpers.docker import get_client
+from src.master.helpers.docker import get_container
 from src.master.helpers.io import marshal, InvalidInputData
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
@@ -82,8 +82,7 @@ class JobResource(Resource):
         job = Job.query.get_or_404(job_id)
 
         if job.status == JobStatus.running:
-            client = get_client()
-            client.containers.get(job.container_id).kill()
+            get_container(job.container_id).kill()
             job.status = JobStatus.cancelled
         else:
             job.status = JobStatus.hidden
@@ -333,8 +332,7 @@ class JobLogsResource(Resource):
         offset = args.get('offset', 0)
         last = args.get('last', 0)
 
-        client = get_client()
-        log = client.containers.get(job.container_id).logs().decode()
+        log = get_container(job.container_id).logs().decode()
 
         log = log.split('\n')
         if offset > 0 and last == 0:

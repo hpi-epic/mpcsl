@@ -34,7 +34,7 @@ class MarginalDistributionTest(BaseResourceTest):
                            name='MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
 
         # When
-        distribution = self.post(self.url_for(MarginalDistributionResource, node_id=node.id))
+        distribution = self.get(self.url_for(MarginalDistributionResource, node_id=node.id))
 
         # Then
         assert distribution['categorical'] is False
@@ -68,7 +68,7 @@ class MarginalDistributionTest(BaseResourceTest):
                                name='MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
 
             # When
-            distribution = self.post(self.url_for(MarginalDistributionResource, node_id=node.id))
+            distribution = self.get(self.url_for(MarginalDistributionResource, node_id=node.id))
 
             # Then
             assert distribution['categorical'] is True

@@ -45,7 +45,7 @@ class MarginalDistributionResource(Resource):
                                                  ContinuousDistributionSchema]).get_swagger()),
         'tags': ['Node', 'Distribution']
     })
-    def post(self, node_id):
+    def get(self, node_id):
         node = Node.query.get_or_404(node_id)
 
         dataset = node.dataset

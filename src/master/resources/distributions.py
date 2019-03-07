@@ -165,7 +165,7 @@ class ConditionalDistributionResource(Resource):
                                                  ConditionalContinuousDistributionSchema]).get_swagger()),
         'tags': ['Node', 'Distribution']
     })
-    def get(self, node_id):
+    def post(self, node_id):
         node = Node.query.get_or_404(node_id)
         dataset = node.dataset
         session = get_db_session(dataset)

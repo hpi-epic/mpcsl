@@ -83,14 +83,13 @@ class JobTest(BaseResourceTest):
 
         # When
         m = MagicMock()
-        with patch('src.master.resources.jobs.get_client', m):
+        with patch('src.master.resources.jobs.get_container', m):
             result = self.delete(self.url_for(JobResource, job_id=job.id))
 
         # Then
         assert result['id'] == job.id
         assert result['status'] == JobStatus.cancelled
-        m.assert_called_once()
-        m.return_value.containers.get.assert_called_once_with(job.container_id)
+        m.assert_called_one_with(job.container_id)
 
     def test_hide_job(self):
         # Given

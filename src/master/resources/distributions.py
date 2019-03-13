@@ -219,3 +219,77 @@ class ConditionalDistributionResource(Resource):
                 'bin_edges': bin_edges,
                 'conditions': conditions
             })
+
+
+class InterventionalDistributionResource(Resource):
+    @swagger.doc({
+        'description': '',
+        'parameters': [
+            {
+                'name': 'cause_node_id',
+                'description': 'Node identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },
+            {
+                'name': 'effect_node_id',
+                'description': 'Node identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },
+            {
+                'name': 'factor_node_ids',
+                'description': 'Node identifiers',
+                'in': 'path',
+                'type': 'list',
+                'required': True
+            },
+        ],
+        'responses': get_default_response(oneOf([DiscreteDistributionSchema,
+                                                 ContinuousDistributionSchema]).get_swagger()),
+        'tags': ['Node', 'Distribution']
+    })
+    def get(self, cause_node_id, effect_node_id, factor_node_ids):
+        cause_node = Node.query.get_or_404(cause_node_id)
+        effect_node = Node.query.get_or_404(effect_node_id)
+        factor_nodes = [Node.query.get_or_404(factor_node_id) for factor_node_id in factor_node_ids]
+
+        dataset = effect_node.dataset
+        session = get_db_session(dataset)
+
+        categorical_check = session.execute(f"SELECT 1 FROM ({dataset.load_query}) _subquery_ "
+                                            f"HAVING COUNT(DISTINCT \"{effect_node.name}\") <= 10").fetchall()
+        is_categorical = len(categorical_check) > 0
+
+        if is_categorical:  # Categorical
+            # cause c, effect e, factors F
+            # P(e|do(c)) = \Sigma_{F} P(e|c,f) P(f)
+            category_query = session.execute(f"SELECT DISTINCT \"{effect_node.name}\" "
+                                             f"FROM ({dataset.load_query}) _subquery_").fetchall()
+            categories = [row[0] for row in category_query]
+            num_of_obs = session.execute(f"SELECT COUNT(*) FROM ({dataset.load_query}) _subquery_").fetchone()[0]
+
+            probabilities = []
+            for category in categories:
+                if len(probabilities) == len(categories) - 1:  # Probabilities will sum to 1
+                    probabilities.append(1 - sum(probabilities))
+                else:
+                    pass
+
+            bins = dict([(str(cat), round(num_of_obs * float(prob))) for cat, prob in zip(categories, probabilities)])
+            return marshal(DiscreteDistributionSchema, {
+                'node': effect_node_id,
+                'dataset': dataset,
+                'bins': bins
+            })
+        else:
+            raise Exception('Not implemented')
+            # hist, bin_edges = np.histogram(values, bins='auto', density=False)
+            # return marshal(ContinuousDistributionSchema, {
+            #     'node': node,
+            #     'dataset': dataset,
+            #     'bins': hist,
+            #     'bin_edges': bin_edges
+            # })

@@ -2,10 +2,18 @@ from hashlib import blake2b
 
 from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import BadRequest
+import networkx as nx
 
 from src.db import db
 from src.master.db import data_source_connections
 from src.models import Node
+
+
+def load_networkx_graph(result):
+    node_list = [node.id for node in result.job.experiment.dataset.nodes]
+    edge_list = [(edge.from_node_id, edge.to_node_id) for edge in result.edges]
+    graph = nx.DiGraph(node_list, edge_list)
+    return graph
 
 
 def check_dataset_hash(dataset):

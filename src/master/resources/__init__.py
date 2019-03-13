@@ -5,7 +5,7 @@ from .results import ResultListResource, ResultResource
 from .jobs import JobListResource, JobResource, JobLogsResource, JobResultResource, \
     ExperimentJobListResource
 from .algorithms import AlgorithmResource, AlgorithmListResource
-from .nodes import NodeResource, ResultNodeListResource, NodeContextResource
+from .nodes import NodeResource, ResultNodeListResource, NodeContextResource, NodeConfounderResource
 from .edges import EdgeResource, ResultEdgeListResource
 from .sepsets import SepsetResource, ResultSepsetListResource
 from .distributions import MarginalDistributionResource, ConditionalDistributionResource
@@ -29,6 +29,7 @@ __all__ = [
     'NodeResource',
     'ResultNodeListResource',
     'NodeContextResource',
+    'NodeConfounderResource',
     'EdgeResource',
     'ResultEdgeListResource',
     'SepsetResource',

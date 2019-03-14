@@ -118,7 +118,7 @@ class ConditionalDistributionTest(BaseResourceTest):
             }
 
             # When
-            distribution = self.get(self.url_for(ConditionalDistributionResource, node_id=node.id), json=data)
+            distribution = self.post(self.url_for(ConditionalDistributionResource, node_id=node.id), json=data)
 
             print(distribution)
             # Then

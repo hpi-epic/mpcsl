@@ -5,7 +5,7 @@ from .resources import DatasetLoadResource, DatasetListResource, \
     AlgorithmResource, AlgorithmListResource, \
     ResultNodeListResource, ResultEdgeListResource, ResultSepsetListResource, GraphExportResource, \
     NodeResource, EdgeResource, SepsetResource, NodeContextResource, MarginalDistributionResource, \
-    ConditionalDistributionResource
+    DatasetAvailableSourcesResource, ConditionalDistributionResource
 from src.master.executor.executor import ExecutorResource
 
 
@@ -19,6 +19,7 @@ def set_up_routes(api):
     api.add_resource(DatasetLoadResource, base_url('/dataset/<int:dataset_id>/load'))
     api.add_resource(DatasetResource, base_url('/dataset/<int:dataset_id>'))
     api.add_resource(DatasetListResource, base_url('/datasets'))
+    api.add_resource(DatasetAvailableSourcesResource, base_url('/datasources'))
     api.add_resource(ExperimentResource, base_url('/experiment/<int:experiment_id>'))
     api.add_resource(ExperimentJobListResource, base_url('/experiment/<int:experiment_id>/jobs'))
     api.add_resource(ExecutorResource, base_url('/experiment/<int:experiment_id>/start'))

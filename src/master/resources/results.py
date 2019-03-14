@@ -9,7 +9,7 @@ import networkx as nx
 from src.db import db
 from src.master.helpers.io import marshal
 from src.master.helpers.swagger import get_default_response
-from src.models import Result, ResultSchema, Node, NodeSchema, Edge
+from src.models import Result, ResultSchema, Node, NodeSchema, Edge, EdgeInformation
 from src.models.swagger import SwaggerMixin
 
 
@@ -108,7 +108,7 @@ class GraphExportResource(Resource):
         parser.add_argument('format', required=False, type=str, store_missing=False)
         args = parser.parse_args()
         format_type = args.get('format', 'gexf').lower()
-        supported_types = ['gexf', 'graphml']
+        supported_types = ['gexf', 'graphml', 'node_link_data.json']
         if format_type not in supported_types:
             raise BadRequest(f'Graph format `{format_type}` is not supported. Supported types are: {supported_types}')
 
@@ -117,12 +117,21 @@ class GraphExportResource(Resource):
 
         graph = nx.DiGraph()
         for node in nodes:
-            graph.add_node(node.id, name=node.name)
+            graph.add_node(node.id, label=node.name)
         for edge in edges:
-            graph.add_edge(edge.from_node, edge.to_node, weight=edge.weight)
+            edge_info = EdgeInformation.query.filter_by(
+                experiment=result.job.experiment, from_node_name=edge.from_node.id, to_node_name=edge.to_node.id)\
+                .one_or_none()
+            graph.add_edge(edge.from_node.id, edge.to_node.id, weight=edge.weight, label=edge_info.annotation)
 
         headers = {'Content-Disposition': f'attachment;filename=Graph_{result_id}.{format_type}'}
         if format_type == 'gexf':
             return Response(nx.generate_gexf(graph), mimetype='text/xml', headers=headers)
         elif format_type == 'graphml':
             return Response(nx.generate_graphml(graph), mimetype='text/xml', headers=headers)
+        elif format_type == 'node_link_data.json':
+            return Response(nx.generate_graphml(json.dumps(
+                # TODO: Ask Victor what would be helpful
+                # Set keys correct (graph creation and json dumps)
+                nx.readwrite.json_graph.node_link_data(graph, {'key': 'id', 'name': 'name'}))),
+                            mimetype='application/json', headers=headers)

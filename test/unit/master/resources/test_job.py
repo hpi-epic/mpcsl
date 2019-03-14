@@ -89,7 +89,7 @@ class JobTest(BaseResourceTest):
         # Then
         assert result['id'] == job.id
         assert result['status'] == JobStatus.cancelled
-        m.assert_called_one_with(job.container_id)
+        m.assert_called_once_with(job.container_id)
 
     def test_hide_job(self):
         # Given

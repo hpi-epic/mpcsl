@@ -10,21 +10,15 @@ class EdgeAnnotation(str, enum.Enum):
 
 
 class EdgeInformation(BaseModel):
-    experiment_id = db.Column(
+    edge_id = db.Column(
         db.Integer,
-        db.ForeignKey('experiment.id'),
+        db.ForeignKey('edge.id'),
         nullable=False
     )
-
-    experiment = db.relationship('Experiment',
-                                 backref=db.backref('edge_informations',
-                                                    cascade="all, delete-orphan"))
+    edge = db.relationship('Edge',
+                           backref=db.backref('edge_information', cascade="all, delete-orphan"))
 
     annotation = db.Column(db.Enum(EdgeAnnotation), nullable=False)
-
-    from_node_name = db.Column(db.String)
-
-    to_node_name = db.Column(db.String)
 
 
 class EdgeInformationSchema(BaseSchema):

@@ -115,14 +115,13 @@ class GraphExportResource(Resource):
         nodes = Node.query.filter_by(dataset_id=result.job.experiment.dataset_id).all()
         edges = Edge.query.filter_by(result_id=result_id).all()
 
-        graph = nx.DiGraph()
+        graph = nx.DiGraph(name=f'Graph_{result_id}')
         for node in nodes:
             graph.add_node(node.id, label=node.name)
         for edge in edges:
-            edge_info = EdgeInformation.query.filter_by(
-                experiment=result.job.experiment, from_node_name=edge.from_node.id, to_node_name=edge.to_node.id)\
-                .one_or_none()
-            graph.add_edge(edge.from_node.id, edge.to_node.id, weight=edge.weight, label=edge_info.annotation)
+            edge_info = EdgeInformation.query.filter_by(edge=edge).one_or_none()
+            edge_label = edge_info.annotation.name if edge_info else ''
+            graph.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label=edge_label, weight=edge.weight)
 
         headers = {'Content-Disposition': f'attachment;filename=Graph_{result_id}.{format_type}'}
         if format_type == 'gexf':

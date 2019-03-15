@@ -82,7 +82,7 @@ class GraphExportResource(Resource):
     supported_types = ['GEXF', 'GraphML', 'GML', 'node_link_data.json']
 
     @swagger.doc({
-        'description': 'Returns the complete graph in a GraphML',
+        'description': 'Returns the complete graph in a graph file format',
         'parameters': [
             {
                 'name': 'result_id',

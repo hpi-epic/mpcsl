@@ -79,6 +79,8 @@ class ResultResource(Resource):
 
 
 class GraphExportResource(Resource):
+    supported_types = ['GEXF', 'GraphML', 'GML', 'node_link_data.json']
+
     @swagger.doc({
         'description': 'Returns the complete graph in a GraphML',
         'parameters': [
@@ -94,7 +96,7 @@ class GraphExportResource(Resource):
                 'description': 'Graph export format',
                 'in': 'query',
                 'type': 'string',
-                'enum': ['GEXF', 'GraphML'],
+                'enum': supported_types,
                 'default': 'GEXF'
             }
         ],
@@ -108,14 +110,13 @@ class GraphExportResource(Resource):
         parser.add_argument('format', required=False, type=str, store_missing=False)
         args = parser.parse_args()
         format_type = args.get('format', 'gexf').lower()
-        supported_types = ['gexf', 'graphml', 'node_link_data.json']
-        if format_type not in supported_types:
-            raise BadRequest(f'Graph format `{format_type}` is not supported. Supported types are: {supported_types}')
+        if format_type not in [x.lower() for x in self.supported_types]:
+            raise BadRequest(f'Graph format `{format_type}` is not one of the supported types: {self.supported_types}')
 
         nodes = Node.query.filter_by(dataset_id=result.job.experiment.dataset_id).all()
         edges = Edge.query.filter_by(result_id=result_id).all()
 
-        graph = nx.DiGraph(name=f'Graph_{result_id}')
+        graph = nx.DiGraph(id=str(result_id), name=f'Graph_{result_id}')
         for node in nodes:
             graph.add_node(node.id, label=node.name)
         for edge in edges:
@@ -128,9 +129,8 @@ class GraphExportResource(Resource):
             return Response(nx.generate_gexf(graph), mimetype='text/xml', headers=headers)
         elif format_type == 'graphml':
             return Response(nx.generate_graphml(graph), mimetype='text/xml', headers=headers)
+        elif format_type == 'gml':
+            return Response(nx.generate_gml(graph), mimetype='text/plain', headers=headers)
         elif format_type == 'node_link_data.json':
-            return Response(nx.generate_graphml(json.dumps(
-                # TODO: Ask Victor what would be helpful
-                # Set keys correct (graph creation and json dumps)
-                nx.readwrite.json_graph.node_link_data(graph, {'key': 'id', 'name': 'name'}))),
+            return Response(json.dumps(nx.readwrite.json_graph.node_link_data(graph)),
                             mimetype='application/json', headers=headers)

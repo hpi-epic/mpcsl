@@ -113,13 +113,10 @@ class GraphExportResource(Resource):
         if format_type not in [x.lower() for x in self.supported_types]:
             raise BadRequest(f'Graph format `{format_type}` is not one of the supported types: {self.supported_types}')
 
-        nodes = Node.query.filter_by(dataset_id=result.job.experiment.dataset_id).all()
-        edges = Edge.query.filter_by(result_id=result_id).all()
-
         graph = nx.DiGraph(id=str(result_id), name=f'Graph_{result_id}')
-        for node in nodes:
+        for node in result.job.experiment.dataset.nodes:
             graph.add_node(node.id, label=node.name)
-        for edge in edges:
+        for edge in result.edges:
             edge_info = EdgeInformation.query.filter_by(edge=edge).one_or_none()
             edge_label = edge_info.annotation.name if edge_info else ''
             graph.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label=edge_label, weight=edge.weight)

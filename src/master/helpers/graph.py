@@ -2,7 +2,7 @@ from itertools import combinations, product
 
 
 # I wish this was more legible, but it is ported over from pcalg::has.new.coll which is a complete mess...
-def creates_collider(self, graph, x, fixed_parents, bi_parents, combination):
+def creates_collider(graph, x, fixed_parents, bi_parents, combination):
         res = False
         if len(combination) > 0 and True:
             if len(fixed_parents) > 0 and True:
@@ -24,8 +24,9 @@ def creates_collider(self, graph, x, fixed_parents, bi_parents, combination):
 
 def get_potential_confounders(graph, cause_node_id):
     all_parents = set(graph.predecessors(cause_node_id))
-    bi_parents = set([node for node in all_parents if graph.has_edge(node, cause_node_id)])
+    bi_parents = set([node for node in all_parents if graph.has_edge(cause_node_id, node)])
     fixed_parents = all_parents - bi_parents
+    print(fixed_parents)
 
     possible_parent_combinations = []
     for i in range(len(bi_parents) + 1):

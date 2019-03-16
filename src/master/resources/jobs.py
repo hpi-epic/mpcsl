@@ -167,10 +167,10 @@ class ResultEndpointSchema(Schema, SwaggerMixin):
 
 
 def ijson_parse_items(file, prefixes):
-    '''
+    """
     An iterator returning native Python objects constructed from the events
     under a list of given prefixes.
-    '''
+    """
     prefixed_events = iter(ijson.parse(getreader('utf-8')(file), buf_size=RESULT_READ_BUFF_SIZE))
     try:
         while True:

@@ -35,3 +35,5 @@ def downgrade():
     op.create_foreign_key('edge_information_experiment_id_fkey', 'edge_information', 'experiment', ['experiment_id'], ['id'])
     op.drop_column('edge_information', 'edge_id')
     # ### end Alembic commands ###
+
+    

@@ -9,7 +9,7 @@ import networkx as nx
 from src.db import db
 from src.master.helpers.io import marshal
 from src.master.helpers.swagger import get_default_response
-from src.models import Result, ResultSchema, Node, NodeSchema, Edge, EdgeInformation
+from src.models import Result, ResultSchema, Node, NodeSchema
 from src.models.swagger import SwaggerMixin
 
 

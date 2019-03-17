@@ -59,11 +59,18 @@ class NodeContextSchema(BaseSchema, SwaggerMixin):
 
 class NodeContextResource(Resource):
     @swagger.doc({
-        'description': 'Returns all nodes for one result',
+        'description': 'Returns neighborhood of a node for one result',
         'parameters': [
             {
                 'name': 'node_id',
                 'description': 'Node identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },
+            {
+                'name': 'result_id',
+                'description': 'Result identifier',
                 'in': 'path',
                 'type': 'integer',
                 'required': True
@@ -72,10 +79,11 @@ class NodeContextResource(Resource):
         'responses': get_default_response(NodeContextSchema.get_swagger()),
         'tags': ['Node']
     })
-    def get(self, node_id):
+    def get(self, node_id, result_id):
         main_node = Node.query.get_or_404(node_id)
         edges = main_node.edge_froms + main_node.edge_tos
-        context_nodes = {n for edge in edges for n in [edge.from_node, edge.to_node] if n != main_node}
+        context_nodes = {n for edge in edges for n in [edge.from_node, edge.to_node]
+                         if n != main_node and edge.result_id == result_id}
 
         return marshal(NodeContextSchema, {
             'main_node': main_node,

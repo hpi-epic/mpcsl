@@ -1,5 +1,3 @@
-import enum
-
 from marshmallow import fields, validates, ValidationError
 from sqlalchemy.ext.mutable import MutableDict
 
@@ -7,16 +5,10 @@ from src.db import db
 from src.models.base import BaseModel, BaseSchema
 
 
-class BackendType(str, enum.Enum):
-    python = "python"
-    cpp = "cpp"
-    R = "R"
-
-
 class Algorithm(BaseModel):
     name = db.Column(db.String, unique=True)
     script_filename = db.Column(db.String)
-    backend = db.Column(db.Enum(BackendType))
+    docker_image = db.Column(db.String)
     description = db.Column(db.String)
     valid_parameters = db.Column(MutableDict.as_mutable(db.JSON))
 

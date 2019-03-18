@@ -2,7 +2,7 @@
   {
     "name": "pcalg",
     "script_filename": "pcalg.r",
-    "backend": "R",
+    "docker_image":  "mpci_execution_r",
     "description": "Standard pcalg R-implementation",
     "valid_parameters": {
       "alpha": {
@@ -39,7 +39,7 @@
   {
     "name": "parallelpc",
     "script_filename": "parallelpc.r",
-    "backend": "R",
+    "docker_image":  "mpci_execution_r",
     "description": "ParallelPC R-implementation",
     "valid_parameters": {
       "alpha": {

@@ -1,7 +1,7 @@
 from .datasets import DatasetLoadResource, DatasetListResource, DatasetResource, \
     DatasetAvailableSourcesResource
 from .experiments import ExperimentListResource, ExperimentResource
-from .results import ResultListResource, ResultResource
+from .results import ResultListResource, ResultResource, GraphExportResource
 from .jobs import JobListResource, JobResource, JobLogsResource, JobResultResource, \
     ExperimentJobListResource
 from .algorithms import AlgorithmResource, AlgorithmListResource
@@ -21,6 +21,7 @@ __all__ = [
     'ExperimentListResource',
     'ExperimentResource',
     'ResultListResource',
+    'GraphExportResource',
     'JobListResource',
     'JobResource',
     'JobLogsResource',

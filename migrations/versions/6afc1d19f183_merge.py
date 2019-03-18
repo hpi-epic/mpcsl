@@ -1,8 +1,8 @@
 """merge
 
-Revision ID: 682a149b755a
-Revises: ad520fd90bcd, 24dfdfe81378
-Create Date: 2019-03-06 11:57:13.159054
+Revision ID: 6afc1d19f183
+Revises: 155fe996403c, 24dfdfe81378
+Create Date: 2019-03-18 14:44:44.174935
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '682a149b755a'
-down_revision = ('ad520fd90bcd', '24dfdfe81378')
+revision = '6afc1d19f183'
+down_revision = ('155fe996403c', '24dfdfe81378')
 branch_labels = None
 depends_on = None
 

@@ -4,6 +4,9 @@
 
 set -e
 
+echo "==> Bootstrap…"
+bash scripts/bootstrap.sh
+
 source conf/backend.env
 if [[ "${MPCI_ENVIRONMENT}" = "production" ]]; then
     COMPOSE_FILE='-f docker-compose-prod.yml'
@@ -12,10 +15,6 @@ elif [[ "${MPCI_ENVIRONMENT}" = "staging" ]]; then
 else
     COMPOSE_FILE='-f docker-compose.yml'
 fi
-
-
-echo "==> Bootstrap…"
-bash scripts/bootstrap.sh
 
 echo "==> Updating database…"
 # run all database migrations to ensure everything is up to date

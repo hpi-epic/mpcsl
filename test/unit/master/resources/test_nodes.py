@@ -62,7 +62,7 @@ class NodeTest(BaseResourceTest):
         # Given
         result = ResultFactory()
         nodes = [NodeFactory(dataset=result.job.experiment.dataset) for _ in range(5)]
-        edges = [EdgeFactory(result=result, from_node=nodes[i], to_node=nodes[j]) for i, j in [
+        edges = [EdgeFactory(result=result, from_node=nodes[i], to_node=nodes[j]) for i, j in [  # noqa
             (0, 2), (2, 0), (1, 2), (2, 1), (2, 3), (4, 2), (4, 1)
         ]]
         cause_node = nodes[2]  # 2 has one set parent, two bidirectional ones, and has causal effect on 3
@@ -72,11 +72,6 @@ class NodeTest(BaseResourceTest):
 
         assert 'confounders' in response
         confounders = response['confounders']
-        print([n.id for n in nodes])
-        print([(e.from_node_id, e.to_node_id) for e in edges])
-
-        print(confounders)
-        print(cause_node.id)
 
         assert len(confounders) == 2
         assert confounders[0] == [nodes[4].id]

@@ -26,7 +26,6 @@ def get_potential_confounders(graph, cause_node_id):
     all_parents = set(graph.predecessors(cause_node_id))
     bi_parents = set([node for node in all_parents if graph.has_edge(cause_node_id, node)])
     fixed_parents = all_parents - bi_parents
-    print(fixed_parents)
 
     possible_parent_combinations = []
     for i in range(len(bi_parents) + 1):

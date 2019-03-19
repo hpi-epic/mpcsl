@@ -21,6 +21,11 @@ if [[ $(diff confdefault/algorithms.json conf/algorithms.json) ]]; then
     diff confdefault/algorithms.json conf/algorithms.json || true
 fi
 
+# build execution environments (separate docker images)
+cd src/executionenvironments/r
+docker build -t mpci_execution_r .
+cd ../../..
+
 source conf/backend.env
 if [[ "${MPCI_ENVIRONMENT}" = "production" ]]; then
     COMPOSE_FILE='-f docker-compose-nginx.yml'
@@ -31,4 +36,4 @@ else
     echo "==> Pull and build everything necessary (backend only)…"
 fi
 
-docker-compose ${COMPOSE_FILE} build --pull
+docker-compose ${COMPOSE_FILE} build

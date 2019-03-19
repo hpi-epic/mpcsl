@@ -5,8 +5,7 @@ language: python
 services:
   - docker
 install:
-  - cp confdefault/* conf/
-  - bash scripts/build.sh
+  - bash scripts/bootstrap.sh
 script:
   - docker-compose run backend flake8
   - docker-compose run backend flask db upgrade

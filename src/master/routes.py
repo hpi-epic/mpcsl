@@ -5,8 +5,8 @@ from .resources import DatasetLoadResource, DatasetListResource, \
     AlgorithmResource, AlgorithmListResource, \
     ResultNodeListResource, ResultEdgeListResource, ResultSepsetListResource, GraphExportResource, \
     NodeResource, EdgeResource, SepsetResource, NodeContextResource, MarginalDistributionResource, \
-    DatasetAvailableSourcesResource, ConditionalDistributionResource, NodeConfounderResource
-from src.master.executor.executor import ExecutorResource
+    DatasetAvailableSourcesResource, NodeConfounderResource ConditionalDistributionResource, \
+    ExecutorResource
 
 
 def base_url(url):

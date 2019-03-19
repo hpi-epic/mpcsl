@@ -23,8 +23,10 @@ def set_up_algorithms(db):
                     if not alg_in_db:
                         alg = Algorithm(**data)
                         db.session.add(alg)
+                        print(f'==> Algorithm `{data["name"]}` added…')
                     else:
                         alg_in_db.update(data)
+                        print(f'==> Algorithm `{data["name"]}` updated…')
                 db.session.commit()
 
 

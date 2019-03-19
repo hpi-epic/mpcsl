@@ -2,7 +2,7 @@ import pytest
 import requests
 
 from src.db import db
-from src.master.executor import ExecutorResource
+from src.master.resources import ExecutorResource
 from test.factories import ExperimentFactory
 from .base import BaseIntegrationTest
 

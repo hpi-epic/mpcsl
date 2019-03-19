@@ -40,7 +40,7 @@ class NodeTest(BaseResourceTest):
         main_node = nodes[1]
 
         # When
-        context = self.get(self.url_for(NodeContextResource, node_id=main_node.id))
+        context = self.get(self.url_for(NodeContextResource, node_id=main_node.id, result_id=result.id))
 
         assert context['main_node']['id'] == main_node.id
 

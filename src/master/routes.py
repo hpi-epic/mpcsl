@@ -3,10 +3,10 @@ from .resources import DatasetLoadResource, DatasetListResource, \
     ExperimentResource, ExperimentListResource, ResultListResource, \
     JobLogsResource, JobResultResource, ExperimentJobListResource, ResultResource, \
     AlgorithmResource, AlgorithmListResource, \
-    ResultNodeListResource, ResultEdgeListResource, ResultSepsetListResource, \
+    ResultNodeListResource, ResultEdgeListResource, ResultSepsetListResource, GraphExportResource, \
     NodeResource, EdgeResource, SepsetResource, NodeContextResource, MarginalDistributionResource, \
-    ConditionalDistributionResource
-from src.master.executor.executor import ExecutorResource
+    DatasetAvailableSourcesResource, \
+    ConditionalDistributionResource, ExecutorResource
 
 
 def base_url(url):
@@ -19,6 +19,7 @@ def set_up_routes(api):
     api.add_resource(DatasetLoadResource, base_url('/dataset/<int:dataset_id>/load'))
     api.add_resource(DatasetResource, base_url('/dataset/<int:dataset_id>'))
     api.add_resource(DatasetListResource, base_url('/datasets'))
+    api.add_resource(DatasetAvailableSourcesResource, base_url('/datasources'))
     api.add_resource(ExperimentResource, base_url('/experiment/<int:experiment_id>'))
     api.add_resource(ExperimentJobListResource, base_url('/experiment/<int:experiment_id>/jobs'))
     api.add_resource(ExecutorResource, base_url('/experiment/<int:experiment_id>/start'))
@@ -32,8 +33,9 @@ def set_up_routes(api):
     api.add_resource(ResultNodeListResource, base_url('/result/<int:result_id>/nodes'))
     api.add_resource(ResultEdgeListResource, base_url('/result/<int:result_id>/edges'))
     api.add_resource(ResultSepsetListResource, base_url('/result/<int:result_id>/sepsets'))
+    api.add_resource(GraphExportResource, base_url('/result/<int:result_id>/export'))
     api.add_resource(NodeResource, base_url('/node/<int:node_id>'))
-    api.add_resource(NodeContextResource, base_url('/node/<int:node_id>/context'))
+    api.add_resource(NodeContextResource, base_url('/node/<int:node_id>/result/<int:result_id>/context'))
     api.add_resource(MarginalDistributionResource, base_url('/node/<int:node_id>/marginal'))
     api.add_resource(ConditionalDistributionResource, base_url('/node/<int:node_id>/conditional'))
     api.add_resource(EdgeResource, base_url('/edge/<int:edge_id>'))

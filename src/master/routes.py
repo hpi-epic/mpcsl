@@ -5,7 +5,7 @@ from .resources import DatasetLoadResource, DatasetListResource, \
     AlgorithmResource, AlgorithmListResource, \
     ResultNodeListResource, ResultEdgeListResource, ResultSepsetListResource, GraphExportResource, \
     NodeResource, EdgeResource, SepsetResource, NodeContextResource, MarginalDistributionResource, \
-    DatasetAvailableSourcesResource, NodeConfounderResource ConditionalDistributionResource, \
+    DatasetAvailableSourcesResource, NodeConfounderResource, ConditionalDistributionResource, \
     ExecutorResource
 
 

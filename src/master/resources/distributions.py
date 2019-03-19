@@ -222,16 +222,10 @@ class ConditionalDistributionResource(Resource):
 
 
 class InterventionalDistributionResource(Resource):
+
     @swagger.doc({
         'description': '',
         'parameters': [
-            {
-                'name': 'cause_node_id',
-                'description': 'Node identifier',
-                'in': 'path',
-                'type': 'integer',
-                'required': True
-            },
             {
                 'name': 'effect_node_id',
                 'description': 'Node identifier',
@@ -240,15 +234,33 @@ class InterventionalDistributionResource(Resource):
                 'required': True
             },
             {
-                'name': 'factor_node_ids',
-                'description': 'Node identifiers',
+                'name': 'cause_node_id',
+                'description': 'Node identifier',
                 'in': 'path',
-                'type': 'list',
+                'type': 'integer',
                 'required': True
             },
+
+            {
+                'name': 'cause_condition',
+                'description': '',
+                'in': 'body',
+                'schema': oneOf([DiscreteConditionSchema, ContinuousConditionSchema]).get_swagger(True),
+                'example': [
+                    {
+                        'categorical': True,
+                        'values': ['3224', '43']
+                    },
+                    {
+                        'categorical': False,
+                        'from_value': 2.12,
+                        'to_value': 2.79
+                    }
+                ]
+            }
         ],
-        'responses': get_default_response(oneOf([DiscreteDistributionSchema,
-                                                 ContinuousDistributionSchema]).get_swagger()),
+        'responses': get_default_response(oneOf([ConditionalDiscreteDistributionSchema,
+                                                 ConditionalContinuousDistributionSchema]).get_swagger()),
         'tags': ['Node', 'Distribution']
     })
     def get(self, cause_node_id, effect_node_id, factor_node_ids):
@@ -276,6 +288,10 @@ class InterventionalDistributionResource(Resource):
                 if len(probabilities) == len(categories) - 1:  # Probabilities will sum to 1
                     probabilities.append(1 - sum(probabilities))
                 else:
+                    do_query = f"SELECT COUNT({effect_node}) FROM ({dataset.load_query}) _subquery_ " \
+                               f"GROUP BY {','.join([n.name for n in ([cause_node] + factor_nodes)])}"
+                    f"SELECT COUNT(*) FROM ({dataset.load_query}) _subquery_ WHERE "
+
                     pass
 
             bins = dict([(str(cat), round(num_of_obs * float(prob))) for cat, prob in zip(categories, probabilities)])

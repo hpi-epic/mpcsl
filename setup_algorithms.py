@@ -1,8 +1,8 @@
 import os
 import json
 
-from src.master.appfactory import AppFactory
 from src.db import db
+from src.master.appfactory import AppFactory
 from src.master.helpers.io import InvalidInputData
 from src.models import Algorithm, AlgorithmSchema
 

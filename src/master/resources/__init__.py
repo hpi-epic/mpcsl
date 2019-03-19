@@ -1,7 +1,7 @@
 from .datasets import DatasetLoadResource, DatasetListResource, DatasetResource, \
     DatasetAvailableSourcesResource
 from .experiments import ExperimentListResource, ExperimentResource
-from .results import ResultListResource, ResultResource
+from .results import ResultListResource, ResultResource, GraphExportResource
 from .jobs import JobListResource, JobResource, JobLogsResource, JobResultResource, \
     ExperimentJobListResource
 from .algorithms import AlgorithmResource, AlgorithmListResource
@@ -9,6 +9,7 @@ from .nodes import NodeResource, ResultNodeListResource, NodeContextResource
 from .edges import EdgeResource, ResultEdgeListResource
 from .sepsets import SepsetResource, ResultSepsetListResource
 from .distributions import MarginalDistributionResource, ConditionalDistributionResource
+from .executor import ExecutorResource
 
 __all__ = [
     'AlgorithmListResource',
@@ -20,6 +21,7 @@ __all__ = [
     'ExperimentListResource',
     'ExperimentResource',
     'ResultListResource',
+    'GraphExportResource',
     'JobListResource',
     'JobResource',
     'JobLogsResource',
@@ -34,5 +36,6 @@ __all__ = [
     'SepsetResource',
     'ResultSepsetListResource',
     'MarginalDistributionResource',
-    'ConditionalDistributionResource'
+    'ConditionalDistributionResource',
+    'ExecutorResource'
 ]

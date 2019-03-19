@@ -33,7 +33,7 @@ class AlgorithmTest(BaseResourceTest):
         assert result['id'] == alg.id
         assert result['name'] == alg.name
         assert result['script_filename'] == alg.script_filename
-        assert result['backend'] == alg.backend
+        assert result['docker_image'] == alg.docker_image
         assert result['description'] == alg.description
         assert result['valid_parameters'] == alg.valid_parameters
 

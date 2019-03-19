@@ -296,15 +296,22 @@ class InterventionalDistributionResource(Resource):
                 else:
                     factor_str = ','.join(['_subquery_.\"' + n.name + '\"' for n in factor_nodes])
                     do_sql = f"SELECT {factor_str}, " \
-                             f"COUNT(*) AS marginal_count, " \
-                             f"COUNT(CASE _subquery_.\"{effect_node.name}\" WHEN {category} THEN 1 ELSE NULL END) " \
+                             f"COUNT(*) AS group_count, " \
+                             f"COUNT(CASE WHEN _subquery_.\"{cause_node.name}\"={data['cause_condition']} " \
+                             f"THEN 1 ELSE NULL END) AS marginal_count, " \
+                             f"COUNT(CASE WHEN _subquery_.\"{cause_node.name}\" = {data['cause_condition']} " \
+                             f"AND _subquery_.\"{effect_node.name}\"={category} THEN 1 ELSE NULL END) " \
                              f"AS conditional_count FROM ({dataset.load_query}) _subquery_ " \
-                             f"WHERE _subquery_.\"{cause_node.name}\" = {data['cause_condition']} " \
                              f"GROUP BY {factor_str}"
                     do_query = session.execute(do_sql).fetchall()
-                    marg_counts, cond_counts = zip(*[(line[-2], line[-1]) for line in do_query])
+                    group_counts, marg_counts, cond_counts = zip(*[(line[-3], line[-2], line[-1]) for line in do_query])
 
-                    probability = sum(cond_counts) / sum(marg_counts)
+                    print(group_counts, marg_counts, cond_counts)
+                    probability = sum([
+                        (cond_count / marg_count) * (group_count / sum(group_counts))
+                        for group_count, marg_count, cond_count in zip(group_counts, marg_counts, cond_counts)
+                        if marg_count > 0
+                    ])
                     probabilities.append(probability)
 
             bins = dict([(str(cat), round(num_of_obs * float(prob))) for cat, prob in zip(categories, probabilities)])

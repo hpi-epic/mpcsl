@@ -167,13 +167,14 @@ class InterventionalDistributionTest(BaseResourceTest):
             assert distribution['dataset']['id'] == ds.id
 
             assert 'bins' in distribution
+            print(distribution['bins'])
             assert distribution['bins'] == {
-                '3': 403,
-                '4': 250,
-                '0': 28,
-                '6': 56,
+                '3': 209,
+                '4': 162,
+                '0': 35,
+                '6': 50,
                 '7': 0,
-                '1': 264
+                '1': 544
             }
 
     def test_noncategorical_raises(self):

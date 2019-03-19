@@ -1,5 +1,4 @@
 import os
-import json
 from sys import argv
 
 from flask import Flask, jsonify

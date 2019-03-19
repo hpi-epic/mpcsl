@@ -6,7 +6,9 @@ set -e
 
 source conf/backend.env
 if [[ "${MPCI_ENVIRONMENT}" = "production" ]]; then
-    COMPOSE_FILE='-f docker-compose-nginx.yml'
+    COMPOSE_FILE='-f docker-compose-prod.yml'
+elif [[ "${MPCI_ENVIRONMENT}" = "staging" ]]; then
+    COMPOSE_FILE='-f docker-compose-staging.yml'
 else
     COMPOSE_FILE='-f docker-compose.yml'
 fi

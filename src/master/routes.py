@@ -5,7 +5,7 @@ from .resources import DatasetLoadResource, DatasetListResource, \
     AlgorithmResource, AlgorithmListResource, \
     ResultNodeListResource, ResultEdgeListResource, ResultSepsetListResource, GraphExportResource, \
     NodeResource, EdgeResource, SepsetResource, NodeContextResource, MarginalDistributionResource, \
-    DatasetAvailableSourcesResource, \
+    DatasetAvailableSourcesResource, InterventionalDistributionResource, \
     ConditionalDistributionResource, ExecutorResource
 
 
@@ -38,5 +38,6 @@ def set_up_routes(api):
     api.add_resource(NodeContextResource, base_url('/node/<int:node_id>/context'))
     api.add_resource(MarginalDistributionResource, base_url('/node/<int:node_id>/marginal'))
     api.add_resource(ConditionalDistributionResource, base_url('/node/<int:node_id>/conditional'))
+    api.add_resource(InterventionalDistributionResource, base_url('/intervention'))
     api.add_resource(EdgeResource, base_url('/edge/<int:edge_id>'))
     api.add_resource(SepsetResource, base_url('/sepset/<int:sepset_id>'))

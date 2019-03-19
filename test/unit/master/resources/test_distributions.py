@@ -1,7 +1,9 @@
 import numpy as np
+import pandas as pd
 
 from src.db import db
-from src.master.resources import MarginalDistributionResource, ConditionalDistributionResource
+from src.master.resources import MarginalDistributionResource, ConditionalDistributionResource, \
+    InterventionalDistributionResource
 from test.factories import ResultFactory, NodeFactory, DatasetFactory, ExperimentFactory, JobFactory
 from .base import BaseResourceTest
 
@@ -130,3 +132,72 @@ class ConditionalDistributionTest(BaseResourceTest):
             bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(conditioned_source, return_counts=True))])
             assert distribution['bins'] == bins
             assert 'bin_edges' not in distribution
+
+
+class InterventionalDistributionTest(BaseResourceTest):
+
+    def test_returns_interventional_distribution(self):
+            # Given
+            df = pd.read_csv('test/fixtures/coolinghouse_1k.csv', index_col=0)
+            disc_df = df.apply(lambda c: pd.qcut(c, 8).cat.codes, axis=1)  # discretize
+            disc_df.to_sql('test_data', con=db.engine, index=False)
+            ds = DatasetFactory(
+                load_query="SELECT * FROM test_data",
+                content_hash=None
+            )
+            db.session.commit()
+
+            cause_node = NodeFactory(dataset=ds, name='V3')
+            effect_node = NodeFactory(dataset=ds, name='V4')
+            factor_nodes = [NodeFactory(dataset=ds, name='V2')]
+            treatment = '7'
+
+            # When
+            distribution = self.get(
+                self.url_for(InterventionalDistributionResource) +
+                f'?cause_node_id={cause_node.id}&effect_node_id={effect_node.id}' +
+                f'&factor_node_ids={str([n.id for n in factor_nodes])}&cause_condition={treatment}'
+            )
+
+            # Then
+            assert 'node' in distribution
+            assert distribution['node']['id'] == effect_node.id
+
+            assert 'dataset' in distribution
+            assert distribution['dataset']['id'] == ds.id
+
+            assert 'bins' in distribution
+            assert distribution['bins'] == {
+                '3': 403,
+                '4': 250,
+                '0': 28,
+                '6': 56,
+                '7': 0,
+                '1': 264
+            }
+
+    def test_noncategorical_raises(self):
+            # Given
+            df = pd.read_csv('test/fixtures/coolinghouse_1k.csv', index_col=0)
+            disc_df = df.apply(lambda c: pd.qcut(c, 8).cat.codes, axis=1)  # More than 10 categories
+            disc_df.to_sql('test_data2', con=db.engine, index=False)
+            ds = DatasetFactory(
+                load_query="SELECT * FROM test_data2",
+                content_hash=None
+            )
+            db.session.commit()
+
+            cause_node = NodeFactory(dataset=ds, name='V3')
+            effect_node = NodeFactory(dataset=ds, name='V4')
+            factor_nodes = [NodeFactory(dataset=ds, name='V2')]
+            treatment = '19'
+
+            # When
+            distribution = self.get(
+                self.url_for(InterventionalDistributionResource) +
+                f'?cause_node_id={cause_node.id}&effect_node_id={effect_node.id}' +
+                f'&factor_node_ids={str([n.id for n in factor_nodes])}&cause_condition={treatment}',
+                parse_result=False
+            )
+
+            assert distribution.status_code

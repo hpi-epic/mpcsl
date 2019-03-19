@@ -10,19 +10,30 @@ from unittest import TestCase
 from multiprocessing import Process
 from urllib.error import URLError
 from urllib.request import urlopen
+import socket
+
 
 from src.master.appfactory import AppFactory
 from src.db import db
-from src.master.executor import ExecutorResource
+from src.master.resources import ExecutorResource
 from src.master.helpers.io import remove_logs
 from src.master.helpers.database import add_dataset_nodes
+from src.master.helpers.docker import get_client
 from src.models import Result, Job
 from test.factories import DatasetFactory
 
 
+def get_container_name():
+    client = get_client()
+    container = client.containers.get(socket.gethostname())
+    return container.name
+
+
 class BaseIntegrationTest(TestCase):
 
-    PATCHES = {}
+    PATCHES = {
+        'src.master.resources.executor.API_HOST': get_container_name() + ':5000'
+    }
 
     @classmethod
     def setUpClass(cls):

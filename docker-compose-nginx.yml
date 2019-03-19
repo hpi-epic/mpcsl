@@ -4,6 +4,7 @@ services:
     container_name: backend
     volumes:
      - ./:/app
+     - /var/run/docker.sock:/var/run/docker.sock
     build: .
     depends_on:
       - database

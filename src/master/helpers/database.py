@@ -2,10 +2,22 @@ from hashlib import blake2b
 
 from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import BadRequest
+import networkx as nx
 
 from src.db import db
 from src.master.db import data_source_connections
-from src.models import Node
+from src.models import Node, EdgeInformation
+
+
+def load_networkx_graph(result):
+    graph = nx.DiGraph(id=str(result.id), name=f'Graph_{result.id}')
+    for node in result.job.experiment.dataset.nodes:
+        graph.add_node(node.id, label=node.name)
+    for edge in result.edges:
+        edge_info = EdgeInformation.query.filter_by(edge=edge).one_or_none()
+        edge_label = edge_info.annotation.name if edge_info else ''
+        graph.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label=edge_label, weight=edge.weight)
+    return graph
 
 
 def check_dataset_hash(dataset):

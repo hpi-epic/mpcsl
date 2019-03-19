@@ -1,4 +1,4 @@
-from src.master.resources import NodeResource, ResultNodeListResource, NodeContextResource
+from src.master.resources import NodeResource, ResultNodeListResource, NodeContextResource, NodeConfounderResource
 from test.factories import NodeFactory, EdgeFactory, ResultFactory
 from .base import BaseResourceTest
 
@@ -40,7 +40,7 @@ class NodeTest(BaseResourceTest):
         main_node = nodes[1]
 
         # When
-        context = self.get(self.url_for(NodeContextResource, node_id=main_node.id))
+        context = self.get(self.url_for(NodeContextResource, node_id=main_node.id, result_id=result.id))
 
         assert context['main_node']['id'] == main_node.id
 
@@ -57,3 +57,22 @@ class NodeTest(BaseResourceTest):
             assert edge['id'] in edge_ids
             edge_ids.remove(edge['id'])
         assert len(edge_ids) == 0
+
+    def test_returns_node_confounders(self):
+        # Given
+        result = ResultFactory()
+        nodes = [NodeFactory(dataset=result.job.experiment.dataset) for _ in range(5)]
+        edges = [EdgeFactory(result=result, from_node=nodes[i], to_node=nodes[j]) for i, j in [  # noqa
+            (0, 2), (2, 0), (1, 2), (2, 1), (2, 3), (4, 2), (4, 1)
+        ]]
+        cause_node = nodes[2]  # 2 has one set parent, two bidirectional ones, and has causal effect on 3
+
+        # When
+        response = self.get(self.url_for(NodeConfounderResource, node_id=cause_node.id, result_id=result.id))
+
+        assert 'confounders' in response
+        confounders = response['confounders']
+
+        assert len(confounders) == 2
+        assert confounders[0] == [nodes[4].id]
+        assert confounders[1] == [nodes[4].id, nodes[1].id]

@@ -7,9 +7,10 @@ import json
 import networkx as nx
 
 from src.db import db
+from src.master.helpers.database import load_networkx_graph
 from src.master.helpers.io import marshal
 from src.master.helpers.swagger import get_default_response
-from src.models import Result, ResultSchema, Node, NodeSchema, EdgeInformation
+from src.models import Result, ResultSchema, Node, NodeSchema
 from src.models.swagger import SwaggerMixin
 
 
@@ -113,13 +114,7 @@ class GraphExportResource(Resource):
         if format_type not in [x.lower() for x in self.supported_types]:
             raise BadRequest(f'Graph format `{format_type}` is not one of the supported types: {self.supported_types}')
 
-        graph = nx.DiGraph(id=str(result_id), name=f'Graph_{result_id}')
-        for node in result.job.experiment.dataset.nodes:
-            graph.add_node(node.id, label=node.name)
-        for edge in result.edges:
-            edge_info = EdgeInformation.query.filter_by(edge=edge).one_or_none()
-            edge_label = edge_info.annotation.name if edge_info else ''
-            graph.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label=edge_label, weight=edge.weight)
+        graph = load_networkx_graph(result)
 
         headers = {'Content-Disposition': f'attachment;filename=Graph_{result_id}.{format_type}'}
         if format_type == 'gexf':

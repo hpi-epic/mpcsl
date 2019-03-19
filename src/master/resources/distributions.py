@@ -197,12 +197,15 @@ class ConditionalDistributionResource(Resource):
             else:
                 predicates.append(f"\"{node_name}\" >= {condition['from_value']}")
                 predicates.append(f"\"{node_name}\" <= {condition['to_value']}")
-        query = base_query if len(predicates) == 0 else base_query + " WHERE " + ' AND '.join(predicates)
+        categorical_check = session.execute(f"SELECT 1 FROM ({dataset.load_query}) _subquery_ "
+                                            f"HAVING COUNT(DISTINCT \"{node_name}\") <= 10").fetchall()
+        is_categorical = len(categorical_check) > 0
 
+        query = base_query if len(predicates) == 0 else base_query + " WHERE " + ' AND '.join(predicates)
         result = session.execute(query).fetchall()
         data = [line[0] for line in result]
 
-        if len(np.unique(data)) <= 10:  # Categorical
+        if is_categorical:  # Categorical
             bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(data, return_counts=True))])
             return marshal(ConditionalDiscreteDistributionSchema, {
                 'node': node,

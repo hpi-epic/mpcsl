@@ -20,5 +20,4 @@ echo "==> Updating database…"
 # run all database migrations to ensure everything is up to date
 docker-compose ${COMPOSE_FILE} run --rm backend flask db upgrade
 # update all algorithms from conf/algorithms.json
-docker-compose ${COMPOSE_FILE} run --rm backend python setup_algorithms.py
-#docker-compose ${COMPOSE_FILE} run --rm backend python scripts/setup_algorithms.py
+docker-compose ${COMPOSE_FILE} run --rm backend python scripts/setup_algorithms.py

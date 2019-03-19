@@ -1,11 +1,8 @@
-import os
-
 import pytest
 import requests
 
 from src.db import db
 from src.master.resources import JobLogsResource
-from src.master.helpers.io import get_logfile_name
 from src.models import Node, Sepset, Edge
 from test.factories import ExperimentFactory
 from .base import BaseIntegrationTest
@@ -87,8 +84,11 @@ class BinaryExecutorTest(BaseIntegrationTest):
 
 class SepsetExecutorTest(BaseIntegrationTest):
 
-    PATCHES = {'src.master.resources.jobs.LOAD_SEPARATION_SET': True,
-               'src.master.executor.executor.LOAD_SEPARATION_SET': True}
+    PATCHES = {
+        **BaseIntegrationTest.PATCHES,
+        'src.master.resources.jobs.LOAD_SEPARATION_SET': True,
+        'src.master.resources.executor.LOAD_SEPARATION_SET': True
+    }
 
     @pytest.mark.run(order=-9)
     def test_r_execution_with_sepsets(self):
@@ -198,15 +198,9 @@ class LogExecutorTest(BaseIntegrationTest):
         assert 'Successfully loaded dataset' in offset_log.text
         assert 'Successfully executed job' in offset_log.text
 
-        limit_log = requests.get(self.url_for(JobLogsResource, job_id=job.id, limit=1))
+        limit_log = requests.get(self.url_for(JobLogsResource, job_id=job.id, last=2))
         assert limit_log.status_code == 200
         assert 'Attaching package: ‘BiocGenerics’' not in limit_log.text
         assert 'Load dataset from' not in limit_log.text
         assert 'Successfully loaded dataset' not in limit_log.text
         assert 'Successfully executed job' in limit_log.text
-
-        logfile = get_logfile_name(job.id)
-        assert os.path.isfile(logfile)
-        delete_request = requests.delete(self.url_for(JobLogsResource, job_id=job.id))
-        assert delete_request.status_code == 200
-        assert not os.path.isfile(logfile)

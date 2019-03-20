@@ -51,7 +51,8 @@ Here’s a quick mapping of what our scripts are named and what they’re respon
 - `bash scripts/console.sh` – opens a console
 
 Some of the scripts accept parameters that are passed through the underlying docker commands.
-For example, you can start a server in detached mode with `bash scripts/server.sh --detach`.
+For example, you can start a server in detached mode with `bash scripts/server.sh --detach`
+or run a specific test with `bash scripts/test.sh test/unit/master/resources/test_job.py`.
 
 We provide three different ways how to run the Causal Inference Pipeline:
 

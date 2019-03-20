@@ -26,8 +26,8 @@ the following tasks:
 All API endpoints are documented in Swagger.
 For algorithms that are called or written in R, the mpciutils file in the
 R environment can be reused to simplify the API calls. Examples can be found there
-for R scripts running PCAlg. The R image used by default for the R environment
-contains two scripts, so twp algorithms are defined later, that simply call the corresponding 
+in the form of R scripts running PCAlg. The R image used by default for the R environment
+contains two scripts, so two algorithms are defined later, that simply call the corresponding 
 script using the same image.
 
 ### Command line parameters

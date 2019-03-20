@@ -15,9 +15,9 @@ fi
 
 
 echo "==> Resetting everything (including database)…"
-docker-compose --log-level ERROR -f docker-compose.yml down
-docker-compose --log-level ERROR -f docker-compose-staging.yml down
-docker-compose --log-level ERROR -f docker-compose-prod.yml down
+docker-compose -f docker-compose.yml --log-level ERROR down
+docker-compose -f docker-compose-staging.yml --log-level ERROR down
+docker-compose -f docker-compose-prod.yml --log-level ERROR down
 
 echo "==> Update…"
 bash scripts/update.sh

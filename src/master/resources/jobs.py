@@ -14,7 +14,7 @@ from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET, RESULT
 from src.master.helpers.docker import get_container
 from src.master.helpers.io import marshal, InvalidInputData
 from src.master.helpers.swagger import get_default_response
-from src.models import Job, JobSchema, ResultSchema, Edge, Node, Result, Sepset, Experiment
+from src.models import Job, JobSchema, ResultSchema, Edge, Result, Sepset, Experiment
 from src.models.base import SwaggerMixin
 from src.models.job import JobStatus
 
@@ -214,40 +214,28 @@ class JobResultResource(Resource):
         db.session.add(result)
         db.session.flush()
 
-        current_app.logger.info('Result {} is in creation for job {}'.format(result.id, job.id))
+        node_ids = {n.id for n in job.experiment.dataset.nodes}
 
-        node_mapping = {}
+        current_app.logger.info('Result {} is in creation for job {}'.format(result.id, job.id))
 
         result_elements = ijson_parse_items(
             request.stream,
-            ['meta_results', 'node_list.item', 'edge_list.item', 'sepset_list.item']
+            ['meta_results', 'edge_list.item', 'sepset_list.item']
         )
         edges = []
         sepsets = []
-        flushed_nodes = False
         for prefix, element in result_elements:
             if prefix == 'meta_results':
                 for key, val in element.items():
                     if isinstance(val, Decimal):
                         element[key] = float(val)
                 result.meta_results = element
-            if prefix == 'node_list.item':
-                node = Node.query.filter_by(dataset_id=job.experiment.dataset_id, name=element).first()
-                node_mapping[element] = node
-            if prefix in ['edge_list.item', 'sepset_list.item']:
-                if len(node_mapping) == 0:
-                    current_app.logger.warning(
-                        'Result {} for job {} could not be stored. Node list was not first.'.format(result.id, job.id)
-                    )
-                    raise InvalidInputData({'node_list': ['has to be sent first!']})
-                if flushed_nodes is False:
-                    db.session.flush()
-                    flushed_nodes = True
-                    current_app.logger.info('Flushing {} nodes'.format(len(node_mapping)))
-            if prefix == 'edge_list.item':
+            elif prefix == 'edge_list.item':
+                if element['from_node'] not in node_ids or element['to_node'] not in node_ids:
+                    raise InvalidInputData('Invalid Node ID')
                 edge = Edge(
-                    from_node_id=node_mapping[element['from_node']].id,
-                    to_node_id=node_mapping[element['to_node']].id,
+                    from_node_id=element['from_node'],
+                    to_node_id=element['to_node'],
                     result_id=result.id,
                     weight=element.get('weight', None)
                 )
@@ -257,12 +245,14 @@ class JobResultResource(Resource):
                     db.session.bulk_save_objects(edges)
                     edges = []
 
-            if prefix == 'sepset_list.item' and LOAD_SEPARATION_SET:
+            elif prefix == 'sepset_list.item' and LOAD_SEPARATION_SET:
+                if element['from_node'] not in node_ids or element['to_node'] not in node_ids:
+                    raise InvalidInputData('Invalid Node ID')
                 sepset = Sepset(
                     statistic=element['statistic'],
                     level=element['level'],
-                    from_node_id=node_mapping[element['from_node']].id,
-                    to_node_id=node_mapping[element['to_node']].id,
+                    from_node_id=element['from_node'],
+                    to_node_id=element['to_node'],
                     result_id=result.id
                 )
                 sepsets.append(sepset)

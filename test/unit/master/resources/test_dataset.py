@@ -84,17 +84,20 @@ class DatasetTest(BaseResourceTest):
 
     def test_returns_the_correct_dataset(self):
         # Given
-        ds = DatasetFactory(load_query="SELECT * FROM test_data")
         source = create_database_table()
+        ds = DatasetFactory(load_query="SELECT * FROM test_data")
+        add_dataset_nodes(ds)
+        nodes = ds.nodes
 
         # When
         result = self.test_client.get(self.url_for(DatasetLoadResource, dataset_id=ds.id))
 
         source = pd.DataFrame(source)
-        source.columns = ['a', 'b', 'c']
+        source.columns = [n.id for n in nodes]
         result = result.data.decode('utf-8')
         result = io.StringIO(result)
         result = pd.read_csv(result)
+        result.rename(columns=int, inplace=True)
 
         # Then
         pd.testing.assert_frame_equal(source, result)

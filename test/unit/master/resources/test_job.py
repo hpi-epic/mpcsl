@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 
 from src.db import db
 from src.master.resources.jobs import JobListResource, JobResource, JobResultResource, ExperimentJobListResource
-from src.models import Result, Node, Edge, JobStatus
+from src.models import Result, Edge, JobStatus
 from test.factories import ExperimentFactory, JobFactory, DatasetFactory, NodeFactory
 from .base import BaseResourceTest
 
@@ -115,14 +115,10 @@ class JobTest(BaseResourceTest):
             db.session.add(node)
         db.session.commit()
         data = {
-            'node_list': [
-                'X1', 'X2', 'X3'
-            ],
             'edge_list': [
-                {'from_node': 'X1', 'to_node': 'X2', 'weight': 1.23}
+                {'from_node': nodes[0].id, 'to_node': nodes[1].id, 'weight': 1.23}
             ],
-            'sepset_list': [
-            ],
+            'sepset_list': [],
             'meta_results': {'important_note': 'lol', 'number': 123.123}
         }
 
@@ -132,31 +128,29 @@ class JobTest(BaseResourceTest):
 
         # Then
         assert db_result.meta_results == data['meta_results'] == result['meta_results']
-        for node in db.session.query(Node):
-            assert node.name in data['node_list']
         for edge in data['edge_list']:
             db_edge = db.session.query(Edge).filter(
-                Edge.from_node.has(name=edge['from_node'])
+                Edge.from_node.has(id=edge['from_node'])
             ).filter(
-                Edge.to_node.has(name=edge['to_node'])
+                Edge.to_node.has(id=edge['to_node'])
             ).first()
             assert db_edge is not None
             assert db_edge.weight == edge['weight']
 
-    def test_submit_results_with_invalid_order(self):
+    def test_submit_results_with_invalid_node_id(self):
         # Given
         ds = DatasetFactory()
         mock_experiment = ExperimentFactory(dataset=ds)
         db.session.add(mock_experiment)
         mock_job = JobFactory(experiment=mock_experiment, start_time=datetime.now())
         db.session.add(mock_job)
+        nodes = [NodeFactory(name="X" + str(i + 1), dataset=ds) for i in range(3)]
+        for node in nodes:
+            db.session.add(node)
         db.session.commit()
         data = {
             'edge_list': [
-                {'from_node': 'X1', 'to_node': 'X2'}
-            ],
-            'node_list': [
-                'X1', 'X2', 'X3'
+                {'from_node': nodes[0].id, 'to_node': -1, 'weight': 1.23}
             ],
             'sepset_list': [],
             'meta_results': {'important_note': 'lol', 'number': 123.123}

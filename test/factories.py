@@ -23,7 +23,7 @@ class DatasetFactory(BaseFactory):
     name = factory.Faker('word')
     load_query = factory.Faker('file_path')
     description = factory.Faker('text')
-    content_hash = factory.Faker('word')
+    content_hash = factory.Faker('md5')
     data_source = 'postgres'
 
 

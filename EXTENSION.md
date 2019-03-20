@@ -1,7 +1,7 @@
 # Adding algorithms
 
-The system is build to be easily extensible. This is achieved
-by making use of docker images stored on the host system. Thoose 
+The system was built to be easily extensible. This is achieved
+by making use of docker images stored on the host system. Those 
 images are used to execute the algorithm in their respective environments.
 
 ## Preparations

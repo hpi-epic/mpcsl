@@ -11,6 +11,7 @@ class Algorithm(BaseModel):
     docker_image = db.Column(db.String)
     description = db.Column(db.String)
     valid_parameters = db.Column(MutableDict.as_mutable(db.JSON))
+    docker_parameters = db.Column(MutableDict.as_mutable(db.JSON), default={})
 
 
 class AlgorithmSchema(BaseSchema):

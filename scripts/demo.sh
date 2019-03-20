@@ -20,9 +20,5 @@ echo "==> Seed the database with example experiment"
 docker-compose ${COMPOSE_FILE} run --rm backend python seed.py
 
 echo "==> Run application…"
-if [ -n "$1" ]; then
-  # pass arguments to call. This is useful for starting in detached mode.
-   docker-compose ${COMPOSE_FILE} up "$1"
-else
-   docker-compose ${COMPOSE_FILE} up
-fi
+# pass arguments to call. This is useful for starting in detached mode.
+docker-compose ${COMPOSE_FILE} up "$@"

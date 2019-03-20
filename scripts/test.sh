@@ -8,9 +8,5 @@ echo "==> Running flake8…"
 docker-compose run --rm backend flake8
 
 echo "==> Running pytest…"
-if [ -n "$1" ]; then
-  # pass arguments to test call. This is useful for calling a single test.
-   docker-compose run --rm backend pytest "$1"
-else
-   docker-compose run --rm backend pytest
-fi
+# pass arguments to test call. This is useful for calling a single test.
+docker-compose run --rm backend pytest "$@"

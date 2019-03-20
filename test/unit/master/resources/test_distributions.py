@@ -153,10 +153,11 @@ class InterventionalDistributionTest(BaseResourceTest):
             treatment = '7'
 
             # When
+            factor_nodes_str = ','.join([str(n.id) for n in factor_nodes])
             distribution = self.get(
                 self.url_for(InterventionalDistributionResource) +
                 f'?cause_node_id={cause_node.id}&effect_node_id={effect_node.id}' +
-                f'&factor_node_ids={str([n.id for n in factor_nodes])}&cause_condition={treatment}'
+                f'&factor_node_ids={factor_nodes_str}&cause_condition={treatment}'
             )
 
             # Then
@@ -179,9 +180,8 @@ class InterventionalDistributionTest(BaseResourceTest):
 
     def test_noncategorical_raises(self):
             # Given
-            df = pd.read_csv('test/fixtures/coolinghouse_1k.csv', index_col=0)
-            disc_df = df.apply(lambda c: pd.qcut(c, 8).cat.codes, axis=1)  # More than 10 categories
-            disc_df.to_sql('test_data2', con=db.engine, index=False)
+            df = pd.read_csv('test/fixtures/coolinghouse_1k.csv', index_col=0)  # More than 10 categories
+            df.to_sql('test_data2', con=db.engine, index=False)
             ds = DatasetFactory(
                 load_query="SELECT * FROM test_data2",
                 content_hash=None
@@ -194,11 +194,54 @@ class InterventionalDistributionTest(BaseResourceTest):
             treatment = '19'
 
             # When
+            factor_nodes_str = ','.join([str(n.id) for n in factor_nodes])
             distribution = self.get(
                 self.url_for(InterventionalDistributionResource) +
                 f'?cause_node_id={cause_node.id}&effect_node_id={effect_node.id}' +
-                f'&factor_node_ids={str([n.id for n in factor_nodes])}&cause_condition={treatment}',
+                f'&factor_node_ids={factor_nodes_str}&cause_condition={treatment}',
                 parse_result=False
             )
 
-            assert distribution.status_code
+            assert distribution.status_code == 501
+
+    def test_empty_factors(self):
+            # Given
+            df = pd.read_csv('test/fixtures/coolinghouse_1k.csv', index_col=0)
+            disc_df = df.apply(lambda c: pd.qcut(c, 8).cat.codes, axis=1)  # More than 10 categories
+            disc_df.to_sql('test_data3', con=db.engine, index=False)
+            ds = DatasetFactory(
+                load_query="SELECT * FROM test_data3",
+                content_hash=None
+            )
+            db.session.commit()
+
+            cause_node = NodeFactory(dataset=ds, name='V3')
+            effect_node = NodeFactory(dataset=ds, name='V4')
+            factor_nodes = []
+            treatment = '19'
+
+            # When
+            factor_nodes_str = ','.join([str(n.id) for n in factor_nodes])
+            distribution = self.get(
+                self.url_for(InterventionalDistributionResource) +
+                f'?cause_node_id={cause_node.id}&effect_node_id={effect_node.id}' +
+                f'&factor_node_ids={factor_nodes_str}&cause_condition={treatment}'
+            )
+
+            print(distribution)
+            # Then
+            assert 'node' in distribution
+            assert distribution['node']['id'] == effect_node.id
+
+            assert 'dataset' in distribution
+            assert distribution['dataset']['id'] == ds.id
+
+            assert 'bins' in distribution
+            assert distribution['bins'] == {
+                '3': 0,
+                '4': 0,
+                '0': 0,
+                '6': 0,
+                '7': 0,
+                '1': 1000
+            }

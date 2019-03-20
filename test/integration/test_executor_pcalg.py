@@ -180,8 +180,6 @@ class LogExecutorTest(BaseIntegrationTest):
 
         full_log = requests.get(self.url_for(JobLogsResource, job_id=job.id))
         assert full_log.status_code == 200
-        print(full_log.text)
-
         assert 'Attaching package: ‘BiocGenerics’' in full_log.text
         assert 'Load dataset from' in full_log.text
         assert 'Successfully loaded dataset' in full_log.text

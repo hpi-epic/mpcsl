@@ -17,7 +17,7 @@ class MarginalDistributionTest(BaseResourceTest):
         )
         db.session.execute("""
             CREATE TABLE IF NOT EXISTS test_data (
-                "MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand." float,
+                "haha_.col" float,
                 b float,
                 c float
             );
@@ -33,7 +33,7 @@ class MarginalDistributionTest(BaseResourceTest):
         job = JobFactory(experiment=exp)
         result = ResultFactory(job=job)
         node = NodeFactory(dataset=result.job.experiment.dataset,
-                           name='MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
+                           name='haha_.col')
 
         # When
         distribution = self.get(self.url_for(MarginalDistributionResource, node_id=node.id))
@@ -53,7 +53,7 @@ class MarginalDistributionTest(BaseResourceTest):
             )
             db.session.execute("""
                 CREATE TABLE IF NOT EXISTS discrete_test_data (
-                    "MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand." int,
+                    "haha_.col" int,
                     b int,
                     c int
                 );
@@ -67,7 +67,7 @@ class MarginalDistributionTest(BaseResourceTest):
             job = JobFactory(experiment=exp)
             result = ResultFactory(job=job)
             node = NodeFactory(dataset=result.job.experiment.dataset,
-                               name='MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
+                               name='haha_.col')
 
             # When
             distribution = self.get(self.url_for(MarginalDistributionResource, node_id=node.id))
@@ -90,9 +90,9 @@ class ConditionalDistributionTest(BaseResourceTest):
             )
             db.session.execute("""
                 CREATE TABLE IF NOT EXISTS cond_test_data (
-                    "MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand." int,
+                    "haha_.col" int,
                     b int,
-                    "Copy-MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand." int,
+                    "Copy-haha_.col" int,
                     "Copy-b" int
                 );
             """)
@@ -106,9 +106,9 @@ class ConditionalDistributionTest(BaseResourceTest):
             job = JobFactory(experiment=exp)
             ResultFactory(job=job)
             node = NodeFactory(dataset=job.experiment.dataset,
-                               name='MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
+                               name='haha_.col')
             node2 = NodeFactory(dataset=job.experiment.dataset,
-                                name='Copy-MABT1_AS_137030ZE1_S7GC.AutoVR.aktiv..SK.in.Hand.')
+                                name='Copy-haha_.col')
 
             data = {
                 'conditions': {

@@ -1,10 +1,10 @@
 import numpy as np
 from flask_restful_swagger_2 import swagger
-from flask_restful import Resource
+from flask_restful import Resource, abort
 from marshmallow import fields, validates, Schema, ValidationError
 
 from src.master.helpers.database import get_db_session
-from src.master.helpers.io import marshal, load_data
+from src.master.helpers.io import marshal, load_data, InvalidInputData
 from src.master.helpers.swagger import get_default_response, oneOf
 from src.models import Node, BaseSchema
 from src.models.swagger import SwaggerMixin
@@ -222,3 +222,108 @@ class ConditionalDistributionResource(Resource):
                 'bin_edges': bin_edges,
                 'conditions': conditions
             })
+
+
+class InterventionalParameterSchema(Schema, SwaggerMixin):
+    cause_node_id = fields.Int()
+    effect_node_id = fields.Int()
+    factor_node_ids = fields.String(default=[])
+    cause_condition = fields.String()
+
+
+class InterventionalDistributionResource(Resource):
+
+    @swagger.doc({
+        'description': '',
+        'parameters': [
+            {
+                'name': 'cause_node_id',
+                'description': 'Node identifier of cause',
+                'in': 'query',
+                'type': 'integer'
+            },
+            {
+                'name': 'effect_node_id',
+                'description': 'Node identifier of effect',
+                'in': 'query',
+                'type': 'integer'
+            },
+            {
+                'name': 'factor_node_ids',
+                'description': 'Node identifiers of external factors',
+                'in': 'query',
+                'type': 'array',
+                'items': {'type': 'integer'}
+            },
+            {
+                'name': 'cause_condition',
+                'description': 'Interventional value of cause',
+                'in': 'query',
+                'type': 'string'
+            }
+        ],
+        'responses': get_default_response(oneOf([ConditionalDiscreteDistributionSchema,
+                                                 ConditionalContinuousDistributionSchema]).get_swagger()),
+        'tags': ['Node', 'Distribution']
+    })
+    def get(self):
+        data = load_data(InterventionalParameterSchema, 'args')
+
+        cause_node = Node.query.get_or_404(data['cause_node_id'])
+        effect_node = Node.query.get_or_404(data['effect_node_id'])
+        try:
+            factor_node_ids = [int(e) for e in data['factor_node_ids'].split(',')] \
+                if len(data['factor_node_ids']) > 0 else []
+            factor_nodes = [Node.query.get_or_404(factor_node_id) for factor_node_id in factor_node_ids]
+        except ValueError:
+            raise InvalidInputData('factor_node_ids must be array of ints')
+
+        dataset = effect_node.dataset
+        assert all([n.dataset == dataset for n in [cause_node] + factor_nodes])
+        session = get_db_session(dataset)
+
+        categorical_check = session.execute(f"SELECT 1 FROM ({dataset.load_query}) _subquery_ "
+                                            f"HAVING COUNT(DISTINCT \"{effect_node.name}\") <= 10").fetchall()
+        is_categorical = len(categorical_check) > 0
+
+        if is_categorical:  # Categorical
+            # cause c, effect e, factors F
+            # P(e|do(c)) = \Sigma_{F} P(e|c,f) P(f)
+            category_query = session.execute(f"SELECT DISTINCT \"{effect_node.name}\" "
+                                             f"FROM ({dataset.load_query}) _subquery_").fetchall()
+            categories = [row[0] for row in category_query]
+            num_of_obs = session.execute(f"SELECT COUNT(*) FROM ({dataset.load_query}) _subquery_").fetchone()[0]
+
+            probabilities = []
+            for category in categories:
+                if len(probabilities) == len(categories) - 1:  # Probabilities will sum to 1
+                    probabilities.append(1 - sum(probabilities))
+                else:
+                    do_sql = f"SELECT " \
+                             f"COUNT(*) AS group_count, " \
+                             f"COUNT(CASE WHEN _subquery_.\"{cause_node.name}\"={data['cause_condition']} " \
+                             f"THEN 1 ELSE NULL END) AS marginal_count, " \
+                             f"COUNT(CASE WHEN _subquery_.\"{cause_node.name}\" = {data['cause_condition']} " \
+                             f"AND _subquery_.\"{effect_node.name}\"={category} THEN 1 ELSE NULL END) " \
+                             f"AS conditional_count FROM ({dataset.load_query}) _subquery_ "
+                    if len(factor_nodes) > 0:
+                        factor_str = ','.join(['_subquery_.\"' + n.name + '\"' for n in factor_nodes])
+                        do_sql += f"GROUP BY {factor_str}"
+                    do_query = session.execute(do_sql).fetchall()
+                    group_counts, marg_counts, cond_counts = zip(*[(line[-3], line[-2], line[-1]) for line in do_query])
+
+                    probability = sum([
+                        (cond_count / marg_count) * (group_count / sum(group_counts))
+                        for group_count, marg_count, cond_count in zip(group_counts, marg_counts, cond_counts)
+                        if marg_count > 0
+                    ])
+                    probabilities.append(probability)
+
+            bins = dict([(str(cat), round(num_of_obs * float(prob))) for cat, prob in zip(categories, probabilities)])
+            return marshal(DiscreteDistributionSchema, {
+                'node': effect_node,
+                'dataset': dataset,
+                'bins': bins
+            })
+        else:
+            abort(501)

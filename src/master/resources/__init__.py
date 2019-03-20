@@ -8,7 +8,8 @@ from .algorithms import AlgorithmResource, AlgorithmListResource
 from .nodes import NodeResource, ResultNodeListResource, NodeContextResource, NodeConfounderResource
 from .edges import EdgeResource, ResultEdgeListResource
 from .sepsets import SepsetResource, ResultSepsetListResource
-from .distributions import MarginalDistributionResource, ConditionalDistributionResource
+from .distributions import MarginalDistributionResource, ConditionalDistributionResource, \
+    InterventionalDistributionResource
 from .executor import ExecutorResource
 
 __all__ = [
@@ -38,5 +39,6 @@ __all__ = [
     'ResultSepsetListResource',
     'MarginalDistributionResource',
     'ConditionalDistributionResource',
+    'InterventionalDistributionResource',
     'ExecutorResource'
 ]

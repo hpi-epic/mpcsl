@@ -4,7 +4,7 @@ from flask_restful import Resource, abort
 from marshmallow import fields, validates, Schema, ValidationError
 
 from src.master.helpers.database import get_db_session
-from src.master.helpers.io import marshal, load_data
+from src.master.helpers.io import marshal, load_data, InvalidInputData
 from src.master.helpers.swagger import get_default_response, oneOf
 from src.models import Node, BaseSchema
 from src.models.swagger import SwaggerMixin
@@ -271,9 +271,12 @@ class InterventionalDistributionResource(Resource):
 
         cause_node = Node.query.get_or_404(data['cause_node_id'])
         effect_node = Node.query.get_or_404(data['effect_node_id'])
-        factor_node_ids = [int(e) for e in data['factor_node_ids'].split(',')] \
-            if len(data['factor_node_ids']) > 0 else []
-        factor_nodes = [Node.query.get_or_404(factor_node_id) for factor_node_id in factor_node_ids]
+        try:
+            factor_node_ids = [int(e) for e in data['factor_node_ids'].split(',')] \
+                if len(data['factor_node_ids']) > 0 else []
+            factor_nodes = [Node.query.get_or_404(factor_node_id) for factor_node_id in factor_node_ids]
+        except ValueError:
+            raise InvalidInputData('factor_node_ids must be array of ints')
 
         dataset = effect_node.dataset
         assert all([n.dataset == dataset for n in [cause_node] + factor_nodes])

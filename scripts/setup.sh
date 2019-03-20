@@ -5,18 +5,19 @@
 
 set -e
 
-source conf/backend.env
-if [[ "${MPCI_ENVIRONMENT}" = "production" ]]; then
-    COMPOSE_FILE='-f docker-compose-prod.yml'
-elif [[ "${MPCI_ENVIRONMENT}" = "staging" ]]; then
-    COMPOSE_FILE='-f docker-compose-staging.yml'
-else
-    COMPOSE_FILE='-f docker-compose.yml'
+# ensure configurations are up to date
+if [[ ! -f conf/backend.env ]]; then
+    cp confdefault/backend.env conf/backend.env
+fi
+if [[ ! -f conf/algorithms.json ]]; then
+    cp confdefault/algorithms.json conf/algorithms.json
 fi
 
 
 echo "==> Resetting everything (including database)…"
-docker-compose ${COMPOSE_FILE} down
+docker-compose --log-level ERROR -f docker-compose.yml down
+docker-compose --log-level ERROR -f docker-compose-staging.yml down
+docker-compose --log-level ERROR -f docker-compose-prod.yml down
 
 echo "==> Update…"
 bash scripts/update.sh

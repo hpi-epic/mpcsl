@@ -4,6 +4,9 @@
 
 set -e
 
+echo "==> Setup…"
+bash scripts/setup.sh
+
 source conf/backend.env
 if [[ "${MPCI_ENVIRONMENT}" = "production" ]]; then
     COMPOSE_FILE='-f docker-compose-prod.yml'
@@ -12,9 +15,6 @@ elif [[ "${MPCI_ENVIRONMENT}" = "staging" ]]; then
 else
     COMPOSE_FILE='-f docker-compose.yml'
 fi
-
-echo "==> Setup…"
-bash scripts/setup.sh
 
 echo "==> Seed the database with example experiment"
 docker-compose ${COMPOSE_FILE} run --rm backend python seed.py

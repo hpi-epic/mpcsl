@@ -4,6 +4,16 @@
 
 set -e
 
+# ensure configurations are up to date
+if [[ $(diff confdefault/backend.env conf/backend.env) ]]; then
+    echo "==> Consider updating your conf/backend.env file…"
+    diff confdefault/backend.env conf/backend.env || true
+fi
+if [[ $(diff confdefault/algorithms.json conf/algorithms.json) ]]; then
+    echo "==> Consider updating your conf/algorithms.json file…"
+    diff confdefault/algorithms.json conf/algorithms.json || true
+fi
+
 echo "==> Bootstrap…"
 bash scripts/bootstrap.sh
 

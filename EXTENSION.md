@@ -51,8 +51,7 @@ To add an algorithm there, add an object to the list with the parameters set cor
 - valid_parameters: A dictionary (examples should be already there) that specifies
   additional valid command line parameters that the algorithm script accepts.
 - docker_parameters: A dictionary containing additional arguments for the docker API 
-  call. Available arguments can be found here: 
-  https://docker-py.readthedocs.io/en/stable/containers.html#docker.models.containers.ContainerCollection.run
+  call. Available arguments can be found [here](https://docker-py.readthedocs.io/en/stable/containers.html#docker.models.containers.ContainerCollection.run)
 
 When the algorithm is added to the file, restart the system to make it available 
 for usage in experiments.

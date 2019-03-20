@@ -73,7 +73,8 @@ class ExecutorResource(Resource):
                 algorithm.docker_image,
                 command,
                 detach=True,
-                network=DOCKER_EXECUTION_NETWORK
+                network=DOCKER_EXECUTION_NETWORK if DOCKER_EXECUTION_NETWORK else None,
+                **algorithm.docker_parameters
             )
         except docker.errors.ImageNotFound:
             raise BadRequest(

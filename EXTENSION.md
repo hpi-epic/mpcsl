@@ -23,6 +23,7 @@ the following tasks:
 2. Call the REST API to download the dataset
 3. Execute the algorithm with the data given
 4. Post the results back to the API to mark the job as done
+
 All API endpoints are documented in Swagger.
 For algorithms that are called or written in R, the mpciutils file in the
 R environment can be reused to simplify the API calls. Examples can be found there
@@ -31,7 +32,7 @@ contains two scripts, so two algorithms are defined later, that simply call the 
 script using the same image.
 
 ### Command line parameters
-The following parameters are passed to the given script when launched:
+The following command line parameters are passed to the script:
 - **-j**: The job id (important for submitting results)
 - **-d**: The dataset id (important when calling the API to load the dataset)
 - **--api_host**: The host where the REST API is available

@@ -1,5 +1,4 @@
 import os
-import json
 from sys import argv
 
 from flask import Flask, jsonify
@@ -12,7 +11,6 @@ from src.master.config import UWSGI_NUM_PROCESSES
 from src.master.helpers.daemon import JobDaemon
 from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
-from src.models import Algorithm, AlgorithmSchema
 
 
 class AppFactory(object):
@@ -70,25 +68,6 @@ class AppFactory(object):
         )
         set_up_routes(self.api)
 
-    def set_up_algorithms(self):
-        if os.path.isfile('conf/algorithms.json'):
-            with self.app.app_context():
-                # The second check here is necessary, because without running the migrations,
-                # the DB might be empty. To be able to run the migrations though, it is necessary to be able
-                # to initialize the app.
-                if self.db.engine.dialect.has_table(self.db.session, Algorithm.__table__.name):
-                    with open('conf/algorithms.json') as f:
-                        algorithms = json.load(f)
-                        for algorithm in algorithms:
-                            data, errors = AlgorithmSchema().load(algorithm)
-                            if len(errors) > 0:
-                                raise InvalidInputData(payload=errors)
-                            if not self.db.session.query(Algorithm)\
-                                    .filter(Algorithm.name == data['name']).one_or_none():
-                                alg = Algorithm(**data)
-                                self.db.session.add(alg)
-                        self.db.session.commit()
-
     def set_up_daemon(self, force=False):
         """
         This function starts the daemon in one of three cases:
@@ -121,7 +100,6 @@ class AppFactory(object):
         self.set_up_app()
         self.set_up_api()
         self.set_up_db()
-        self.set_up_algorithms()
         self.set_up_error_handlers()
         if not no_daemon:
             self.set_up_daemon()

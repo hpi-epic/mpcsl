@@ -140,6 +140,7 @@ class DatasetLoadResource(Resource):
     })
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
+        nodes = ds.nodes
 
         if ds.data_source != 'postgres':
             session = data_source_connections.get(ds.data_source, None)
@@ -148,13 +149,13 @@ class DatasetLoadResource(Resource):
         else:
             session = db.session
 
-        result = session.execute(ds.load_query)
-        keys = result.keys()
+        node_names = ','.join(['\"' + n.name + '\"' for n in nodes])
+        result = session.execute(f"SELECT {node_names} FROM ({ds.load_query}) _subquery_").fetchall()
+        keys = [n.id for n in nodes]
 
         f = io.StringIO()
         wr = csv.writer(f)
         wr.writerow(keys)
-        result = result.fetchall()
         for line in result:
             wr.writerow(line)
         resp = Response(f.getvalue(), mimetype='text/csv')

@@ -28,31 +28,7 @@ Additionally, the data model can be seen as ER diagram:
 
 ### Docker
 
-The full backend setup is done using a docker container that means that you will require docker to be running for a local execution. Afterwards, you can clone the repository using:
-
-```
-git clone git@github.com:danthe96/mpci.git
-```
-
-Then we can move into the repository to build the backend using:
-
-```
-cp confdefault/backend.env conf/backend.env
-cp confdefault/algorithms.json conf/algorithms.json
-docker-compose build
-```
-
-To initialize the database we have to run the following command:
-```
-docker-compose run --rm backend flask db upgrade
-```
-Finally, we can start our backend with the default configuration using:
-```
-docker-compose up
-```
-
-### Setup with user interface
-
+The complete setup is done using [Docker](https://docs.docker.com/install/) that means that you will require docker to be running for a local execution.
 As the user interface files are stored in a different [repository](https://github.com/VictorKuenstler/mpci-frontend),
 you have to clone the repo using:
 
@@ -60,51 +36,59 @@ you have to clone the repo using:
 git clone --recurse-submodules git@github.com:danthe96/mpci.git
 ```
 
-If you already cloned the repo without submodules, they have to be initialized using git submodule:
+### [Scripts to rule them all](https://github.blog/2015-06-30-scripts-to-rule-them-all/)
 
-```
-git submodule update --remote --init 
-```
+To make your life easier to get from a git clone to an up-and-running project we prepared some scripts for you.
+Here’s a quick mapping of what our scripts are named and what they’re responsible for doing:
 
-When the UI files are present, the full setup can be build using:
-```
-cp confdefault/backend.env conf/backend.env
-cp confdefault/algorithms.json conf/algorithms.json
-docker-compose -f docker-compose-nginx.yml build
-```
+- `bash scripts/bootstrap.sh` – installs/updates all dependencies
+- `bash scripts/setup.sh` – sets up a project to be used for the first time
+- `bash scripts/update.sh` – updates a project to run at its current version
+- `bash scripts/server.sh` – starts app
+- `bash scripts/demo.sh` – starts app with example dataset and experiment pre-configured
+- `bash scripts/test.sh` – runs tests
+- `bash scripts/cibuild.sh` – invoked by continuous integration servers to run tests
+- `bash scripts/console.sh` – opens a console
 
-To initialize the database we have to run the following command:
-```
-docker-compose -f docker-compose-nginx.yml run --rm backend flask db upgrade
-```
+Some of the scripts accept parameters that are passed through the underlying docker commands.
+For example, you can start a server in detached mode with `bash scripts/server.sh --detach`
+or run a specific test with `bash scripts/test.sh test/unit/master/resources/test_job.py`.
 
-Finally, we can start our frontend and backend with the default configuration using:
-```
-docker-compose -f docker-compose-nginx.yml up
-```
-This will deploy the backend with an additional nginx server, that is used
+We provide three different ways how to run the Causal Inference Pipeline:
+
+1. `backend` – starts just the backend with a postgres and a database ui - uses `docker-compose.yml`
+
+1. `staging` – deploys the backend with an additional nginx server, that is used
 to serve static files and provide the backend functionality by connecting to uWSGI.
-The transpilation of the UI files will be done during build. If the UI files change,
-it is necessary to rebuild the frontend container.
+The transpilation of the UI files will be done during build. - uses `docker-compose-staging.yml`
 
-### Seeding the database
-The files include a small seed-script that generates a randomized dataset.
-The seed script can be run using:
+1. `production` – same setup as `staging` but without database ui. Make sure to override DB credentials - uses `docker-compose-prod.yml`
 
-```
-docker-compose run --rm backend python seed.py
-```
+Change the environment variable `MPCI_ENVIRONMENT` in `conf/backend.env` accordingly to choose the desired setup.
+The default is `backend`.
 
-If you are running the UI build, you have to include the -nginx.yml compose file.
+A database user interface is available using http://localhost:8081 given a `backend` or `staging` setup.
 
-### Migrating the database
+### Try it out
+
+Just run `bash scripts/demo.sh` and open http://localhost:5000 in your browser.
+Make sure to change the `MPCI_ENVIRONMENT` in your `conf/backend.env` to `staging` to also deploy the user interface.
+
+
+## Endpoint Documentation
+
+A Swagger documentation of our REST endpoints is available using
+http://localhost:5000/static/swagger/index.html
+given default host and port settings.
+
+## Migrating the database
 
 
 A clear database is needed to launch. This is especially important,
 as the tests create all tables without using the migration system.
 To get a clear database run:
 ```
-docker-compose down
+bash scripts/setup.sh
 ```
 This command will clear all volumes, including the database.
 
@@ -116,10 +100,7 @@ DROP SCHEMA public CASCADE; CREATE SCHEMA public
 
 When the models have been changed, make sure your database is up to date by using:
 ```
-# (optional) Check first if configuration files need to be updated
-diff confdefault/backend.env conf/backend.env
-diff confdefault/algorithms.json conf/algorithms.json
-docker-compose run --rm backend flask db upgrade
+bash scripts/update.sh
 ```
 
 Afterwards, you can auto-create an migration by using:
@@ -143,8 +124,13 @@ Alembic is used for the migration system. Alembic does not auto-detect the follo
 
 This list might not be complete, be sure to check the Alembic documentation for further information.
 
-## Endpoint Documentation
+## FAQ
 
-A Swagger documentation of our REST endpoints is available using
-http://localhost:5000/static/swagger/index.html
-given default host and port settings.
+#### What should I do if following error occurs?
+```
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) could not connect to server: Connection refused
+	Is the server running on host "database" (192.168.64.2) and accepting
+	TCP/IP connections on port 5432?
+ (Background on this error at: http://sqlalche.me/e/e3q8)
+```
+For some reason the database startup took a bit too long. Just retry the command.

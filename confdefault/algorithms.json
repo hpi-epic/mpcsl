@@ -34,7 +34,8 @@
         "type": "int",
         "minimum": -1
       }
-    }
+    },
+    "docker_parameters": {}
   },
   {
     "name": "parallelpc",
@@ -72,6 +73,7 @@
         "type": "int",
         "minimum": -1
       }
-    }
+    },
+    "docker_parameters": {}
   }
 ]

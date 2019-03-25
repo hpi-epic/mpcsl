@@ -23,7 +23,7 @@ colorize_log <- function(color, string) {
 check_request <- function(api_host, request, job_id) {
     if (http_error(request)) {
         save(request, file=paste0('logs/job_', job_id, '_error.RData'))
-        error_request <- PUT(paste0('http://', api_host, '/api/job/', job_id))
+        error_request <- RETRY("PUT", paste0('http://', api_host, '/api/job/', job_id), times = 5, quiet=FALSE)
         warn_for_status(error_request)
         stop_for_status(request)
     }
@@ -33,7 +33,7 @@ get_dataset <- function(api_host, dataset_id, job_id) {
     url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/load')
     colorize_log(ANSI_GREEN, paste0('Load dataset from ', url))
     start_time <- Sys.time()
-    df_request <- GET(url)
+    df_request <- RETRY("GET", url, times = 5, quiet=FALSE)
     check_request(api_host, df_request, job_id)
     colorize_log(ANSI_GREEN, paste('Successfully loaded dataset (size ', headers(df_request)$`x-content-length`,
                 ' bytes) in', (Sys.time() - start_time), 'sec'))
@@ -108,9 +108,9 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, independenc
         sepset_list=if(nrow(sepset_list) == 0) list() else sepset_list
     ), auto_unbox=TRUE)
     
-    graph_request <- POST(paste0('http://', api_host, '/api/job/', job_id, '/result'),
+    graph_request <- RETRY("POST", paste0('http://', api_host, '/api/job/', job_id, '/result'),
                                  body=result_json, 
-                                 add_headers("Content-Type" = "application/json"))
+                                 add_headers("Content-Type" = "application/json"), times = 5, quiet=FALSE)
     check_request(api_host, graph_request, job_id)
     colorize_log(ANSI_GREEN, paste0('Successfully executed job ', job_id))
     return(graph_request)

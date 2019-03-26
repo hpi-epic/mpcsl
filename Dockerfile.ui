@@ -1,4 +1,4 @@
-FROM danthe1/mpci_ui:latest
+FROM chris89/mpci_ui:latest
 
 COPY ./static/swagger /var/www/mpci/swagger
 COPY ./static/ui/package.json /var/www/mpci/ui/package.json

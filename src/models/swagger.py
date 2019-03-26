@@ -71,7 +71,7 @@ class SwaggerMixin(object):
         for fieldname, field in cls._declared_fields.items():
             if type(field) != sqlaFields.Related and \
                     (not for_load or cls.include_field(fieldname, field)) and \
-                                (field is not None):
+                    (field is not None):
                 if type(field) == fields.Nested:
                     definition = field.schema.get_swagger()
                     if field.many:

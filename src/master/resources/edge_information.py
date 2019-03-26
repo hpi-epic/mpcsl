@@ -35,6 +35,15 @@ class EdgeInformationResource(Resource):
 class EdgeInformationListResource(Resource):
     @swagger.doc({
         'description': 'Returns all available Edge Information for a specific Result',
+        'parameters': [
+            {
+                'name': 'result_id',
+                'description': 'Result Identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
         'responses': get_default_response(EdgeInformationSchema.get_swagger().array()),
         'tags': ['Edge Information']
     })

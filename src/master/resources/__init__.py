@@ -6,7 +6,7 @@ from .jobs import JobListResource, JobResource, JobLogsResource, JobResultResour
     ExperimentJobListResource
 from .algorithms import AlgorithmResource, AlgorithmListResource
 from .nodes import NodeResource, ResultNodeListResource, NodeContextResource, NodeConfounderResource
-from .edges import EdgeResource, ResultEdgeListResource
+from .edges import EdgeResource, ResultEdgeListResource, ResultImportantEdgeListResource
 from .edge_information import EdgeInformationResource, EdgeInformationListResource
 from .sepsets import SepsetResource, ResultSepsetListResource
 from .distributions import MarginalDistributionResource, ConditionalDistributionResource, \
@@ -38,6 +38,7 @@ __all__ = [
     'ResultEdgeListResource',
     'EdgeInformationResource',
     'EdgeInformationListResource',
+    'ResultImportantEdgeListResource',
     'SepsetResource',
     'ResultSepsetListResource',
     'MarginalDistributionResource',

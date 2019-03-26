@@ -103,6 +103,7 @@ class EdgeFactory(BaseFactory):
     result = factory.SubFactory(ResultFactory)
     from_node = factory.SubFactory(NodeFactory)
     to_node = factory.SubFactory(NodeFactory)
+    weight = random.random()
 
 
 class EdgeInformationFactory(BaseFactory):

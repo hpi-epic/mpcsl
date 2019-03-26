@@ -14,7 +14,9 @@ def load_networkx_graph(result):
     for node in result.job.experiment.dataset.nodes:
         graph.add_node(node.id, label=node.name)
     for edge in result.edges:
-        edge_info = EdgeInformation.query.filter_by(edge=edge).one_or_none()
+        edge_info = EdgeInformation.query.filter(EdgeInformation.from_node == edge.from_node,
+                                                 EdgeInformation.to_node == edge.to_node,
+                                                 EdgeInformation.result == edge.result).one_or_none()
         edge_label = edge_info.annotation.name if edge_info else ''
         graph.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label=edge_label, weight=edge.weight)
     return graph

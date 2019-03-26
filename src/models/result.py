@@ -13,4 +13,5 @@ class Result(BaseModel):
 
 class ResultSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
+        exclude = ['edge_informations']
         model = Result

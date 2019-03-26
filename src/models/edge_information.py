@@ -5,18 +5,23 @@ from src.models.base import BaseModel, BaseSchema
 
 
 class EdgeAnnotation(str, enum.Enum):
-    valid = "valid"
-    invalid = "invalid"
+    approved = "approved"
+    declined = "declined"
+    missing = "missing"
 
 
 class EdgeInformation(BaseModel):
-    edge_id = db.Column(
-        db.Integer,
-        db.ForeignKey('edge.id'),
-        nullable=False
-    )
-    edge = db.relationship('Edge',
-                           backref=db.backref('edge_information', cascade="all, delete-orphan"))
+
+    result_id = db.Column(db.Integer, db.ForeignKey('result.id'), nullable=False)
+    result = db.relationship('Result', backref=db.backref('edge_informations', cascade="all, delete-orphan"))
+
+    from_node_id = db.Column(db.Integer, db.ForeignKey('node.id'), nullable=False)
+    from_node = db.relationship('Node', foreign_keys=[from_node_id],
+                                backref=db.backref('edge_information_froms'))
+
+    to_node_id = db.Column(db.Integer, db.ForeignKey('node.id'), nullable=False)
+    to_node = db.relationship('Node', foreign_keys=[to_node_id],
+                              backref=db.backref('edge_information_tos'))
 
     annotation = db.Column(db.Enum(EdgeAnnotation), nullable=False)
 

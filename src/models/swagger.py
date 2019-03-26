@@ -13,7 +13,8 @@ TYPE_MAP = {
     fields.Raw: 'object',
     fields.Dict: 'object',
     fields.List: 'array',
-    fields.Bool: 'boolean'
+    fields.Bool: 'boolean',
+    sqlaFields.RelatedList: 'array'
 }
 
 FORMAT_MAP = {
@@ -27,6 +28,7 @@ FORMAT_MAP = {
     fields.Dict: 'object',
     fields.List: 'array',
     fields.Bool: 'boolean',
+    sqlaFields.RelatedList: 'array'
 }
 
 PYTHON_TYPE_MAP = {
@@ -68,7 +70,8 @@ class SwaggerMixin(object):
         properties = {}
         for fieldname, field in cls._declared_fields.items():
             if type(field) != sqlaFields.Related and \
-                    (not for_load or cls.include_field(fieldname, field)):
+                    (not for_load or cls.include_field(fieldname, field)) and \
+                                (field is not None):
                 if type(field) == fields.Nested:
                     definition = field.schema.get_swagger()
                     if field.many:
@@ -79,6 +82,14 @@ class SwaggerMixin(object):
                         'items': {
                             'type': TYPE_MAP[type(field.container)],
                             'format': FORMAT_MAP[type(field.container)]
+                        }
+                    }
+                elif type(field) == sqlaFields.RelatedList:
+                    definition = {
+                        'type': 'array',
+                        'items': {
+                            'type': 'integer',
+                            'format': 'int64'
                         }
                     }
                 elif type(field) == fields.Constant:

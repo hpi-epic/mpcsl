@@ -46,3 +46,35 @@ class ResultEdgeListResource(Resource):
         edges = Edge.query.filter(Edge.result_id == result_id).all()
 
         return marshal(EdgeSchema, edges, many=True)
+
+
+class ResultImportantEdgeListResource(Resource):
+
+    @swagger.doc({
+        'description': 'Returns all edges for one result',
+        'parameters': [
+            {
+                'name': 'result_id',
+                'description': 'Result identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },
+            {
+                'name': 'amount',
+                'description': 'Amount of most significant edges to maximally return',
+                'in': 'path',
+                'type': 'integer',
+                'required': False
+            }
+        ],
+        'responses': get_default_response(EdgeSchema.get_swagger().array()),
+        'tags': ['Edge']
+    })
+    def get(self, result_id, amount):
+        edges = Edge.query.filter(Edge.result_id == result_id).order_by(Edge.weight.desc()).all()
+
+        if amount and len(edges) > amount:
+            edges = edges[:amount]
+
+        return marshal(EdgeSchema, edges, many=True)

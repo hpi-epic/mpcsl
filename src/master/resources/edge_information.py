@@ -68,7 +68,14 @@ class EdgeInformationListResource(Resource):
     def post(self):
         data = load_data(EdgeInformationSchema)
 
-        edge_information = EdgeInformation(**data)
+        edge_information = EdgeInformation.query.filter(EdgeInformation.result_id == data['result_id'],
+                                                        EdgeInformation.from_node_id == data['from_node_id'],
+                                                        EdgeInformation.to_node_id == data['from_node_id'])\
+                                                .one_or_none()
+        if not edge_information:
+            edge_information = EdgeInformation()
+
+        edge_information.update(data)
 
         db.session.add(edge_information)
         db.session.commit()

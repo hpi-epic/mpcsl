@@ -9,17 +9,17 @@ TOKEN = 'a66ddccc06f682bdefee2d0964ee676c87dfc7ca'
 most_recent_backend_commit = ''
 if os.path.exists('most_recent_backend_commit.pkl'):
     most_recent_backend_commit = pickle.load(open('most_recent_backend_commit.pkl', 'rb'))
-r = requests.get('http://api.github.com/repos/danthe96/mpci/commits/master', auth=('mpci-deploy-user', TOKEN))
+r = requests.get('http://api.github.com/repos/hpi-epic/mpci/commits/master', auth=('mpci-deploy-user', TOKEN))
 current_backend_commit = r.json()['sha']
 
 most_recent_ui_commit = ''
 if os.path.exists('most_recent_ui_commit.pkl'):
     most_recent_ui_commit = pickle.load(open('most_recent_ui_commit.pkl', 'rb'))
-r = requests.get('http://api.github.com/repos/threxx/mpci-frontend/commits/master', auth=('mpci-deploy-user', TOKEN))
+r = requests.get('http://api.github.com/repos/hpi-epic/mpci-frontend/commits/master', auth=('mpci-deploy-user', TOKEN))
 current_ui_commit = r.json()['sha']
 
 if current_backend_commit != most_recent_backend_commit or current_ui_commit != most_recent_ui_commit:
-    r = requests.get('https://api.github.com/repos/danthe96/mpci/commits/{}/check-runs'.format(current_backend_commit),
+    r = requests.get('https://api.github.com/repos/hpi-epic/mpci/commits/{}/check-runs'.format(current_backend_commit),
                      auth=('mpci-deploy-user', TOKEN), params={'status': 'completed'},
                      headers={'Accept': 'application/vnd.github.antiope-preview+json'})
     checks = r.json()

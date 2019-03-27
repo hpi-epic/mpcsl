@@ -24,11 +24,11 @@ Additionally, the data model can be seen as ER diagram:
 ### Docker
 
 The complete setup is done using [Docker](https://docs.docker.com/install/) that means that you will require docker to be running for a local execution.
-As the user interface files are stored in a different [repository](https://github.com/VictorKuenstler/mpci-frontend),
+As the user interface files are stored in a different [repository](https://github.com/hpi-epic/mpci-frontend),
 you have to clone the repo using:
 
 ```
-git clone --recurse-submodules git@github.com:danthe96/mpci.git
+git clone --recurse-submodules git@github.com:hpi-epic/mpci.git
 ```
 
 ### [Scripts to rule them all](https://github.blog/2015-06-30-scripts-to-rule-them-all/)

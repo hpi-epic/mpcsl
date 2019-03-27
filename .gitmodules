@@ -1,5 +1,5 @@
 [submodule "static/ui"]
 	path = static/ui
-	url = git@github.com:threxx/mpci-frontend.git
+	url = git@github.com:hpi-epic/mpci-frontend.git
 	branch = master
 	update = rebase

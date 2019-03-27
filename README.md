@@ -1,20 +1,15 @@
 # Master Project: Causal Inference Pipeline
 
-This repository contains the backend of a Causal Inference pipeline build during the Master Project 2018/19 at the HPI chair for Enterprise Platform and Integration Concepts. The pipeline currently includes the following features, which are all accessible via a REST-api:
+This repository contains the backend of a Causal Inference pipeline build during the Master Project 2018/19 at the HPI chair for Enterprise Platform and Integration Concepts. The pipeline currently includes the following features, all of which are accessible via a REST API:
 
 - Store causal inference ready datasets into our backend
-- Set up causal inference experiments for the pcalg algorithm in R with different hyperparameter settings and dataset choice
+- Set up causal inference experiments for different causal inference algorithms in R with different hyperparameter settings and dataset choice
 - Run the experiments as jobs directly in our backend
 - Manage all currently running jobs on the backend
-- Deliver the results and metainformation of past experiments 
-
-The following features are currently under active development and will be added in the following months:
-
-- Receive additional metainformation from past experiments
-- Add the choice of additional causal inference algorithms
-- Give people the opportunity to extend the pipeline with their own algorithms 
-- Integrate prior knowledge into the algorithms
-- Add additional steps to pre-process datasets
+- Deliver the results and meta information of past experiments 
+- Show distributions and perform interventions on results
+- Annotate results with additional infromation
+- Extend the pipeline with new algorithms in their own execution environments (e.g. C++)
 
 The following image shows the holistic architecture as a FMC diagram:
 
@@ -134,3 +129,12 @@ sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) could not connect t
  (Background on this error at: http://sqlalche.me/e/e3q8)
 ```
 For some reason the database startup took a bit too long. Just retry the command.
+
+## Contributors
+
+* [Alexander Kastius](https://github.com/Raandom)
+* [Victor Kuenstler](https://github.com/VictorKuenstler)
+* [Tobias Nack](https://github.com/Dencrash)
+* [Jonathan Schneider](https://github.com/jonaschn)
+* [Daniel Thevessen](https://github.com/danthe96)
+* [Theresa Zobel](https://github.com/threxx)

@@ -2,7 +2,8 @@ import factory
 import random
 from factory.alchemy import SQLAlchemyModelFactory
 
-from src.models import BaseModel, Dataset, Experiment, Job, Result, Node, Edge, Sepset, JobStatus, Algorithm
+from src.models import BaseModel, Dataset, Experiment, Job, Result, Node, Edge, Sepset, JobStatus, \
+                        Algorithm, EdgeInformation, EdgeAnnotation
 from src.db import db
 
 
@@ -103,6 +104,18 @@ class EdgeFactory(BaseFactory):
     from_node = factory.SubFactory(NodeFactory)
     to_node = factory.SubFactory(NodeFactory)
     weight = random.random()
+
+
+class EdgeInformationFactory(BaseFactory):
+    class Meta:
+        model = EdgeInformation
+        sqlalchemy_session = db.session
+
+    result = factory.SubFactory(ResultFactory)
+    from_node = factory.SubFactory(NodeFactory)
+    to_node = factory.SubFactory(NodeFactory)
+
+    annotation = random.choice(list(EdgeAnnotation))
 
 
 class SepsetFactory(BaseFactory):

@@ -22,7 +22,7 @@ colorize_log <- function(color, string) {
 
 check_request <- function(api_host, request, job_id) {
     if (http_error(request)) {
-        save(request, file=paste0('logs/job_', job_id, '_error.RData'))
+        save(request, file=paste0('/logs/job_', job_id, '_error.RData'))
         error_request <- RETRY("PUT", paste0('http://', api_host, '/api/job/', job_id), times = 5, quiet=FALSE)
         warn_for_status(error_request)
         stop_for_status(request)

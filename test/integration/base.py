@@ -16,7 +16,6 @@ import socket
 from src.master.appfactory import AppFactory
 from src.db import db
 from src.master.resources import ExecutorResource
-from src.master.helpers.io import remove_logs
 from src.master.helpers.database import add_dataset_nodes
 from src.master.helpers.docker import get_client
 from src.models import Result, Job
@@ -79,15 +78,10 @@ class BaseIntegrationTest(TestCase):
                 single_patch.__exit__()
 
     def tearDown(self):
-        self.remove_logs()
         self.stop_app_thread()
         self.db.session.remove()
         self.db.reflect()
         self.drop_all()
-
-    def remove_logs(self):
-        for job in Job.query.all():
-            remove_logs(job.id)
 
     def drop_all(self):
         for tbl in reversed(self.db.metadata.sorted_tables):

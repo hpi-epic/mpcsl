@@ -17,7 +17,7 @@ The following image shows the holistic architecture as a FMC diagram:
 
 Additionally, the data model can be seen as ER diagram:
 
-<img src="https://user-images.githubusercontent.com/8962207/50157111-e03c1d80-02d0-11e9-80a9-96d301355201.png" width="600" title="ER Datamodel Diagram">
+<img src="https://user-images.githubusercontent.com/2228622/55068955-43351180-5083-11e9-9cc3-1f7d5ffcd83b.png" width="600" title="ER Datamodel Diagram">
 
 ## Setup
 

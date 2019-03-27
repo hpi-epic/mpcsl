@@ -52,3 +52,7 @@ LOAD_SEPARATION_SET = os.environ.get('LOAD_SEPARATION_SET', 'false').lower() == 
 
 DOCKER_EXECUTION_NETWORK = os.environ.get('DOCKER_EXECUTION_NETWORK', 'mpci_default')
 DOCKER_BASE_URL = os.environ.get('DOCKER_BASE_URL', 'unix://var/run/docker.sock')
+
+DOCKER_MOUNT_LOG_VOLUME = os.environ.get('DOCKER_MOUNT_LOG_VOLUME', 'true').lower() == 'true'
+DOCKER_LOG_VOLUME_NAME = os.environ.get('DOCKER_MOUNT_LOG_VOLUME', 'mpci_worker_logs')
+DOCKER_LOG_VOLUME_MOUNT_PATH = os.environ.get('DOCKER_LOG_VOLUME_MOUNT_PATH', '/logs')

@@ -139,7 +139,7 @@ class InterventionalDistributionTest(BaseResourceTest):
     def test_returns_interventional_distribution(self):
             # Given
             df = pd.read_csv('test/fixtures/coolinghouse_1k.csv', index_col=0)
-            disc_df = df.apply(lambda c: pd.qcut(c, 8).cat.codes, axis=1)  # discretize
+            disc_df = df.apply(lambda c: pd.qcut(c, 8).cat.codes, axis=0)  # discretize
             disc_df.to_sql('test_data', con=db.engine, index=False)
             ds = DatasetFactory(
                 load_query="SELECT * FROM test_data",
@@ -170,12 +170,14 @@ class InterventionalDistributionTest(BaseResourceTest):
             assert 'bins' in distribution
             print(distribution['bins'])
             assert distribution['bins'] == {
-                '3': 209,
-                '4': 162,
-                '0': 35,
-                '6': 50,
-                '7': 0,
-                '1': 544
+                '3': 125,
+                '5': 166,
+                '4': 52,
+                '0': 0,
+                '6': 265,
+                '2': 0,
+                '7': 267,
+                '1': 125
             }
 
     def test_noncategorical_raises(self):
@@ -207,7 +209,7 @@ class InterventionalDistributionTest(BaseResourceTest):
     def test_empty_factors(self):
             # Given
             df = pd.read_csv('test/fixtures/coolinghouse_1k.csv', index_col=0)
-            disc_df = df.apply(lambda c: pd.qcut(c, 8).cat.codes, axis=1)  # More than 10 categories
+            disc_df = df.apply(lambda c: pd.qcut(c, 8).cat.codes, axis=0)
             disc_df.to_sql('test_data3', con=db.engine, index=False)
             ds = DatasetFactory(
                 load_query="SELECT * FROM test_data3",
@@ -239,9 +241,11 @@ class InterventionalDistributionTest(BaseResourceTest):
             assert 'bins' in distribution
             assert distribution['bins'] == {
                 '3': 0,
+                '5': 0,
                 '4': 0,
                 '0': 0,
                 '6': 0,
+                '2': 0,
                 '7': 0,
                 '1': 1000
             }

@@ -13,7 +13,7 @@ This repository contains the backend of a Causal Inference pipeline build during
 
 The following image shows the holistic architecture as a FMC diagram:
 
-<img src="https://user-images.githubusercontent.com/1437509/55067517-2fd47700-5080-11e9-9107-a7e0e28afa67.png" width="600" title="FMC Architecture Diagram">
+<img src="https://user-images.githubusercontent.com/1437509/55085207-92d90480-50a6-11e9-8f7e-e10fced882db.png" width="600" title="FMC Architecture Diagram">
 
 Additionally, the data model can be seen as ER diagram:
 

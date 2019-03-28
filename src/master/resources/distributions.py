@@ -225,10 +225,10 @@ class ConditionalDistributionResource(Resource):
 
 
 class InterventionalParameterSchema(Schema, SwaggerMixin):
-    cause_node_id = fields.Int()
-    effect_node_id = fields.Int()
+    cause_node_id = fields.Int(required=True)
+    effect_node_id = fields.Int(required=True)
     factor_node_ids = fields.String(default=[])
-    cause_condition = fields.String()
+    cause_condition = fields.String(required=True)
 
 
 class InterventionalDistributionResource(Resource):
@@ -240,26 +240,30 @@ class InterventionalDistributionResource(Resource):
                 'name': 'cause_node_id',
                 'description': 'Node identifier of cause',
                 'in': 'query',
-                'type': 'integer'
+                'type': 'integer',
+                'required': True
             },
             {
                 'name': 'effect_node_id',
                 'description': 'Node identifier of effect',
                 'in': 'query',
-                'type': 'integer'
+                'type': 'integer',
+                'required': True
             },
             {
                 'name': 'factor_node_ids',
                 'description': 'Node identifiers of external factors',
                 'in': 'query',
                 'type': 'array',
-                'items': {'type': 'integer'}
+                'items': {'type': 'integer'},
+                'default': []
             },
             {
                 'name': 'cause_condition',
                 'description': 'Interventional value of cause',
                 'in': 'query',
-                'type': 'string'
+                'type': 'string',
+                'required': True
             }
         ],
         'responses': get_default_response(oneOf([ConditionalDiscreteDistributionSchema,
@@ -273,7 +277,7 @@ class InterventionalDistributionResource(Resource):
         effect_node = Node.query.get_or_404(data['effect_node_id'])
         try:
             factor_node_ids = [int(e) for e in data['factor_node_ids'].split(',')] \
-                if len(data['factor_node_ids']) > 0 else []
+                if data.get('factor_node_ids', []) else []
             factor_nodes = [Node.query.get_or_404(factor_node_id) for factor_node_id in factor_node_ids]
         except ValueError:
             raise InvalidInputData('factor_node_ids must be array of ints')

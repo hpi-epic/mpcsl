@@ -1,4 +1,4 @@
-# Master Project: Causal Inference Pipeline
+# Master Project: Causal Inference Pipeline [![Docs](https://img.shields.io/badge/docs-wiki-blue.svg)](https://github.com/hpi-epic/mpci/wiki) [![Build Status](https://travis-ci.com/hpi-epic/mpci.svg?token=SsowzqaXUAS2f1Cszp23&branch=master)](https://travis-ci.com/hpi-epic/mpci)
 
 This repository contains the backend of a Causal Inference pipeline build during the Master Project 2018/19 at the HPI chair for Enterprise Platform and Integration Concepts. The pipeline currently includes the following features, all of which are accessible via a REST API:
 
@@ -45,6 +45,7 @@ Here’s a quick mapping of what our scripts are named and what they’re respon
 - `bash scripts/cibuild.sh` – invoked by continuous integration servers to run tests
 - `bash scripts/console.sh` – opens a console
 
+The example dataset for `demo.sh` is generated from an EARTHQUAKE bayesian network on [this page](http://www.bnlearn.com/bnrepository/discrete-small.html#earthquake).
 Some of the scripts accept parameters that are passed through the underlying docker commands.
 For example, you can start a server in detached mode with `bash scripts/server.sh --detach`
 or run a specific test with `bash scripts/test.sh test/unit/master/resources/test_job.py`.

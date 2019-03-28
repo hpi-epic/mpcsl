@@ -1,4 +1,4 @@
-import numpy as np
+import pandas as pd
 
 from src.master.appfactory import AppFactory
 from src.db import db
@@ -14,9 +14,9 @@ def add_experiment(db, dataset_id):
         name="Example experiment",
         description="This is an example description",
         parameters={
-            'alpha': 0.9,
+            'alpha': 0.01,
             'cores': 1,
-            'independence_test': 'gaussCI'
+            'independence_test': 'binCI'
         }
     )
 
@@ -25,19 +25,9 @@ def add_experiment(db, dataset_id):
 
 
 def add_dataset(db):
-    db.session.execute("""
-        CREATE TABLE IF NOT EXISTS test_data (
-            a float,
-            b float,
-            c float
-        );
-    """)
-
-    mean = [0, 5, 10]
-    cov = [[1, 0, 0], [0, 10, 0], [0, 0, 20]]
-    source = np.random.multivariate_normal(mean, cov, size=50)
-    for l in source:
-        db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+    df = pd.read_csv('test/fixtures/earthquake_10k.csv', index_col=0) \
+        .astype('category').apply(lambda c: c.cat.codes, axis=0)
+    df.to_sql('test_data', con=db.engine, index=False)
     db.session.commit()
 
     new_dataset = Dataset(name="Example dataset", load_query="SELECT * FROM test_data", data_source="postgres")

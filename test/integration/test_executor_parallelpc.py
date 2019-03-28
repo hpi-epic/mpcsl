@@ -198,9 +198,9 @@ class LogExecutorTest(BaseIntegrationTest):
         assert 'Successfully loaded dataset' in offset_log.text
         assert 'Successfully executed job' in offset_log.text
 
-        limit_log = requests.get(self.url_for(JobLogsResource, job_id=job.id, last=2))
-        assert limit_log.status_code == 200
-        assert 'Attaching package: ‘BiocGenerics’' not in limit_log.text
-        assert 'Load dataset from' not in limit_log.text
-        assert 'Successfully loaded dataset' not in limit_log.text
-        assert 'Successfully executed job' in limit_log.text
+        last_log = requests.get(self.url_for(JobLogsResource, job_id=job.id, last=2))
+        assert last_log.status_code == 200
+        assert 'Attaching package: ‘BiocGenerics’' not in last_log.text
+        assert 'Load dataset from' not in last_log.text
+        assert 'Successfully loaded dataset' not in last_log.text
+        assert 'Successfully executed job' in last_log.text

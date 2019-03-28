@@ -1,4 +1,4 @@
-# Master Project: Causal Inference Pipeline
+# Master Project: Causal Inference Pipeline [![Docs](https://img.shields.io/badge/docs-wiki-blue.svg)](https://github.com/hpi-epic/mpci/wiki) [![Build Status](https://travis-ci.com/hpi-epic/mpci.svg?token=SsowzqaXUAS2f1Cszp23&branch=master)](https://travis-ci.com/hpi-epic/mpci)
 
 This repository contains the backend of a Causal Inference pipeline build during the Master Project 2018/19 at the HPI chair for Enterprise Platform and Integration Concepts. The pipeline currently includes the following features, all of which are accessible via a REST API:
 

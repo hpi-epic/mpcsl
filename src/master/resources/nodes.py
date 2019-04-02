@@ -120,7 +120,7 @@ class NodeConfounderResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(NodeContextSchema.get_swagger()),
+        'responses': get_default_response(NodeConfounderSchema.get_swagger()),
         'tags': ['Node']
     })
     def get(self, node_id, result_id):

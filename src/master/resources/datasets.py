@@ -148,9 +148,8 @@ class DatasetLoadResource(Resource):
         else:
             session = db.session
 
-        nodes = ds.nodes
-        result = session.execute(f"SELECT * FROM ({ds.load_query}) _subquery_")
-        keys = [next(filter(lambda n:n.name == name, nodes)).id for name in result.keys()]  # Enforce column order
+        result = session.execute(ds.load_query)
+        keys = [next(filter(lambda n:n.name == name, ds.nodes)).id for name in result.keys()]  # Enforce column order
         result = result.fetchall()
 
         f = io.StringIO()

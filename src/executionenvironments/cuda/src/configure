@@ -1,0 +1,30 @@
+#! /bin/bash
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+  echo "could not determine R_HOME"
+  exit 1
+fi
+
+CXX=`"${R_HOME}/bin/R" CMD config CXX`
+CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
+
+# Check whether --with-cuda-home was given.
+if test "${with_cuda_home+set}" = set; then :
+  withval=$with_cuda_home; cuda_home_path=$withval
+fi
+
+if test  -n "${cuda_home_path}"  ; then
+  CUDA_HOME="${cuda_home_path}"
+else
+  if test  -d "/usr/local/cuda"  ; then
+    CUDA_HOME="/usr/local/cuda"
+  fi
+fi
+
+R_LIBS=`Rscript -e 'writeLines(Sys.getenv("R_LIBS_USER"))'`
+ABS_HOME='/home/'`Rscript -e 'writeLines(Sys.getenv("USER"))'`
+R_LIBS=${R_LIBS/\~/$ABS_HOME}
+R_INC=`Rscript -e 'writeLines(Sys.getenv("R_INCLUDE_DIR"))'`
+
+sed -e "s#@CUDA_HOME@#${CUDA_HOME}#g" -e "s#@R_LIBS@#${R_LIBS}#g" -e "s#@R_INC@#${R_INC}#g" -e "s#@CXX@#${CXX}#g" \
+src/Makevars.in > src/Makevars

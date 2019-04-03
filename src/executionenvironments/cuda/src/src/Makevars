@@ -1,0 +1,29 @@
+RCPP_INC = /home/root/R/x86_64-pc-linux-gnu-library/3.4/Rcpp/include
+
+NVCC = /usr/local/cuda/bin/nvcc
+CUDA_INC = /usr/local/cuda/include
+CUDA_LIB = /usr/local/cuda/lib64
+
+# This defines what the shared object libraries will be
+PKG_LIBS= -L$(CUDA_LIB) -L$(CUDA_LIB)/stubs -Wl,-rpath,$(CUDA_LIB) -lcudart -lcublas -lcusolver -lnvrtc -lcudart -lcuda -d
+
+NVCC_FLAGS = -Xcompiler "-fPIC"  -I/usr/share/R/include
+
+### Define objects
+cu_sources := $(wildcard independence/*.cu) $(wildcard correlation/*.cu) $(wildcard util/*.cu)
+cu_sharedlibs := $(patsubst %.cu, %.cu.o, $(cu_sources))
+
+cpp_sources := $(wildcard *.cpp)
+cpp_sharedlibs := $(patsubst %.cpp, %.cpp.o, $(cpp_sources))
+
+OBJECTS = $(cu_sharedlibs) $(cpp_sharedlibs)
+
+all : rcppcuda.so
+
+rcppcuda.so: $(OBJECTS)
+
+%.cpp.o: %.cpp
+			g++ $< -c -fPIC -I/usr/share/R/include -I$(RCPP_INC)  -std=c++11 -I. -o $<.o
+
+%.cu.o: %.cu
+			$(NVCC) $(NVCC_FLAGS) -I$(CUDA_INC) -o $<.o $< -c  -std=c++11 -I.

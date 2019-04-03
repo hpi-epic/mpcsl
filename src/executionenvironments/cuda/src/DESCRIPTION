@@ -1,0 +1,8 @@
+Package: gpucausalrcpp
+Type: Package
+Title: A GPU Enabled Causal Inference Algorithm
+Depends: R (>= 3.1.2)
+Version: 1.0
+Description: Find causal relations between variables using the GPU.
+Imports: Rcpp
+LinkingTo: Rcpp

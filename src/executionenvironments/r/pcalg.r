@@ -35,16 +35,25 @@ opt <- parse_args(option_parser)
 
 df <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
 
-matrix_df <- data.matrix(df)
-
 if (opt$independence_test == "gaussCI") {
+    matrix_df <- data.matrix(df)
     sufficient_stats <- list(C=cor(matrix_df), n=nrow(matrix_df))
-} else if (opt$independence_test == "binCI") {
-    sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE)
-} else if (opt$independence_test == "disCI"){
-    p <- ncol(matrix_df)
-    nlev <- vapply(seq_len(p), function(j) length(levels(factor(matrix_df[,j]))), 1L)
-    sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE, nlev=nlev)
+} else if (opt$independence_test == "binCI" || opt$independence_test == "disCI"){
+    # Map categories to numbers if not done yet
+    cat_map <- unique(unlist(df))
+    for(col in names(df)){
+        levels(df[[col]]) <- match(levels(df[[col]]), cat_map)
+        df[[col]] <- as.numeric(df[[col]]) - 1
+    }
+    matrix_df <- data.matrix(df)
+
+    if (opt$independence_test == "binCI") {
+        sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE)
+    } else {
+        p <- ncol(matrix_df)
+        nlev <- vapply(seq_len(p), function(j) length(levels(factor(matrix_df[,j]))), 1L)
+        sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE, nlev=nlev)
+    }
 } else{
     stop("No valid independence test specified")
 }

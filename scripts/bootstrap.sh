@@ -7,6 +7,13 @@ set -e
 # build execution environments (separate docker images)
 cd src/executionenvironments/r
 docker build -t mpci_execution_r .
+
+### INSERT FOR BRANCHES WITH CUDA TEST SETUP
+cd ..
+cd cuda
+docker build -t mpci_execution_cuda .
+### CUDA END
+
 cd ../../..
 
 source conf/backend.env

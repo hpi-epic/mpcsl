@@ -79,7 +79,7 @@
   {
     "name": "cudaalg",
     "script_filename": "alg.r",
-    "docker_image":  "mpci_cuda",
+    "docker_image":  "mpci_execution_cuda",
     "description": "CUDA based implementation",
     "valid_parameters": {
       "alpha": {

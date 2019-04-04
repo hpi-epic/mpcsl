@@ -42,6 +42,7 @@ if (opt$independence_test == "gaussCI") {
     # Map categories to numbers if not done yet
     cat_map <- unique(unlist(df))
     for(col in names(df)){
+        df[[col]] <- factor(df[[col]])
         levels(df[[col]]) <- match(levels(df[[col]]), cat_map)
         df[[col]] <- as.numeric(df[[col]]) - 1
     }

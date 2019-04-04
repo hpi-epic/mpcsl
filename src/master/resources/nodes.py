@@ -86,7 +86,7 @@ class NodeContextResource(Resource):
         main_node = Node.query.get_or_404(node_id)
         edges = Edge.query.filter(Edge.result_id == result_id, or_(Edge.from_node_id == node_id, Edge.to_node_id == node_id))
         context_nodes = {n for edge in edges for n in [edge.from_node, edge.to_node]
-                         if n != main_node and edge.result_id == result_id}
+                         if n != main_node}
 
         return marshal(NodeContextSchema, {
             'main_node': main_node,

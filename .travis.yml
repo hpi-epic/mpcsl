@@ -2,6 +2,8 @@ if: branch = master
 
 
 sudo: required
+git:
+  submodules: false
 language: python
 services:
   - docker
@@ -14,5 +16,5 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 script:
   - bash scripts/cibuild.sh
-git:
-  submodules: false
+after_success:
+  - codecov

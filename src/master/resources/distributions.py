@@ -266,8 +266,7 @@ class InterventionalDistributionResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(oneOf([ConditionalDiscreteDistributionSchema,
-                                                 ConditionalContinuousDistributionSchema]).get_swagger()),
+        'responses': get_default_response(DiscreteDistributionSchema.get_swagger()),
         'tags': ['Node', 'Distribution']
     })
     def get(self):

@@ -35,8 +35,6 @@ opt <- parse_args(option_parser)
 
 df <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
 
-matrix_df <- data.matrix(df)
-
 if (opt$independence_test == "gaussCI") {
     matrix_df <- data.matrix(df)
     sufficient_stats <- list(C=cor(matrix_df), n=nrow(matrix_df))

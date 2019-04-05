@@ -1,12 +1,13 @@
 from flask_restful_swagger_2 import swagger
 from flask_restful import Resource
 from marshmallow import fields
+from sqlalchemy import or_
 
 from src.master.helpers.database import load_networkx_graph
 from src.master.helpers.graph import get_potential_confounders
 from src.master.helpers.io import marshal
 from src.master.helpers.swagger import get_default_response
-from src.models import Node, NodeSchema, BaseSchema, Result
+from src.models import Node, NodeSchema, BaseSchema, Result, Edge
 from src.models.swagger import SwaggerMixin
 
 
@@ -83,9 +84,9 @@ class NodeContextResource(Resource):
     })
     def get(self, node_id, result_id):
         main_node = Node.query.get_or_404(node_id)
-        edges = main_node.edge_froms + main_node.edge_tos
+        edges = Edge.query.filter(Edge.result_id == result_id, or_(Edge.from_node_id == node_id, Edge.to_node_id == node_id))
         context_nodes = {n for edge in edges for n in [edge.from_node, edge.to_node]
-                         if n != main_node and edge.result_id == result_id}
+                         if n != main_node}
 
         return marshal(NodeContextSchema, {
             'main_node': main_node,

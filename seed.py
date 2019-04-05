@@ -11,12 +11,13 @@ def add_experiment(db, dataset_id):
     new_experiment = Experiment(
         algorithm_id=alg.id,
         dataset_id=dataset_id,
-        name="Example experiment",
-        description="This is an example description",
+        name="Earthquake experiment",
+        description="with pcalg and binCI",
         parameters={
             'alpha': 0.01,
             'cores': 1,
-            'independence_test': 'binCI'
+            'independence_test': 'binCI',
+            'verbose': 1
         }
     )
 
@@ -30,7 +31,12 @@ def add_dataset(db):
     df.to_sql('test_data', con=db.engine, index=False)
     db.session.commit()
 
-    new_dataset = Dataset(name="Example dataset", load_query="SELECT * FROM test_data", data_source="postgres")
+    new_dataset = Dataset(
+        name="Earthquake dataset",
+        description="10k observations x 5 nodes",
+        load_query="SELECT * FROM test_data",
+        data_source="postgres"
+    )
     db.session.add(new_dataset)
 
     add_dataset_nodes(new_dataset)

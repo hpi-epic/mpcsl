@@ -193,10 +193,10 @@ class ConditionalDistributionResource(Resource):
                     condition['categorical'] = False
 
             if condition['categorical']:
-                predicates.append(f"\"{node_name}\" IN ({','.join(map(str, condition['values']))})")
+                predicates.append(f"\"{node_name}\" IN ({','.join(map(repr, condition['values']))})")
             else:
-                predicates.append(f"\"{node_name}\" >= {condition['from_value']}")
-                predicates.append(f"\"{node_name}\" <= {condition['to_value']}")
+                predicates.append(f"\"{node_name}\" >= {repr(condition['from_value'])}")
+                predicates.append(f"\"{node_name}\" <= {repr(condition['to_value'])}")
         categorical_check = session.execute(f"SELECT 1 FROM ({dataset.load_query}) _subquery_ "
                                             f"HAVING COUNT(DISTINCT \"{node_name}\") <= 10").fetchall()
         is_categorical = len(categorical_check) > 0
@@ -304,10 +304,10 @@ class InterventionalDistributionResource(Resource):
                 else:
                     do_sql = f"SELECT " \
                              f"COUNT(*) AS group_count, " \
-                             f"COUNT(CASE WHEN _subquery_.\"{cause_node.name}\"={data['cause_condition']} " \
+                             f"COUNT(CASE WHEN _subquery_.\"{cause_node.name}\"={repr(data['cause_condition'])} " \
                              f"THEN 1 ELSE NULL END) AS marginal_count, " \
-                             f"COUNT(CASE WHEN _subquery_.\"{cause_node.name}\" = {data['cause_condition']} " \
-                             f"AND _subquery_.\"{effect_node.name}\"={category} THEN 1 ELSE NULL END) " \
+                             f"COUNT(CASE WHEN _subquery_.\"{cause_node.name}\" = {repr(data['cause_condition'])} " \
+                             f"AND _subquery_.\"{effect_node.name}\"={repr(category)} THEN 1 ELSE NULL END) " \
                              f"AS conditional_count FROM ({dataset.load_query}) _subquery_ "
                     if len(factor_nodes) > 0:
                         factor_str = ','.join(['_subquery_.\"' + n.name + '\"' for n in factor_nodes])

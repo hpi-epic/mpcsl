@@ -11,12 +11,12 @@ def add_experiment(db, dataset_id):
     new_experiment = Experiment(
         algorithm_id=alg.id,
         dataset_id=dataset_id,
-        name="Earthquake experiment",
-        description="with pcalg and binCI",
+        name="ALARM experiment 1",
+        description="With low alpha and pcalg",
         parameters={
             'alpha': 0.01,
             'cores': 1,
-            'independence_test': 'binCI',
+            'independence_test': 'disCI',
             'verbose': 1
         }
     )
@@ -26,14 +26,13 @@ def add_experiment(db, dataset_id):
 
 
 def add_dataset(db):
-    df = pd.read_csv('test/fixtures/earthquake_10k.csv', index_col=0) \
-        .astype('category').apply(lambda c: c.cat.codes, axis=0)
+    df = pd.read_csv('test/fixtures/alarm_10k.csv', index_col=0).astype('category')
     df.to_sql('test_data', con=db.engine, index=False)
     db.session.commit()
 
     new_dataset = Dataset(
-        name="Earthquake dataset",
-        description="10k observations x 5 nodes",
+        name="ALARM dataset",
+        description="10k observations x 37 nodes",
         load_query="SELECT * FROM test_data",
         data_source="postgres"
     )

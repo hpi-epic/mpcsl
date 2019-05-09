@@ -13,7 +13,7 @@ COPY ./requirements.r ./requirements.r
 RUN Rscript requirements.r
 
 # Build
-COPY ./src /scripts/src
+COPY ./EPIC-causality/R-Package /scripts/src
 WORKDIR /scripts/src
 RUN R CMD INSTALL ./
 

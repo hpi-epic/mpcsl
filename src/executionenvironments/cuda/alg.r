@@ -34,7 +34,7 @@ tmp = estimateSkeleton(matrix_df, alpha=opt$alpha, maxCondSize=opt$subset_size, 
 
 p <- ncol(matrix_df)
 seq_p <- seq_len(p)
-labels <- as.character(seq_len(p)))
+labels <- as.character(seq_len(p))
 G <- tmp$amat
 sepset <- lapply(seq_p, function(i) c(
     lapply(tmp$sepset[[i]], function(v) if(identical(v, as.integer(-1))) NULL else v),
@@ -58,4 +58,4 @@ skel <- new("pcAlgo", graph = Gobject, call = match.call(), n = integer(0),
 
 result = udag2pdag(skel)
 
-graph_request <- store_graph_result(opt$api_host, [], result, df, opt$job_id, "gaussCI", opt$send_sepsets, opt)
+graph_request <- store_graph_result(opt$api_host, result@'graph', result@'sepset', df, opt$job_id, "gaussCI", opt$send_sepsets, opt)

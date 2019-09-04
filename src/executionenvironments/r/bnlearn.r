@@ -16,6 +16,8 @@ option_list_v <- list(
                                 help="Independence test used for the bnlearn pc.stable", metavar=""),
                     make_option(c("-a", "--alpha"), type="double", default=0.05,
                                 help="This is a hyperparameter", metavar=""),
+                    make_option(c("-c", "--cores"), type="integer", default=1,
+                                help="The number of cores to run bnlearn in cluster mode on localhost", metavar=""),
                     make_option(c("-s", "--subset_size"), type="integer", default=-1,
                                 help="The maximal size of the conditioning sets that are considered", metavar=""),
                     make_option(c("--send_sepsets"), type="integer", default=0,
@@ -39,7 +41,13 @@ if (opt$independence_test == "mi-cg") {
 
 subset_size <- if(opt$subset_size < 0) Inf else opt$subset_size
 verbose <- opt$verbose > 0
-result = pc.stable(matrix_df, debug=verbose, test=opt$independence_test, alpha=opt$alpha, max.sx=subset_size)
+if (opt$cores == 1) {
+    result = pc.stable(matrix_df, debug=verbose, test=opt$independence_test, alpha=opt$alpha, max.sx=subset_size)
+} else {
+    cl = makeCluster(opt$cores, type = "PSOCK")
+    result = pc.stable(matrix_df, debug=verbose, test=opt$independence_test, alpha=opt$alpha, max.sx=subset_size, cluster=cl)
+}
+
 
 
 graph_request <- store_graph_result_bn(opt$api_host, result, df, opt$job_id, opt$independence_test, opt)

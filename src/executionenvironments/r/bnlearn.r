@@ -39,6 +39,11 @@ if (opt$independence_test == "mi-cg") {
     matrix_df <- df
 } else if (opt$independence_test == "x2") {
     df[] <- lapply(df, factor)
+    before <- ncol(df)
+    df <- df[sapply(df, function(x) !is.factor(x) | nlevels(x) > 1)]
+    if (ncol(df) < before){
+        colorize_log('\033[31m',paste('Removed ',(before - ncol(df))))
+    }
     matrix_df <- df
 } else {
 	stop("No valid independence test specified")

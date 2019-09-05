@@ -40,13 +40,9 @@ if (opt$independence_test == "gaussCI") {
     sufficient_stats <- list(C=cor(matrix_df), n=nrow(matrix_df))
 } else if (opt$independence_test == "binCI" || opt$independence_test == "disCI"){
     # Map categories to numbers if not done yet
-    cat_map <- unique(unlist(df))
-    for(col in names(df)){
-        df[[col]] <- factor(df[[col]])
-        levels(df[[col]]) <- match(levels(df[[col]]), cat_map)
-        df[[col]] <- as.numeric(df[[col]]) - 1
-    }
-    matrix_df <- data.matrix(df)
+    df[] <- lapply(df, factor)
+    df <- df[sapply(df, function(x) !is.factor(x) | nlevels(x) > 1)]
+    matrix_df <- data.matrix(df) - 1
 
     if (opt$independence_test == "binCI") {
         sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE)

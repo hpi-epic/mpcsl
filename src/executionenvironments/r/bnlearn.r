@@ -47,10 +47,18 @@ if (opt$independence_test == "mi-cg") {
 subset_size <- if(opt$subset_size < 0) Inf else opt$subset_size
 verbose <- opt$verbose > 0
 if (opt$cores == 1) {
+    start <- Sys.time()
     result = pc.stable(matrix_df, debug=verbose, test=opt$independence_test, alpha=opt$alpha, max.sx=subset_size)
+    end <- Sys.time()
+    taken <- as.double(difftime(end,start,unit="s"))
+    colorize_log('\033[32m',taken)
 } else {
     cl = makeCluster(opt$cores, type = "PSOCK")
+    start <- Sys.time()
     result = pc.stable(matrix_df, debug=verbose, test=opt$independence_test, alpha=opt$alpha, max.sx=subset_size, cluster=cl)
+    end <- Sys.time()
+    taken <- as.double(difftime(end,start,unit="s"))
+    colorize_log('\033[32m',taken)
 }
 
 

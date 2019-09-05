@@ -35,6 +35,11 @@ opt <- parse_args(option_parser)
 df <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
 if (opt$independence_test == "mi-cg") {
 	matrix_df <- df%>%dplyr::mutate_all(funs(if(length(unique(.))<opt$discrete_limit) as.factor(.)  else as.numeric(as.numeric(.))))
+} else if (opt$independence_test == "cor") {
+    matrix_df <- df
+} else if (opt$independence_test == "x2") {
+    df[] <- lapply(df, factor)
+    matrix_df <- df
 } else {
 	stop("No valid independence test specified")
 }

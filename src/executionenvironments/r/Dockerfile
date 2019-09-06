@@ -8,4 +8,5 @@ WORKDIR /scripts/src
 RUN R CMD INSTALL ./
 
 COPY . /scripts
+WORKDIR /scripts
 ENTRYPOINT ["Rscript"]

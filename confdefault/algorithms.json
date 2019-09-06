@@ -92,6 +92,8 @@
         "type": "enum",
         "required": true,
         "values": [
+          "cor",
+          "x2",
           "mi-cg"
         ]
       },
@@ -109,6 +111,11 @@
         "type": "int",
         "minimum": 3,
         "default": 4
+      },
+      "cores": {
+        "type": "int",
+        "required": true,
+        "minimum": 1
       }
     },
     "docker_parameters": {}

@@ -16,6 +16,8 @@ option_list_v <- list(
                                 help="Independence test used for the bnlearn pc.stable", metavar=""),
                     make_option(c("-a", "--alpha"), type="double", default=0.05,
                                 help="This is a hyperparameter", metavar=""),
+                    make_option(c("-c", "--cores"), type="integer", default=1,
+                                help="The number of cores to run bnlearn in cluster mode on localhost", metavar=""),
                     make_option(c("-s", "--subset_size"), type="integer", default=-1,
                                 help="The maximal size of the conditioning sets that are considered", metavar=""),
                     make_option(c("--send_sepsets"), type="integer", default=0,
@@ -33,13 +35,37 @@ opt <- parse_args(option_parser)
 df <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
 if (opt$independence_test == "mi-cg") {
 	matrix_df <- df%>%dplyr::mutate_all(funs(if(length(unique(.))<opt$discrete_limit) as.factor(.)  else as.numeric(as.numeric(.))))
+} else if (opt$independence_test == "cor") {
+    matrix_df <- df
+} else if (opt$independence_test == "x2") {
+    df[] <- lapply(df, factor)
+    before <- ncol(df)
+    df <- df[sapply(df, function(x) !is.factor(x) | nlevels(x) > 1)]
+    if (ncol(df) < before){
+        colorize_log('\033[31m',paste('Removed ',(before - ncol(df))))
+    }
+    matrix_df <- df
 } else {
 	stop("No valid independence test specified")
 }
 
 subset_size <- if(opt$subset_size < 0) Inf else opt$subset_size
 verbose <- opt$verbose > 0
-result = pc.stable(matrix_df, debug=verbose, test=opt$independence_test, alpha=opt$alpha, max.sx=subset_size)
+if (opt$cores == 1) {
+    start <- Sys.time()
+    result = pc.stable(matrix_df, debug=verbose, test=opt$independence_test, alpha=opt$alpha, max.sx=subset_size)
+    end <- Sys.time()
+    taken <- as.double(difftime(end,start,unit="s"))
+    colorize_log('\033[32m',taken)
+} else {
+    cl = makeCluster(opt$cores, type = "PSOCK")
+    start <- Sys.time()
+    result = pc.stable(matrix_df, debug=verbose, test=opt$independence_test, alpha=opt$alpha, max.sx=subset_size, cluster=cl)
+    end <- Sys.time()
+    taken <- as.double(difftime(end,start,unit="s"))
+    colorize_log('\033[32m',taken)
+}
+
 
 
 graph_request <- store_graph_result_bn(opt$api_host, result, df, opt$job_id, opt$independence_test, opt)

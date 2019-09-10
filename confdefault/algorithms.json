@@ -36,7 +36,6 @@
       },
       "skeleton_method": {
         "type": "enum",
-        "required": true,
         "values": [
           "stable.fast",
           "stable",

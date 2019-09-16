@@ -93,7 +93,14 @@
         "required": true,
         "values": [
           "cor",
+          "zf",
+          "mi-g",
+          "mi-g-sh",
           "x2",
+          "x2-adf",
+          "mi",
+          "mi-adf",
+          "mi-sh",
           "mi-cg"
         ]
       },

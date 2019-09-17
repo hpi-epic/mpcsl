@@ -35,9 +35,12 @@ opt <- parse_args(option_parser)
 df <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
 if (opt$independence_test == "mi-cg") {
 	matrix_df <- df%>%dplyr::mutate_all(funs(if(length(unique(.))<opt$discrete_limit) as.factor(.)  else as.numeric(as.numeric(.))))
-} else if (opt$independence_test == "cor") {
+} else if ( opt$independence_test == "cor" || opt$independence_test == "zf" || 
+            opt$independence_test == "mi-g" || opt$independence_test == "mi-g-sh") {
     matrix_df <- df
-} else if (opt$independence_test == "x2") {
+} else if ( opt$independence_test == "x2" || opt$independence_test == "x2-adf" || 
+            opt$independence_test == "mi" || opt$independence_test == "mi-adf" ||
+            opt$independence_test == "mi-sh") {
     df[] <- lapply(df, factor)
     before <- ncol(df)
     df <- df[sapply(df, function(x) !is.factor(x) | nlevels(x) > 1)]

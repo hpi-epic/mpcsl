@@ -33,6 +33,14 @@
       "subset_size": {
         "type": "int",
         "minimum": -1
+      },
+      "skeleton_method": {
+        "type": "enum",
+        "values": [
+          "stable.fast",
+          "stable",
+          "original"
+        ]
       }
     },
     "docker_parameters": {}

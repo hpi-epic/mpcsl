@@ -20,7 +20,9 @@ option_list_v <- list(
                     make_option(c("--send_sepsets"), type="integer", default=0,
                                 help="If 1, sepsets will be sent with the results", metavar=""),
                     make_option(c("-v", "--verbose"), type="integer", default=0,
-                                help="More detailed output is provided (with impact on performance)", metavar="")
+                                help="More detailed output is provided (with impact on performance)", metavar=""),
+                    make_option(c("--skeleton_method"), type="character", default="stable.fast",
+                                help="Method used within skeleton, C++ or R", metavar="")
                     #make_option(c("--fixed_gaps"), type="character", default=NULL,
                     #            help="The connections that are removed via prior knowledge", metavar=""),
                     #make_option(c("--fixed_edges"), type="character", default=NULL,
@@ -62,7 +64,7 @@ verbose <- opt$verbose > 0
 start <- Sys.time()
 result = pc(suffStat=sufficient_stats, verbose=verbose,
             indepTest=indepTestDict[[opt$independence_test]], m.max=subset_size,
-            p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method="stable.fast")
+            p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method=opt$skeleton_method)
 end <- Sys.time()
 taken <- as.double(difftime(end,start,unit="s"))
 colorize_log('\033[32m',taken)

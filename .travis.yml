@@ -2,17 +2,21 @@ if: branch = master
 
 
 sudo: required
+git:
+  submodules: false
 language: python
 services:
   - docker
 env:
   - DOCKER_COMPOSE_VERSION=1.23.2
 before_install:
+  - git submodule update --init --recursive src/executionenvironments/r/pcalg
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 script:
   - bash scripts/cibuild.sh
-git:
-  submodules: false
+after_success:
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  - codecov -b $BRANCH

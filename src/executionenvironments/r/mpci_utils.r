@@ -115,3 +115,29 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, independenc
     colorize_log(ANSI_GREEN, paste0('Successfully executed job ', job_id))
     return(graph_request)
 }
+
+store_graph_result_bn <- function(api_host, bn_result, df, job_id, independence_test, meta_results) {
+    edge_list <- list(from_node=c(), to_node=c())
+
+    for (i in 1:(length(bn_result$'arcs')/2) ){
+        edge_list[['from_node']][[i]] <- as.numeric(bn_result$'arcs'[i])
+        edge_list[['to_node']][[i]] <- as.numeric(bn_result$'arcs'[i+(length(bn_result$'arcs')/2)])
+        edge_list[['weight']][[i]] <- 0
+    }
+    edge_list <- data.frame(edge_list)
+
+    
+    result_json <- jsonlite::toJSON(list(
+        job_id=strtoi(job_id),
+        edge_list=if(nrow(edge_list) == 0) list() else edge_list,
+        meta_results=meta_results,
+        sepset_list=list()
+    ), auto_unbox=TRUE)
+    
+    graph_request <- RETRY("POST", paste0('http://', api_host, '/api/job/', job_id, '/result'),
+                                 body=result_json, 
+                                 add_headers("Content-Type" = "application/json"), times = 5, quiet=FALSE)
+    check_request(api_host, graph_request, job_id)
+    colorize_log(ANSI_GREEN, paste0('Successfully executed job ', job_id))
+    return(graph_request)
+}

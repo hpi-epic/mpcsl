@@ -140,7 +140,6 @@ class DatasetLoadResource(Resource):
     })
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
-        nodes = ds.nodes
 
         if ds.data_source != 'postgres':
             session = data_source_connections.get(ds.data_source, None)
@@ -149,9 +148,9 @@ class DatasetLoadResource(Resource):
         else:
             session = db.session
 
-        node_names = ','.join(['\"' + n.name + '\"' for n in nodes])
-        result = session.execute(f"SELECT {node_names} FROM ({ds.load_query}) _subquery_").fetchall()
-        keys = [n.id for n in nodes]
+        result = session.execute(ds.load_query)
+        keys = [next(filter(lambda n:n.name == name, ds.nodes)).id for name in result.keys()]  # Enforce column order
+        result = result.fetchall()
 
         f = io.StringIO()
         wr = csv.writer(f)

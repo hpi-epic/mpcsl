@@ -35,24 +35,33 @@ opt <- parse_args(option_parser)
 
 df <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
 
-matrix_df <- data.matrix(df)
-
 if (opt$independence_test == "gaussCI") {
+    matrix_df <- data.matrix(df)
     sufficient_stats <- list(C=cor(matrix_df), n=nrow(matrix_df))
-} else if (opt$independence_test == "binCI") {
-    sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE)
-} else if (opt$independence_test == "disCI"){
-    p <- ncol(matrix_df)
-    nlev <- vapply(seq_len(p), function(j) length(levels(factor(matrix_df[,j]))), 1L)
-    sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE, nlev=nlev)
+} else if (opt$independence_test == "binCI" || opt$independence_test == "disCI"){
+    # Map categories to numbers if not done yet
+    df[] <- lapply(df, factor)
+    df <- df[sapply(df, function(x) !is.factor(x) | nlevels(x) > 1)]
+    matrix_df <- data.matrix(df) - 1
+
+    if (opt$independence_test == "binCI") {
+        sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE)
+    } else {
+        p <- ncol(matrix_df)
+        nlev <- vapply(seq_len(p), function(j) length(levels(factor(matrix_df[,j]))), 1L)
+        sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE, nlev=nlev)
+    }
 } else{
     stop("No valid independence test specified")
 }
 
 subset_size <- if(opt$subset_size < 0) Inf else opt$subset_size
 verbose <- opt$verbose > 0
+start <- Sys.time()
 result = pc_parallel(suffStat=sufficient_stats, verbose=verbose,
             indepTest=indepTestDict[[opt$independence_test]], m.max=subset_size,
             p=ncol(matrix_df), alpha=opt$alpha, num.cores=opt$cores, skel.method="parallel")
-
+end <- Sys.time()
+taken <- as.double(difftime(end,start,unit="s"))
+colorize_log('\033[32m',taken)
 graph_request <- store_graph_result(opt$api_host, result@'graph', result@'sepset', df, opt$job_id, opt$independence_test, opt$send_sepsets, opt)

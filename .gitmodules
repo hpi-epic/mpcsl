@@ -1,8 +1,12 @@
 [submodule "static/ui"]
 	path = static/ui
-	url = git@github.com:hpi-epic/mpci-frontend.git
+	url = ../mpci-frontend.git
 	branch = master
 	update = rebase
+[submodule "src/executionenvironments/r/pcalg"]
+	path = src/executionenvironments/r/pcalg
+	url = https://github.com/ChristopherSchmidt89/pcalg.git
+	branch = master
 [submodule "src/executionenvironments/cuda/EPIC-causality"]
 	path = src/executionenvironments/cuda/EPIC-causality
 	url = https://github.com/ChristopherSchmidt89/EPIC-causality.git

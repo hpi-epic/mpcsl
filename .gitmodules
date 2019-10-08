@@ -10,4 +10,4 @@
 [submodule "src/executionenvironments/cuda/EPIC-causality"]
 	path = src/executionenvironments/cuda/EPIC-causality
 	url = https://github.com/ChristopherSchmidt89/EPIC-causality.git
-	branch = master
+	branch = time_measures

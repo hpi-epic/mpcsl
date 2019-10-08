@@ -30,9 +30,9 @@ matrix_df <- data.matrix(df)
 
 verbose <- opt$verbose > 0
 
-start <- Sys.time()
+t_start <- Sys.time()
 tmp = estimateSkeleton(matrix_df, alpha=opt$alpha, maxCondSize=opt$subset_size, verbose=verbose)
-skel <- Sys.time()
+t_skel <- Sys.time()
 
 p <- ncol(matrix_df)
 seq_p <- seq_len(p)
@@ -59,9 +59,9 @@ skel <- new("pcAlgo", graph = Gobject, call = match.call(), n = integer(0),
     sepset = sepset, pMax = pMax, zMin = matrix(NA, 1, 1))
 
 result = udag2pdag(skel)
-end <- Sys.time()
-estimation <- as.double(difftime(skel,start,unit="s"))
-total <- as.double(difftime(end,start,unit="s"))
+t_end <- Sys.time()
+estimation <- as.double(difftime(t_skel,t_start,unit="s"))
+total <- as.double(difftime(t_end,t_start,unit="s"))
 colorize_log('\033[32m',paste('Time Skeleton Estimation ', estimation))
 colorize_log('\033[32m',paste('Time Total ',total))
 graph_request <- store_graph_result(opt$api_host, result@'graph', result@'sepset', df, opt$job_id, "gaussCI", opt$send_sepsets, opt)

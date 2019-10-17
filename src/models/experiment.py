@@ -26,6 +26,13 @@ class Experiment(BaseModel):
             return None
         return sorted(self.jobs, key=lambda x: x.start_time)[-1]
 
+    @property
+    def avg_execution_time(self):
+        times = [job.execution_time for  job in self.jobs]
+        if times:
+            return sum(times) / float(len(times))
+        return 0.0
+
 
 class ExperimentSchema(BaseSchema):
     name = field_for(Experiment, 'name', required=True, validate=Length(min=1))
@@ -33,6 +40,7 @@ class ExperimentSchema(BaseSchema):
     algorithm = fields.Nested('AlgorithmSchema', dump_only=True)
     parameters = fields.Dict()
     last_job = fields.Nested('JobSchema', dump_only=True)
+    avg_execution_time = fields.Float()
 
     class Meta(BaseSchema.Meta):
         model = Experiment

@@ -210,7 +210,7 @@ class JobResultResource(Resource):
     def post(self, job_id):
         job = Job.query.get_or_404(job_id)
         result = Result(job=job, start_time=job.start_time,
-                        end_time=datetime.now())
+                        end_time=datetime.now(),)
         db.session.add(result)
         db.session.flush()
 
@@ -220,7 +220,7 @@ class JobResultResource(Resource):
 
         result_elements = ijson_parse_items(
             request.stream,
-            ['meta_results', 'edge_list.item', 'sepset_list.item']
+            ['meta_results', 'edge_list.item', 'sepset_list.item', 'execution_time', 'dataset_loading_time']
         )
         edges = []
         sepsets = []
@@ -260,6 +260,15 @@ class JobResultResource(Resource):
                 if len(sepsets) > RESULT_WRITE_BUFF_SIZE:
                     db.session.bulk_save_objects(sepsets)
                     sepsets = []
+
+            elif prefix == 'execution_time':
+                result.execution_time = element
+                current_app.logger.info('Element: {}'.format(element))
+
+            elif prefix == 'dataset_loading_time':
+                result.dataset_loading_time = element
+
+
 
         job.status = JobStatus.done
         if len(edges) > 0:

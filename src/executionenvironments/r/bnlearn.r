@@ -32,7 +32,10 @@ option_list_v <- list(
 option_parser <- OptionParser(option_list=option_list_v)
 opt <- parse_args(option_parser)
 
-df <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
+tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
+df <- tmp_result[[1]]
+dataset_loading_time <- tmp_result[[2]]
+
 if (opt$independence_test == "mi-cg") {
 	matrix_df <- df%>%dplyr::mutate_all(funs(if(length(unique(.))<opt$discrete_limit) as.factor(.)  else as.numeric(as.numeric(.))))
 } else if ( opt$independence_test == "cor" || opt$independence_test == "zf" || 
@@ -54,6 +57,7 @@ if (opt$independence_test == "mi-cg") {
 
 subset_size <- if(opt$subset_size < 0) Inf else opt$subset_size
 verbose <- opt$verbose > 0
+taken <- double()
 if (opt$cores == 1) {
     start <- Sys.time()
     result = pc.stable(matrix_df, debug=verbose, test=opt$independence_test, alpha=opt$alpha, max.sx=subset_size)
@@ -71,4 +75,4 @@ if (opt$cores == 1) {
 
 
 
-graph_request <- store_graph_result_bn(opt$api_host, result, df, opt$job_id, opt$independence_test, opt)
+graph_request <- store_graph_result_bn(opt$api_host, result, df, opt$job_id, opt$independence_test, opt, taken, dataset_loading_time)

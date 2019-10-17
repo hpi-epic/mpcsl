@@ -28,7 +28,7 @@ class Experiment(BaseModel):
 
     @property
     def avg_execution_time(self):
-        times = [job.execution_time for  job in self.jobs]
+        times = [job.execution_time for job in filter(lambda job: job.status == 'done' ,self.jobs)]
         if times:
             return sum(times) / float(len(times))
         return 0.0

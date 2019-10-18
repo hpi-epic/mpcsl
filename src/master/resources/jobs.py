@@ -263,7 +263,6 @@ class JobResultResource(Resource):
 
             elif prefix == 'execution_time':
                 result.execution_time = element
-                current_app.logger.info('Element: {}'.format(element))
 
             elif prefix == 'dataset_loading_time':
                 result.dataset_loading_time = element

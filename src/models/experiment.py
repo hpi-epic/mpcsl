@@ -3,9 +3,6 @@ from marshmallow.validate import Length
 from marshmallow_sqlalchemy import field_for
 from sqlalchemy.ext.mutable import MutableDict
 
-
-from flask import current_app
-
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
 

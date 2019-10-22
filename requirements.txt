@@ -44,7 +44,7 @@ python-editor==1.0.3
 pytz==2018.7
 requests==2.20.1
 six==1.11.0
-SQLAlchemy==1.2.14
+SQLAlchemy==1.3.10
 sqlalchemy-hana==0.3.0
 text-unidecode==1.2
 urllib3==1.24.1

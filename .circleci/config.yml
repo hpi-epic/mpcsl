@@ -1,17 +1,12 @@
 version: 2
 jobs:
   build:
-    environment:  
-      DOCKER_COMPOSE_VERSION: 1.23.2
-    docker:
-      - image: python
+    machine:
+      image: ubuntu-1604:201903-01
+      docker_layer_caching: false
     steps:
-      - run: apt install docker
       - checkout
       - run: git submodule update --init --recursive src/executionenvironments/r/pcalg
-      - run: curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-      - run: chmod +x docker-compose
-      - run: mv docker-compose /usr/local/bin
       - run: bash scripts/cibuild.sh
       - run:
           when: on_success

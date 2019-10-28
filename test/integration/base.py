@@ -68,7 +68,7 @@ class BaseIntegrationTest(TestCase):
         while timeout > 0:
             time.sleep(1)
             try:
-                urlopen('localhost:5000')
+                urlopen('0.0.0.0:5000')
                 timeout = 0
             except URLError:
                 timeout -= 1
@@ -106,7 +106,7 @@ class BaseIntegrationTest(TestCase):
             return False
 
     def url_for(self, resource, **values):
-        adapter = self.app.url_map.bind('localhost:5000')
+        adapter = self.app.url_map.bind('0.0.0.0:5000')
         return adapter.build(resource.endpoint, values, force_external=True)
 
     @staticmethod

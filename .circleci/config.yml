@@ -8,7 +8,6 @@ jobs:
     steps:
       - checkout
       - run: git submodule update --init --recursive src/executionenvironments/r/pcalg
-      - run: rm /usr/local/bin/docker-compose
       - run: curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
       - run: chmod +x docker-compose
       - run: mv docker-compose /usr/local/bin

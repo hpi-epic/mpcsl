@@ -15,8 +15,6 @@ jobs:
       - run: curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
       - run: chmod +x docker-compose 
       - run: sudo mv docker-compose /usr/local/bin
-      - setup_remote_docker:
-          docker_layer_caching: true
       - run: 
           name: Build Stuff
           command: bash scripts/setup.sh

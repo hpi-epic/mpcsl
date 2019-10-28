@@ -31,7 +31,9 @@ workflows:
   continous-integration:
     jobs:
       - build
-      - run
+      - run:
+          requires:
+            - build
 
 
 

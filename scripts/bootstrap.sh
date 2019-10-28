@@ -23,4 +23,4 @@ else
     echo "==> Pull and build everything necessary (backend only)…"
 fi
 
-docker-compose ${COMPOSE_FILE} build
+docker-compose --project-name mpci ${COMPOSE_FILE} build

@@ -17,8 +17,8 @@ else
 fi
 
 echo "==> Seed the database with example experiment"
-docker-compose ${COMPOSE_FILE} run --rm backend python seed.py
+docker-compose --project-name mpci ${COMPOSE_FILE} run --rm backend python seed.py
 
 echo "==> Run application…"
 # pass arguments to call. This is useful for starting in detached mode.
-docker-compose ${COMPOSE_FILE} up "$@"
+docker-compose --project-name mpci ${COMPOSE_FILE} up "$@"

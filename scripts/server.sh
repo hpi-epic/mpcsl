@@ -19,4 +19,4 @@ bash scripts/update.sh
 
 echo "==> Run application…"
 # pass arguments to call. This is useful for starting in detached mode.
-docker-compose ${COMPOSE_FILE} up "$@"
+docker-compose --project-name mpci --project-name mpci ${COMPOSE_FILE} up "$@"

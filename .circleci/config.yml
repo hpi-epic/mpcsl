@@ -12,9 +12,6 @@ jobs:
           name: Get Dependencies
           command: git submodule update --init --recursive src/executionenvironments/r/pcalg
       - run:
-          name: Install sudo
-          command: apt-get install -y sudo
-      - run:
           name: Update docker-compose
           command: |
             sudo rm /usr/local/bin/docker-compose &

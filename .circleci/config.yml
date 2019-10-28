@@ -1,9 +1,6 @@
 version: 2
 jobs:
   build:
-    branches:
-      only:
-        - master
     environment:  
       DOCKER_COMPOSE_VERSION: 1.23.2
     docker:

@@ -11,13 +11,10 @@ jobs:
       - run: 
           name: Get Dependencies
           command: git submodule update --init --recursive src/executionenvironments/r/pcalg
-      - run:
-          name: Update docker-compose
-          command: |
-            sudo rm /usr/local/bin/docker-compose &
-            curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose &
-            chmod +x docker-compose &
-            sudo mv docker-compose /usr/local/bin
+      - run: sudo rm /usr/local/bin/docker-compose
+      - run: curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+      - run: chmod +x docker-compose 
+      - run: sudo mv docker-compose /usr/local/bin
       - run: 
           name: Build Stuff
           command: bash scripts/setup.sh

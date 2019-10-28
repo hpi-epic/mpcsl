@@ -6,6 +6,7 @@ jobs:
     docker:
       - image: python
     steps:
+      - run: apt install docker
       - checkout
       - run: git submodule update --init --recursive src/executionenvironments/r/pcalg
       - run: curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose

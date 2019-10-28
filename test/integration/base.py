@@ -58,7 +58,7 @@ class BaseIntegrationTest(TestCase):
                 patched.append(single_patch)
 
         def run_func(app):
-            app.run(host="0.0.0.0", port='5000', debug=True, use_reloader=False, threaded=True)
+            app.run(host=socket.gethostbyname(socket.gethostname()), port='5000', debug=True, use_reloader=False, threaded=True)
         self.app_thread = Process(target=run_func, args=(self.app, ))
 
         self.db.create_all()
@@ -68,7 +68,7 @@ class BaseIntegrationTest(TestCase):
         while timeout > 0:
             time.sleep(1)
             try:
-                urlopen('0.0.0.0:5000')
+                urlopen(f'{socket.gethostbyname(socket.gethostname())}:5000')
                 timeout = 0
             except URLError:
                 timeout -= 1

@@ -30,14 +30,8 @@ workflows:
   version: 2
   continous-integration:
     jobs:
-      - build:
-          filters:
-            branches:
-              only: master
-      - run:
-          filters:
-            branches:
-              only: master
+      - build
+      - run
 
 
 

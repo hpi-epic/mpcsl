@@ -25,7 +25,6 @@ else
 fi
 
 echo "==> Run application…"
-docker-compose 
 docker-compose --project-name mpci ${COMPOSE_FILE} up -d
 
 docker exec -it ${SERVICE_NAME} bash

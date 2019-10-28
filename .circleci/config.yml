@@ -18,7 +18,6 @@ jobs:
       - run: 
           name: Build Stuff
           command: bash scripts/setup.sh
-      - run: docker system prune -a
       - run: 
           name: Run Tests
           command: bash scripts/test.sh

@@ -6,12 +6,39 @@ jobs:
       docker_layer_caching: false
     steps:
       - checkout
-      - run: git submodule update --init --recursive src/executionenvironments/r/pcalg
-      - run: bash scripts/cibuild.sh
+      - run: 
+          name: Get Dependencies
+          command: git submodule update --init --recursive src/executionenvironments/r/pcalg
+      - run: 
+          name: Build Stuff
+          command: bash scripts/setup.sh
+  run:
+    machine:
+      image: ubuntu-1604:201903-01
+      docker_layer_caching: false
+    steps:
+      - run: 
+          name: Run Tests
+          command: bash scripts/test.sh
       - run:
+          name: On Success
           when: on_success
           command: |
               export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
               codecov -b $BRANCH
+workflows:
+  version: 2
+  continous-integration:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master
+      - run:
+          filters:
+            branches:
+              only: master
+
+
 
 

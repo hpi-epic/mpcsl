@@ -1,6 +1,8 @@
 version: 2
 jobs:
-  build:
+  build-and-test:
+    environment:
+      DOCKER_COMPOSE_VERSION: 1.23.2
     machine:
       image: ubuntu-1604:201903-01
       docker_layer_caching: false
@@ -9,14 +11,16 @@ jobs:
       - run: 
           name: Get Dependencies
           command: git submodule update --init --recursive src/executionenvironments/r/pcalg
+      - run:
+          name: Update docker-compose
+          command: |
+            rm /usr/local/bin/docker-compose
+            curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+            chmod +x docker-compose
+            mv docker-compose /usr/local/bin
       - run: 
           name: Build Stuff
           command: bash scripts/setup.sh
-  run:
-    machine:
-      image: ubuntu-1604:201903-01
-      docker_layer_caching: false
-    steps:
       - run: 
           name: Run Tests
           command: bash scripts/test.sh
@@ -26,14 +30,6 @@ jobs:
           command: |
               export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
               codecov -b $BRANCH
-workflows:
-  version: 2
-  continous-integration:
-    jobs:
-      - build
-      - run:
-          requires:
-            - build
 
 
 

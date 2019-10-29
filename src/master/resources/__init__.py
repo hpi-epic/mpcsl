@@ -1,4 +1,4 @@
-from .datasets import DatasetLoadResource, DatasetListResource, DatasetResource, \
+from .datasets import DatasetLoadResource, DatasetListResource, DatasetResource, DatasetGroundTruthUpload, \
     DatasetAvailableSourcesResource
 from .experiments import ExperimentListResource, ExperimentResource
 from .results import ResultListResource, ResultResource, GraphExportResource
@@ -19,6 +19,7 @@ __all__ = [
     'DatasetLoadResource',
     'DatasetListResource',
     'DatasetResource',
+    'DatasetGroundTruthUpload',
     'DatasetAvailableSourcesResource',
     'ExperimentListResource',
     'ExperimentResource',

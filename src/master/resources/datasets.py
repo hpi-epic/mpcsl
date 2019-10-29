@@ -1,8 +1,10 @@
 import csv
 import io
+import networkx as nx
+
 
 from flask_restful_swagger_2 import swagger
-from flask import Response
+from flask import Response, request, current_app
 from flask_restful import Resource, abort
 from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import BadRequest
@@ -59,6 +61,41 @@ class DatasetResource(Resource):
         db.session.delete(ds)
         db.session.commit()
         return data
+
+class DatasetGroundTruthUpload(Resource):
+    @swagger.doc({
+        'description': 'Add Ground-Truth to Dataset',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'Dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },{
+                'name': 'graph_file',
+                'description': 'Path to Graph File',
+                'in': 'formData',
+                'type': 'file',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(DatasetSchema.get_swagger()),
+        'tags': ['Dataset']
+    })
+    def post(self, dataset_id):
+        try:
+            file = request.files['graph_file']
+            graph = nx.parse_gml(file.stream.read().decode('utf-8'))
+        except:
+            raise BadRequest(f'Could not parse file: "{file.filename}"')
+        ds = Dataset.query.get_or_404(dataset_id)
+
+        for edge in graph.edges:
+            current_app.logger.info('{}'.format(edge))
+
+        current_app.logger.info('Dataset Name: {}'.format(ds.nodes))
+        return None
 
 
 class DatasetListResource(Resource):

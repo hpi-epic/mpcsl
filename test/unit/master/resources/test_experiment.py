@@ -65,7 +65,7 @@ class ExperimentTest(BaseResourceTest):
         assert result['id'] == ex.id
         assert inspect(ex).detached is True
 
-    def test_avg_execution_time(self):
+    def test_execution_time_statistics(self):
         # Given
         ex_wo_jobs = ExperimentFactory()
         ex_wo_results = ExperimentFactory()
@@ -78,6 +78,11 @@ class ExperimentTest(BaseResourceTest):
         result2.execution_time = 3.0
 
         # Then
-        assert ex_wo_jobs.avg_execution_time == 0.0
-        assert ex_wo_results.avg_execution_time == 0.0
-        assert ex_w_results.avg_execution_time == 2.5
+        assert ex_wo_jobs.execution_time_statistics == None
+        assert ex_wo_results.execution_time_statistics == None
+        assert ex_w_results.execution_time_statistics['min'] == 2.0
+        assert ex_w_results.execution_time_statistics['max'] == 3.0
+        assert ex_w_results.execution_time_statistics['mean'] == 2.5
+        assert ex_w_results.execution_time_statistics['median'] == 2.5
+        assert ex_w_results.execution_time_statistics['lower_quantile'] == 2.25
+        assert ex_w_results.execution_time_statistics['upper_quantile'] == 2.75

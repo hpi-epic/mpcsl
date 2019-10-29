@@ -267,8 +267,6 @@ class JobResultResource(Resource):
             elif prefix == 'dataset_loading_time':
                 result.dataset_loading_time = element
 
-
-
         job.status = JobStatus.done
         if len(edges) > 0:
             db.session.bulk_save_objects(edges)

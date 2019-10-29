@@ -58,7 +58,7 @@ class BaseIntegrationTest(TestCase):
                 patched.append(single_patch)
 
         def run_func(app):
-            app.run(host='127.0.0.1', port='5000', debug=True, use_reloader=False, threaded=True)
+            app.run(host='0.0.0.0', port='5000', debug=True, use_reloader=False, threaded=True)
         self.app_thread = Process(target=run_func, args=(self.app, ))
 
         self.db.create_all()
@@ -68,7 +68,7 @@ class BaseIntegrationTest(TestCase):
         while timeout > 0:
             time.sleep(1)
             try:
-                urlopen('127.0.0.1:5000')
+                urlopen('localhost:5000')
                 timeout = 0
             except URLError:
                 timeout -= 1
@@ -106,7 +106,7 @@ class BaseIntegrationTest(TestCase):
             return False
 
     def url_for(self, resource, **values):
-        adapter = self.app.url_map.bind('127.0.0.1:5000')
+        adapter = self.app.url_map.bind('localhost:5000')
         return adapter.build(resource.endpoint, values, force_external=True)
 
     @staticmethod

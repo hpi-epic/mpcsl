@@ -8,6 +8,9 @@ jobs:
       docker_layer_caching: false
     steps:
       - checkout
+      - run:
+          name: upgrade pip
+          command: pip install --upgrade pip
       - run: 
           name: Get Dependencies
           command: git submodule update --init --recursive src/executionenvironments/r/pcalg

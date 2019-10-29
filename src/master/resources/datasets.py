@@ -16,7 +16,7 @@ from src.master.db import data_source_connections
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
 from src.master.helpers.database import add_dataset_nodes
-from src.models import Dataset, DatasetSchema
+from src.models import Dataset, DatasetSchema, Edge
 from src.models.swagger import SwaggerMixin
 
 
@@ -92,9 +92,22 @@ class DatasetGroundTruthUpload(Resource):
         ds = Dataset.query.get_or_404(dataset_id)
 
         for edge in graph.edges:
-            current_app.logger.info('{}'.format(edge))
+            from_node_label = edge[0]
+            to_node_label = edge[1]
+            from_node_index = None
+            to_node_index = None
 
-        current_app.logger.info('Dataset Name: {}'.format(ds.nodes))
+            for node in ds.nodes:
+                if from_node_label == node.name:
+                    from_node_index = node.id
+                if to_node_label == node.name:
+                    to_node_index = node.id
+            edge = Edge(result_id=None, from_node_id=from_node_index, to_node_id=to_node_index, weight=None, is_ground_truth=True)
+            db.session.add(edge)
+        
+        db.session.commit()
+
+        # What to return?
         return None
 
 

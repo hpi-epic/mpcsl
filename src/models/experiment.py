@@ -41,14 +41,15 @@ class Experiment(BaseModel):
         execution_times.sort()
 
         if execution_times:
-            execution_time_statistics = {}
-            execution_time_statistics['min'] = min(execution_times)
-            execution_time_statistics['max'] = max(execution_times)
-            execution_time_statistics['mean'] = np.average(execution_times)
-            execution_time_statistics['median'] = np.median(execution_times)
-            execution_time_statistics['lower_quantile'] = np.quantile(execution_times, .25)
-            execution_time_statistics['upper_quantile'] = np.quantile(execution_times, .75)
-
+            execution_time_statistics = {
+                'min': min(execution_times),
+                'max': max(execution_times),
+                'mean': np.average(execution_times),
+                'median': np.median(execution_times),
+                'lower_quantile': np.quantile(execution_times, .25),
+                'upper_quantile': np.quantile(execution_times, .75),
+            }
+    
         return execution_time_statistics 
     
 

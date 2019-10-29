@@ -4,9 +4,8 @@ from sqlalchemy import inspect
 from src.db import db
 from src.master.resources.experiments import ExperimentListResource, ExperimentResource
 from src.models import Experiment
-from test.factories import ExperimentFactory, DatasetFactory, JobFactory, AlgorithmFactory
+from test.factories import ExperimentFactory, DatasetFactory, JobFactory, AlgorithmFactory, ResultFactory
 from .base import BaseResourceTest
-
 
 class ExperimentTest(BaseResourceTest):
     def test_returns_all_experiments(self):
@@ -65,3 +64,20 @@ class ExperimentTest(BaseResourceTest):
         # Then
         assert result['id'] == ex.id
         assert inspect(ex).detached is True
+
+    def test_avg_execution_time(self):
+        # Given
+        ex_wo_jobs = ExperimentFactory()
+        ex_wo_results = ExperimentFactory()
+        ex_w_results = ExperimentFactory()
+        job = JobFactory(experiment=ex_wo_results)
+        job2 = JobFactory(experiment=ex_w_results)
+        result = ResultFactory(job=job2)
+        result2 = ResultFactory(job=job2)
+        result.execution_time = 2.0
+        result2.execution_time = 3.0
+
+        # Then
+        assert ex_wo_jobs.avg_execution_time == 0.0
+        assert ex_wo_results.avg_execution_time == 0.0
+        assert ex_w_results.avg_execution_time == 2.5

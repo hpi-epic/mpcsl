@@ -180,6 +180,5 @@ rsconnect/
 
 # End of https://www.gitignore.io/api/r,python
 
-conf/
 most_recent_backend_commit.pkl
 most_recent_ui_commit.pkl

@@ -23,6 +23,8 @@ class GaussExecutorTest(BaseIntegrationTest):
         assert result.job_id == job.id
         assert result.job.experiment_id == ex.id
         assert result.start_time == job.start_time
+        assert result.execution_time is not None
+        assert result.dataset_loading_time is not None
 
         nodes = db.session.query(Node).filter_by(dataset_id=job.experiment.dataset_id).all()
         edges = db.session.query(Edge).filter_by(result=result).all()
@@ -47,6 +49,8 @@ class DiscreteExecutorTest(BaseIntegrationTest):
         assert result.job_id == job.id
         assert result.job.experiment_id == ex.id
         assert result.start_time == job.start_time
+        assert result.execution_time is not None
+        assert result.dataset_loading_time is not None
 
         nodes = db.session.query(Node).filter_by(dataset_id=job.experiment.dataset_id).all()
         edges = db.session.query(Edge).filter_by(result=result).all()
@@ -71,6 +75,8 @@ class BinaryExecutorTest(BaseIntegrationTest):
         assert result.job_id == job.id
         assert result.job.experiment_id == ex.id
         assert result.start_time == job.start_time
+        assert result.execution_time is not None
+        assert result.dataset_loading_time is not None
 
         nodes = db.session.query(Node).filter_by(dataset_id=job.experiment.dataset_id).all()
         edges = db.session.query(Edge).filter_by(result=result).all()
@@ -101,6 +107,8 @@ class SepsetExecutorTest(BaseIntegrationTest):
         assert result.job_id == job.id
         assert result.job.experiment_id == ex.id
         assert result.start_time == job.start_time
+        assert result.execution_time is not None
+        assert result.dataset_loading_time is not None
 
         nodes = db.session.query(Node).filter_by(dataset_id=job.experiment.dataset_id).all()
         node_set = {'V1', 'V2', 'V3', 'V4', 'V5', 'V6'}
@@ -157,6 +165,8 @@ class ParamExecutorTest(BaseIntegrationTest):
         assert result.job_id == job.id
         assert result.job.experiment_id == ex.id
         assert result.start_time == job.start_time
+        assert result.execution_time is not None
+        assert result.dataset_loading_time is not None
 
         sepsets = db.session.query(Sepset).all()
         # If m.max=0, there can be no separation sets

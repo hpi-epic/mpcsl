@@ -89,18 +89,19 @@ class DatasetGroundTruthUpload(Resource):
             graph = nx.parse_gml(file.stream.read().decode('utf-8'))
         except:
             raise BadRequest(f'Could not parse file: "{file.filename}"')
-
-        # Is this check necessary?
-        edges_of_dataset = db.session.query(Edge).\
-                           join(Node, ((Edge.from_node_id==Node.id or Edge.to_node_id==Node.id) and Node.dataset_id==dataset_id)).\
-                           filter(Edge.is_ground_truth==True)
-
-        if edges_of_dataset.count() != 0:
-            raise ValidationError(f'Ground-Truth Graph for Dataset {dataset_id} allready exists!')
-            # What to return?
-            return None
-
         ds = Dataset.query.get_or_404(dataset_id)
+        already_has_ground_truth = False
+        for node in ds.nodes:
+            for edge in node.edge_froms:
+                if edge.is_ground_truth:
+                    already_has_ground_truth = True 
+                    break
+            if already_has_ground_truth:
+                break
+
+
+        if already_has_ground_truth:
+            raise BadRequest(f'Ground-Truth Graph for Dataset {dataset_id} already exists!')
 
         for edge in graph.edges:
             from_node_label = edge[0]
@@ -115,17 +116,11 @@ class DatasetGroundTruthUpload(Resource):
                     to_node_index = node.id
             edge = Edge(result_id=None, from_node_id=from_node_index, to_node_id=to_node_index, weight=None, is_ground_truth=True)
             db.session.add(edge)
-        
-        
 
-        for edge in edges_of_dataset:
-            current_app.logger.info('Edge ID: {}'.format(edge.id))
-    
-        current_app.logger.info('{}'.format(edges_of_dataset.count()))
         db.session.commit()
 
         # What to return?
-        return None
+        return marshal(DatasetSchema, ds)
 
 
 class DatasetListResource(Resource):

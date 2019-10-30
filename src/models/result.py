@@ -34,7 +34,7 @@ class Result(BaseModel):
             for edge in node.edge_froms:
                 if edge.is_ground_truth:
                     ground_truth.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label='', weight=1)
-        return {'Mean Bullshit': 5}
+        return {'graph_edit_distance': nx.graph_edit_distance(ground_truth,g1)}
 
 
 class ResultSchema(BaseSchema):

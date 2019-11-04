@@ -4,6 +4,7 @@ from marshmallow import fields
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
 from src.models.node import Node
+from flask import current_app
 
 class Result(BaseModel):
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
@@ -30,8 +31,22 @@ class Result(BaseModel):
         
         ground_truth_statistics = {}
         ground_truth_statistics['graph_edit_distance'] = nx.graph_edit_distance(ground_truth, g1)
-
+        ground_truth_statistics['jaccard_coefficients'] = Result.get_jaccard_coefficients(g1, ground_truth)
         return ground_truth_statistics
+
+    @staticmethod
+    def get_jaccard_coefficients(G, H):
+        jc = []
+        for v in G:
+            n = set(G[v]) 
+            m = set(H[v])
+            length_intersection = len(n & m)
+            length_union = len(n) + len(m) - length_intersection
+            if length_union != 0:
+                jc.append((v, float(length_intersection) / length_union))
+            else: 
+                jc.append((v, 1.0))
+        return jc
 
 
 class ResultSchema(BaseSchema):

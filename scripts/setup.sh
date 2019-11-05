@@ -15,9 +15,9 @@ fi
 
 
 echo "==> Resetting everything (including database)…"
-docker-compose -f docker-compose.yml --log-level ERROR down --remove-orphans
-docker-compose -f docker-compose-staging.yml --log-level ERROR down --remove-orphans
-docker-compose -f docker-compose-prod.yml --log-level ERROR down --remove-orphans
+docker-compose --project-name mpci -f docker-compose.yml --log-level ERROR down --remove-orphans
+docker-compose --project-name mpci -f docker-compose-staging.yml --log-level ERROR down --remove-orphans
+docker-compose --project-name mpci -f docker-compose-prod.yml --log-level ERROR down --remove-orphans
 
 echo "==> Update…"
 bash scripts/update.sh

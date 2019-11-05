@@ -1,4 +1,6 @@
 version: 2
+orbs: 
+  codecov: codecov/codecov@1.0.2
 jobs:
   build-and-test:
     environment:
@@ -21,15 +23,14 @@ jobs:
       - run: 
           name: Build Stuff
           command: bash scripts/cibuild.sh
-      #- run: 
-      #    name: Run Tests
-      #    command: bash scripts/test.sh
-      - run:
-          name: On Success
-          when: on_success
-          command: |
-              export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-              codecov -b $BRANCH
+      - when:
+          condition: on_success
+          steps:
+            - codecov/upload:
+                file: coverage.xml
+                conf: .codecov.yml
+
+
 workflows:
   version: 2
   build-and-test:

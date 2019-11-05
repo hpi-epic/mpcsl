@@ -85,3 +85,4 @@ given default host and port settings.
 * [Jonathan Schneider](https://github.com/jonaschn)
 * [Daniel Thevessen](https://github.com/danthe96)
 * [Theresa Zobel](https://github.com/threxx)
+* [Constantin Lange](https://github.com/constantin-lange)

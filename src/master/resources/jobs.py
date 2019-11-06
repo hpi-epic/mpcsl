@@ -61,7 +61,8 @@ class JobResource(Resource):
         current_app.logger.info('An error occurred in Job {}'.format(job.id))
         job.status = JobStatus.error
         db.session.commit()
-
+        from src.app import socketio
+        socketio.emit('job_status', {'id': job_id, 'status': job.status})
         return marshal(JobSchema, job)
 
     @swagger.doc({
@@ -87,7 +88,8 @@ class JobResource(Resource):
         else:
             job.status = JobStatus.hidden
         db.session.commit()
-
+        from src.app import socketio
+        socketio.emit('job_status', {'id': job_id, 'status': job.status})
         return marshal(JobSchema, job)
 
 
@@ -274,7 +276,8 @@ class JobResultResource(Resource):
             db.session.bulk_save_objects(sepsets)
         job.result_id = result.id
         db.session.commit()
-
+        from src.app import socketio
+        socketio.emit('job_status', {'id': job_id, 'status': job.status})
         current_app.logger.info('Result {} created for job {}'.format(result.id, job.id))
 
         return marshal(ResultSchema, result)

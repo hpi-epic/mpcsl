@@ -42,9 +42,14 @@ class JobDaemon(Thread):
                         if container.status == "exited":
                             self.app.logger.warning('Job ' + str(job.id) + ' failed')
                             job.status = JobStatus.error
+                            from src.app import socketio
+                            socketio.emit('job_status', {'id': job.id, 'status': job.status})
                     except docker.errors.NotFound:
                         self.app.logger.warning('Job ' + str(job.id) + ' disappeared')
                         job.status = JobStatus.error
+                        from src.app import socketio
+                        socketio.emit('job_status', {'id': job.id, 'status': job.status})
+
                 db.session.commit()
 
         with self.app.app_context():

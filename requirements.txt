@@ -8,6 +8,7 @@ Click==7.0
 decorator==4.3.2
 docker==3.7.0
 docker-pycreds==0.4.0
+eventlet==0.25.1
 factory-boy==2.11.1
 Faker==1.0.0
 flake8==3.6.0
@@ -16,6 +17,7 @@ Flask-Migrate==2.3.1
 Flask-RESTful==0.3.6
 flask-restful-swagger-2==0.35
 Flask-SQLAlchemy==2.4.1
+Flask-SocketIO==4.2.1
 idna==2.7
 ijson==2.3
 itsdangerous==1.1.0

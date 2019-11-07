@@ -29,6 +29,8 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/bash"]
+          args: ["-c", "envsubst < /etc/nginx/conf.d/nginx.conf > /etc/nginx/conf.d/nginx.conf && nginx -g 'daemon off;'"]
           env:
             - name: BACKEND_HOST
               value: {{ .Release.Name }}-backend

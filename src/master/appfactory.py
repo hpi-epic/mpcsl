@@ -1,27 +1,17 @@
 import os
-from sys import argv
 
 from flask import Flask, jsonify
 from flask_restful_swagger_2 import Api
 from flask_migrate import Migrate
-from werkzeug.serving import is_running_from_reloader
 from flask_socketio import SocketIO
 
 from src.db import db
-from src.master.config import UWSGI_NUM_PROCESSES
-from src.master.helpers.daemon import JobDaemon
+from src.master.helpers.daemon import start_job_daemon
 from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
 
 
 class AppFactory(object):
-    def __init__(self):
-        self.app = None
-        self.socketio = None
-        self.db = None
-        self.api = None
-        self.migrate = None
-        self.daemon = None
 
     def set_up_db(self):
         self.db = db
@@ -36,7 +26,7 @@ class AppFactory(object):
     def set_up_socketio(self):
         if self.app is None:
             raise Exception("Flask app not set")
-        self.socketio = SocketIO(self.app, async_mode="threading")
+        self.socketio = SocketIO(self.app)
 
     def set_up_api(self):
         self.api = Api(
@@ -75,7 +65,7 @@ class AppFactory(object):
         )
         set_up_routes(self.api)
 
-    def set_up_daemon(self, force=False):
+    def start_daemon(self):
         """
         This function starts the daemon in one of three cases:
         - force is set to True
@@ -89,12 +79,12 @@ class AppFactory(object):
         :param force: Bool, set to true to force daemon launch.
         :return:
         """
-        if force or (not is_running_from_reloader()
-                     and (argv[-1] == 'server.py'
-                     or (argv[-1] == 'uwsgi' and os.getpid() % UWSGI_NUM_PROCESSES == 0))):
-            self.app.logger.info("Starting daemon.")
-            self.daemon = JobDaemon(app=self.app, name='Job-Daemon', daemon=True)
-            self.daemon.start()
+        self.app.logger.warning("Starting daemon.")
+        self.daemon = self.socketio.start_background_task(start_job_daemon, self.app, self.socketio)
+
+    def stop_daemon(self):
+        if self.daemon is not None:
+            self.daemon.kill()
 
     def set_up_error_handlers(self):
         @self.app.errorhandler(InvalidInputData)
@@ -103,12 +93,10 @@ class AppFactory(object):
             response.status_code = error.status_code
             return response
 
-    def up(self, no_daemon=False):
+    def up(self):
         self.set_up_app()
         self.set_up_api()
         self.set_up_db()
         self.set_up_error_handlers()
         self.set_up_socketio()
-        if not no_daemon:
-            self.set_up_daemon()
         return [self.app, self.socketio]

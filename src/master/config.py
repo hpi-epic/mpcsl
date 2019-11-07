@@ -1,8 +1,9 @@
 import os
 import json
-from configparser import ConfigParser
 
 API_HOST = os.environ.get('API_HOST')
+
+MPCI_ENVIRONMENT = os.environ.get('MPCI_ENVIRONMENT')
 
 # Database
 DB_TYPE = os.environ.get('DB_TYPE', 'postgresql')
@@ -34,15 +35,15 @@ DAEMON_CYCLE_TIME = 5
 # This variable is used to determine the process which launches the daemon
 # when the server is handled by uWSGI.
 # Further information is available in AppFactory::set_up_daemon
-UWSGI_NUM_PROCESSES = os.environ.get('UWSGI_NUM_PROCESSES', None)
+# UWSGI_NUM_PROCESSES = os.environ.get('UWSGI_NUM_PROCESSES', None)
 
-if UWSGI_NUM_PROCESSES is None and os.path.isfile('uwsgi.ini'):
-    uwsgi_conf = ConfigParser()
-    uwsgi_conf.read('uwsgi.ini')
+# if UWSGI_NUM_PROCESSES is None and os.path.isfile('uwsgi.ini'):
+#     uwsgi_conf = ConfigParser()
+#     uwsgi_conf.read('uwsgi.ini')
 
-    UWSGI_NUM_PROCESSES = int(uwsgi_conf['uwsgi']['processes'])
-else:
-    UWSGI_NUM_PROCESSES = int(UWSGI_NUM_PROCESSES or 0)
+#     UWSGI_NUM_PROCESSES = int(uwsgi_conf['uwsgi']['processes'])
+# else:
+#     UWSGI_NUM_PROCESSES = int(UWSGI_NUM_PROCESSES or 0)
 
 RESULT_READ_BUFF_SIZE = int(os.environ.get('RESULT_READ_BUFF_SIZE', 16 * 1024))
 RESULT_WRITE_BUFF_SIZE = int(os.environ.get('RESULT_WRITE_BUFF_SIZE', 1024))

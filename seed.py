@@ -47,7 +47,7 @@ def add_dataset(db):
 if __name__ == "__main__":
     appfactory = AppFactory()
 
-    [app, _] = appfactory.up(no_daemon=True)
+    [app, _] = appfactory.up()
 
     with app.app_context():
         dataset_id = add_dataset(db)

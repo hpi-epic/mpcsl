@@ -13,7 +13,6 @@ services:
     environment:
       - API_HOST=ui:5000
     restart: on-failure
-    command: "uwsgi --ini /app/uwsgi.ini"
   database:
     container_name: db
     image: postgres:latest

@@ -1,10 +1,9 @@
 from src.master.appfactory import AppFactory
-from flask_socketio import SocketIO
+
 
 fact = AppFactory()
 
-app = fact.up()
-socketio = SocketIO(app)
+[app, socketio] = fact.up()
 db = fact.db
 
 if __name__ == "__main__":

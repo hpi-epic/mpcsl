@@ -3,6 +3,8 @@ import enum
 from src.db import db
 from marshmallow import fields
 from src.models.base import BaseModel, BaseSchema
+from flask_sqlalchemy import event
+from src.master.helpers.socketio_events import job_status_change
 
 
 class JobStatus(str, enum.Enum):
@@ -29,6 +31,11 @@ class Job(BaseModel):
         if len(self.results) == 0:
             return None
         return sorted(self.results, key=lambda x: x.start_time)[-1]
+
+
+@event.listens_for(Job, 'after_update')
+def emitJobChange(mapper, connection, target):
+    job_status_change(target.id, target.status)
 
 
 class JobSchema(BaseSchema):

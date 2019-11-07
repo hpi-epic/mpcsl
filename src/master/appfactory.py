@@ -5,6 +5,7 @@ from flask import Flask, jsonify
 from flask_restful_swagger_2 import Api
 from flask_migrate import Migrate
 from werkzeug.serving import is_running_from_reloader
+from flask_socketio import SocketIO
 
 from src.db import db
 from src.master.config import UWSGI_NUM_PROCESSES
@@ -16,6 +17,7 @@ from .routes import set_up_routes
 class AppFactory(object):
     def __init__(self):
         self.app = None
+        self.socketio = None
         self.db = None
         self.api = None
         self.migrate = None
@@ -30,6 +32,11 @@ class AppFactory(object):
     def set_up_app(self):
         self.app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'), static_url_path='/static')
         self.app.config.from_object('src.master.config')
+
+    def set_up_socketio(self):
+        if self.app is None:
+            raise Exception("Flask app not set")
+        self.socketio = SocketIO(self.app, async_mode="threading")
 
     def set_up_api(self):
         self.api = Api(
@@ -86,7 +93,7 @@ class AppFactory(object):
                      and (argv[-1] == 'server.py'
                      or (argv[-1] == 'uwsgi' and os.getpid() % UWSGI_NUM_PROCESSES == 0))):
             self.app.logger.info("Starting daemon.")
-            self.daemon = JobDaemon(self.app, name='Job-Daemon', daemon=True)
+            self.daemon = JobDaemon(app=self.app, name='Job-Daemon', daemon=True)
             self.daemon.start()
 
     def set_up_error_handlers(self):
@@ -101,6 +108,7 @@ class AppFactory(object):
         self.set_up_api()
         self.set_up_db()
         self.set_up_error_handlers()
+        self.set_up_socketio()
         if not no_daemon:
             self.set_up_daemon()
-        return self.app
+        return [self.app, self.socketio]

@@ -33,7 +33,7 @@ def set_up_algorithms(db):
 if __name__ == "__main__":
     appfactory = AppFactory()
 
-    app = appfactory.up(no_daemon=True)
+    [app, _] = appfactory.up(no_daemon=True)
 
     with app.app_context():
         set_up_algorithms(db)

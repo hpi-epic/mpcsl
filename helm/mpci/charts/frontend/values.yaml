@@ -5,9 +5,9 @@
 replicaCount: 1
 
 image:
-  repository: chris89/mpci_ui
+  repository: mariusdanner/mpci_frontend
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""

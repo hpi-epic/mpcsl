@@ -29,23 +29,19 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/bash"]
+          args : ["-c", "flask db upgrade && python setup_algorithms.py && uwsgi --ini /app/uwsgi.ini"]
           env:
+            - name: PYTHONPATH
+              value: "$PYTHONPATH:/app/"
             - name: API_HOST
               value: {{ .Release.Name }}-backend:5000
             - name: DB_HOST
               value: {{ .Release.Name }}-postgresql
           ports:
             - name: http
-              containerPort: 5000
+              containerPort: 5001
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

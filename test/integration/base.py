@@ -37,7 +37,7 @@ class BaseIntegrationTest(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.factory = AppFactory()
-        cls.app = cls.factory.up()
+        [cls.app, _] = cls.factory.up()
 
         cls.api = cls.factory.api
         cls.app_context = cls.app.app_context()

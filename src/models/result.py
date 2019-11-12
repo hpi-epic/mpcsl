@@ -29,7 +29,7 @@ class Result(BaseModel):
             for edge in node.edge_froms:
                 if edge.is_ground_truth:
                     ground_truth.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label='', weight=1)
-
+    
         ground_truth_statistics = {}
 
         if ground_truth.edges():
@@ -41,6 +41,7 @@ class Result(BaseModel):
                 'error_types': error_types
             }
         return ground_truth_statistics
+        
 
     @staticmethod
     def get_jaccard_coefficients(G, H):
@@ -63,10 +64,10 @@ class Result(BaseModel):
         ground_truth_edges_set = set(ground_truth.edges())
         ground_truth_non_edges_set = set(nx.non_edges(ground_truth))
 
-        false_positives = list(ground_truth_edges_set & g1_non_edges_set)
-        true_negatives = list(ground_truth_edges_set & g1_edges_set)
-        false_negatives = list(ground_truth_non_edges_set & g1_edges_set)
-        true_positives = list(ground_truth_non_edges_set & g1_non_edges_set)
+        false_negatives = list(ground_truth_edges_set & g1_non_edges_set)
+        true_positives = list(ground_truth_edges_set & g1_edges_set)
+        false_positives = list(ground_truth_non_edges_set & g1_edges_set)
+        true_negatives = list(ground_truth_non_edges_set & g1_non_edges_set)
 
         try:
             false_positives_rate = len(false_positives)/(len(false_positives) + len(true_negatives))
@@ -84,12 +85,6 @@ class Result(BaseModel):
             'false_negatives': (false_negatives_rate, false_negatives),
             'true_positives': (1-false_negatives_rate, true_positives)
         }
-        
-
-        current_app.logger.info('false postitive: {}'.format(false_positives))
-        current_app.logger.info('true negative: {}'.format(true_negatives))
-        current_app.logger.info('false negative: {}'.format(false_negatives))
-        current_app.logger.info('true positive: {}'.format(true_positives))
 
         return error_types
     

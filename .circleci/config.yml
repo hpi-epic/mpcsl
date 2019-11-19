@@ -21,8 +21,11 @@ jobs:
       - run: chmod +x docker-compose 
       - run: sudo mv docker-compose /usr/local/bin
       - run: 
-          name: Build Stuff
-          command: bash scripts/cibuild.sh
+          name: Setup Environment
+          command: bash scripts/setup.sh
+      - run: 
+          name: Run Tests
+          command: bash scripts/test.sh
       - when:
           condition: on_success
           steps:

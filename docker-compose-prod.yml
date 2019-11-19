@@ -7,6 +7,7 @@ services:
     build: .
     depends_on:
       - database
+      - scheduler
     env_file:
       - conf/backend.env
     environment:

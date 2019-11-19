@@ -73,7 +73,7 @@ class ExperimentTest(BaseResourceTest):
         ex_w_results = ExperimentFactory()
         job = JobFactory(experiment=ex_wo_results)
         job2 = JobFactory(experiment=ex_w_results)
-        result = ResultFactory(job=job)
+        result = ResultFactory(job=job2)
         result2 = ResultFactory(job=job2)
         result.execution_time = 2.0
         result2.execution_time = 3.0

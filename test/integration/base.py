@@ -37,7 +37,7 @@ class BaseIntegrationTest(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.factory = AppFactory()
-        [cls.app, _] = cls.factory.up()
+        [cls.app, cls.socketio] = cls.factory.up()
         cls.api = cls.factory.api
         cls.app_context = cls.app.app_context()
         cls.app_context.push()
@@ -56,9 +56,9 @@ class BaseIntegrationTest(TestCase):
                 single_patch.__enter__()
                 patched.append(single_patch)
 
-        def run_func(app):
-            app.run(host='0.0.0.0', port='5000', debug=True, use_reloader=False, threaded=True)
-        self.app_thread = Process(target=run_func, args=(self.app, ))
+        def run_func(socketio, app):
+            socketio.run(app, host='0.0.0.0', port='5000', debug=True, use_reloader=False)
+        self.app_thread = Process(target=run_func, args=(self.socketio, self.app, ))
 
         self.db.create_all()
 

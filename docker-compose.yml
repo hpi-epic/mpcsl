@@ -3,6 +3,7 @@ services:
   backend:
     volumes:
      - ./src:/app/src
+     - ./test:/app/test
      - /var/run/docker.sock:/var/run/docker.sock
     build: .
     ports:

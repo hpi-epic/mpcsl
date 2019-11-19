@@ -29,22 +29,6 @@ SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get(
 DAEMON_CYCLE_TIME = 5
 
 
-# The following section tries to read the amount of processes from the uWSGI
-# configuration file in the root directory of project.
-# It can be overridden with an env var to avoid reading the config if necessary.
-# This variable is used to determine the process which launches the daemon
-# when the server is handled by uWSGI.
-# Further information is available in AppFactory::set_up_daemon
-# UWSGI_NUM_PROCESSES = os.environ.get('UWSGI_NUM_PROCESSES', None)
-
-# if UWSGI_NUM_PROCESSES is None and os.path.isfile('uwsgi.ini'):
-#     uwsgi_conf = ConfigParser()
-#     uwsgi_conf.read('uwsgi.ini')
-
-#     UWSGI_NUM_PROCESSES = int(uwsgi_conf['uwsgi']['processes'])
-# else:
-#     UWSGI_NUM_PROCESSES = int(UWSGI_NUM_PROCESSES or 0)
-
 RESULT_READ_BUFF_SIZE = int(os.environ.get('RESULT_READ_BUFF_SIZE', 16 * 1024))
 RESULT_WRITE_BUFF_SIZE = int(os.environ.get('RESULT_WRITE_BUFF_SIZE', 1024))
 LOAD_SEPARATION_SET = os.environ.get('LOAD_SEPARATION_SET', 'false').lower() == 'true'

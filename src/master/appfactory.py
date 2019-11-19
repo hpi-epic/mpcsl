@@ -6,7 +6,6 @@ from flask_migrate import Migrate
 from flask_socketio import SocketIO
 
 from src.db import db
-from src.master.helpers.daemon import start_job_daemon
 from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
 
@@ -64,27 +63,6 @@ class AppFactory(object):
             ]
         )
         set_up_routes(self.api)
-
-    def start_daemon(self):
-        """
-        This function starts the daemon in one of three cases:
-        - force is set to True
-        - the last command of the launch command was server.py, which means
-          that the server was launched by launching server.py directly
-        - the last command was uWSGI and the current pid % UWSGI_NUM_PROCESSES is zero
-          the last check is necessary, to ensure that the daemon is only
-          launched in a single uWSGI worker. uWSGI workers have pids that are sequential
-          up in a docker container, for example 4,5,6,7 so only 1 of them % num workers equals
-          zero.
-        :param force: Bool, set to true to force daemon launch.
-        :return:
-        """
-        self.app.logger.warning("Starting daemon.")
-        self.daemon = self.socketio.start_background_task(start_job_daemon, self.app, self.socketio)
-
-    def stop_daemon(self):
-        if self.daemon is not None:
-            self.daemon.kill()
 
     def set_up_error_handlers(self):
         @self.app.errorhandler(InvalidInputData)

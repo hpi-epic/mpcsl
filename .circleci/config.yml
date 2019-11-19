@@ -3,10 +3,8 @@ orbs:
   codecov: codecov/codecov@1.0.2
 jobs:
   build-and-test:
-    environment:
-      DOCKER_COMPOSE_VERSION: 1.23.2
     machine:
-      image: ubuntu-1604:201903-01
+      image: circleci/buildpack-deps:stable
       docker_layer_caching: false
     steps:
       - checkout
@@ -16,10 +14,6 @@ jobs:
       - run: 
           name: Get Dependencies
           command: git submodule update --init --recursive src/executionenvironments/r/pcalg
-      - run: sudo rm /usr/local/bin/docker-compose
-      - run: curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-      - run: chmod +x docker-compose 
-      - run: sudo mv docker-compose /usr/local/bin
       - run: 
           name: Build Stuff
           command: bash scripts/cibuild.sh

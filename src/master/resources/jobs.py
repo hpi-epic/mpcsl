@@ -1,7 +1,7 @@
 from codecs import getreader
 from datetime import datetime
 from decimal import Decimal
-
+from src.master.helpers.socketio_events import job_status_change
 from flask import current_app, Response, request
 from flask_restful import Resource, abort, reqparse
 from flask_restful_swagger_2 import swagger
@@ -87,6 +87,26 @@ class JobResource(Resource):
             job.status = JobStatus.hidden
         db.session.commit()
         return marshal(JobSchema, job)
+    
+    @swagger.doc({
+        'description': 'Updates the status of a running job to "error"',
+        'parameters': [
+            {
+                'name': 'job_id',
+                'description': 'Job identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(JobSchema.get_swagger()),
+        'tags': ['Job', 'Executor']
+    })
+    def post(self, job_id):
+        content = request.json
+        status = content['status']
+        job_status_change(job_id, JobStatus[status])
+        return "ok"
 
 
 class JobListResource(Resource):

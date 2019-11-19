@@ -11,9 +11,7 @@ db = fact.db
 
 def main():
     isDevelopment = MPCI_ENVIRONMENT != 'production' and MPCI_ENVIRONMENT != 'staging'
-    fact.start_daemon()
     socketio.run(app, host="0.0.0.0", port='5000', debug=isDevelopment)
-    fact.stop_daemon()
 
 
 if __name__ == "__main__":

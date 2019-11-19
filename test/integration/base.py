@@ -38,7 +38,6 @@ class BaseIntegrationTest(TestCase):
     def setUpClass(cls):
         cls.factory = AppFactory()
         [cls.app, _] = cls.factory.up()
-        cls.factory.start_daemon()
         cls.api = cls.factory.api
         cls.app_context = cls.app.app_context()
         cls.app_context.push()
@@ -48,7 +47,6 @@ class BaseIntegrationTest(TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.db.engine.dispose()
-        cls.factory.stop_daemon()
 
     def setUp(self):
         patched = []

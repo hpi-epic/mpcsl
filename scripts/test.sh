@@ -6,10 +6,9 @@
 EXIT_STATUS=0 # Execute all commands but fail at the end if one command failed
 
 echo "==> Running flake8…"
-docker-compose --project-name mpci run --rm backend flake8 || EXIT_STATUS=$?
+docker-compose --project-name mpci run --rm backend flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py || EXIT_STATUS=$?
 
 echo "==> Running pytest…"
-# pass arguments to test call. This is useful for calling a single test.
-docker-compose --project-name mpci run --rm backend pytest --cov-report xml --cov=src "$@" || EXIT_STATUS=$?
+docker-compose --project-name mpci run --rm backend pytest --cov-report xml --cov=src test/ || EXIT_STATUS=$?
 
 exit $EXIT_STATUS

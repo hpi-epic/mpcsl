@@ -6,7 +6,6 @@ from sqlalchemy.ext.mutable import MutableDict
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
 
-from flask import current_app
 import numpy as np
 
 INDEPENDENCE_TESTS = ["gaussCI", "disCI", "binCI"]
@@ -49,11 +48,7 @@ class Experiment(BaseModel):
                 'lower_quantile': np.quantile(execution_times, .25),
                 'upper_quantile': np.quantile(execution_times, .75),
             }
-    
-        return execution_time_statistics 
-    
-
-
+        return execution_time_statistics
 
     @property
     def avg_execution_time(self):
@@ -64,7 +59,7 @@ class Experiment(BaseModel):
                 if (result) and (result.execution_time is not None):
                     execution_time_sum = execution_time_sum + result.execution_time
                     execution_time_count = execution_time_count + 1    
-       
+
         if execution_time_count != 0:
             avg_execution_time = execution_time_sum / execution_time_count
             return avg_execution_time

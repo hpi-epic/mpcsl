@@ -3,7 +3,6 @@ services:
   backend:
     container_name: backend
     volumes:
-     - ./:/app
      - /var/run/docker.sock:/var/run/docker.sock
     build: .
     depends_on:
@@ -12,6 +11,19 @@ services:
       - conf/backend.env
     environment:
       - API_HOST=ui:5000
+    restart: on-failure
+  scheduler:
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    build: 
+      context: .
+      dockerfile: Dockerfile.scheduler
+    depends_on:
+      - database
+    env_file:
+      - conf/backend.env
+    environment:
+      - API_HOST=backend:5000
     restart: on-failure
   database:
     container_name: db

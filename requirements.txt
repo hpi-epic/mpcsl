@@ -1,3 +1,4 @@
+aiohttp==3.6.2
 alembic==1.0.6
 aniso8601==4.0.1
 atomicwrites==1.2.1

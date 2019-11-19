@@ -7,6 +7,7 @@ from src.models import Experiment
 from test.factories import ExperimentFactory, DatasetFactory, JobFactory, AlgorithmFactory, ResultFactory
 from .base import BaseResourceTest
 
+
 class ExperimentTest(BaseResourceTest):
     def test_returns_all_experiments(self):
         # Given
@@ -72,14 +73,14 @@ class ExperimentTest(BaseResourceTest):
         ex_w_results = ExperimentFactory()
         job = JobFactory(experiment=ex_wo_results)
         job2 = JobFactory(experiment=ex_w_results)
-        result = ResultFactory(job=job2)
+        result = ResultFactory(job=job)
         result2 = ResultFactory(job=job2)
         result.execution_time = 2.0
         result2.execution_time = 3.0
 
         # Then
-        assert ex_wo_jobs.execution_time_statistics == None
-        assert ex_wo_results.execution_time_statistics == None
+        assert ex_wo_jobs.execution_time_statistics is None
+        assert ex_wo_results.execution_time_statistics is None
         assert ex_w_results.execution_time_statistics['min'] == 2.0
         assert ex_w_results.execution_time_statistics['max'] == 3.0
         assert ex_w_results.execution_time_statistics['mean'] == 2.5

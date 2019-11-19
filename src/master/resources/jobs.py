@@ -87,7 +87,7 @@ class JobResource(Resource):
             job.status = JobStatus.hidden
         db.session.commit()
         return marshal(JobSchema, job)
-    
+
     @swagger.doc({
         'description': 'Updates the status of a running job to "error"',
         'parameters': [

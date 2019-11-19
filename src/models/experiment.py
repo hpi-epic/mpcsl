@@ -27,12 +27,12 @@ class Experiment(BaseModel):
         if len(self.jobs) == 0:
             return None
         return sorted(self.jobs, key=lambda x: x.start_time)[-1]
-    
+
     @property
     def execution_time_statistics(self):
         execution_time_statistics = None
         execution_times = []
-        for job in self.jobs: 
+        for job in self.jobs:
             for result in job.results:
                 if (result) and (result.execution_time is not None):
                     execution_times.append(result.execution_time)
@@ -58,7 +58,7 @@ class Experiment(BaseModel):
             for result in job.results:
                 if (result) and (result.execution_time is not None):
                     execution_time_sum = execution_time_sum + result.execution_time
-                    execution_time_count = execution_time_count + 1    
+                    execution_time_count = execution_time_count + 1
 
         if execution_time_count != 0:
             avg_execution_time = execution_time_sum / execution_time_count

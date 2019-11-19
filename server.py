@@ -1,4 +1,4 @@
-from src.app import socketio, app, fact
+from src.app import socketio, app
 from src.master.config import MPCI_ENVIRONMENT
 
 

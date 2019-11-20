@@ -13,4 +13,5 @@ COPY ./static/ui/ /var/www/mpci/ui
 RUN yarn run build
 
 COPY ./nginx.conf /etc/nginx/conf.d/nginx.conf
+RUN apt update && apt install -y gettext-base
 CMD ["nginx", "-g", "daemon off;"]

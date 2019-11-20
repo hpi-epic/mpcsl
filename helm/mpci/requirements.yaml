@@ -1,0 +1,10 @@
+dependencies:
+  - name: postgresql
+    version: 6.5.8
+    repository: https://kubernetes-charts.storage.googleapis.com
+  - name: pgweb
+    version: 0.1.0
+  - name: frontend
+    version: 0.1.0
+  - name: backend
+    version: 0.1.0

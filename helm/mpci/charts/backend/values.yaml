@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: mariusdanner/mpci
+  repository: milanpro/mpci_backend
   tag: latest
   pullPolicy: Always
 
@@ -33,7 +33,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 5001
+  port: 5000
 
 ingress:
   enabled: false

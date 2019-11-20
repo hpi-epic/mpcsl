@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: mariusdanner/mpci_frontend
+  repository: milanpro/mpci_frontend
   tag: latest
   pullPolicy: Always
 

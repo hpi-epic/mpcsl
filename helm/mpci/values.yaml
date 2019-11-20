@@ -67,6 +67,14 @@ tolerations: []
 
 affinity: {}
 
+nginx-ingress:
+  enabled: false
+  defaultBackend:
+    enabled: false
+#   contoller:
+#     config:
+
+
 global:
   postgresql:
     postgresqlPassword: postgres

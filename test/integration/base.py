@@ -58,7 +58,7 @@ class BaseIntegrationTest(TestCase):
                 patched.append(single_patch)
 
         def run_func(app):
-            app.run(host="0.0.0.0", port='5000', debug=True, use_reloader=False, threaded=True)
+            app.run(host='0.0.0.0', port='5000', debug=True, use_reloader=False, threaded=True)
         self.app_thread = Process(target=run_func, args=(self.app, ))
 
         self.db.create_all()

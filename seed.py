@@ -1,9 +1,9 @@
 import pandas as pd
 
-from src.master.appfactory import AppFactory
 from src.db import db
-from src.models import Algorithm, Experiment, Dataset
+from src.master.appfactory import AppFactory
 from src.master.helpers.database import add_dataset_nodes
+from src.models import Algorithm, Experiment, Dataset
 
 
 def add_experiment(db, dataset_id):

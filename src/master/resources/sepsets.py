@@ -1,5 +1,5 @@
-from flask_restful_swagger_2 import swagger
 from flask_restful import Resource
+from flask_restful_swagger_2 import swagger
 
 from src.master.helpers.io import marshal
 from src.master.helpers.swagger import get_default_response

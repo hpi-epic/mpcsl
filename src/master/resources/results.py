@@ -1,10 +1,11 @@
+import json
+
+import networkx as nx
 from flask import Response
 from flask_restful import Resource, reqparse
 from flask_restful_swagger_2 import swagger
 from marshmallow import fields
 from werkzeug.exceptions import BadRequest
-import json
-import networkx as nx
 
 from src.db import db
 from src.master.helpers.database import load_networkx_graph

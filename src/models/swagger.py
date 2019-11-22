@@ -1,7 +1,6 @@
-from marshmallow_sqlalchemy import fields as sqlaFields
-from marshmallow import fields
 from flask_restful_swagger_2 import Schema
-
+from marshmallow import fields
+from marshmallow_sqlalchemy import fields as sqlaFields
 
 TYPE_MAP = {
     fields.String: 'string',

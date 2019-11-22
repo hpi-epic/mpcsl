@@ -1,5 +1,7 @@
-from src.master.config import MPCI_ENVIRONMENT
 import eventlet
+
+from src.master.config import MPCI_ENVIRONMENT
+
 eventlet.sleep()
 eventlet.monkey_patch()
 from src.master.appfactory import AppFactory  # noqa: E402

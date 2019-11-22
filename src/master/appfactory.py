@@ -1,8 +1,8 @@
 import os
 
 from flask import Flask, jsonify
-from flask_restful_swagger_2 import Api
 from flask_migrate import Migrate
+from flask_restful_swagger_2 import Api
 from flask_socketio import SocketIO
 
 from src.db import db

@@ -1,7 +1,7 @@
-from src.db import db
-from marshmallow_sqlalchemy import ModelSchema
 from marshmallow import fields
+from marshmallow_sqlalchemy import ModelSchema
 
+from src.db import db
 from src.models.swagger import SwaggerMixin
 
 

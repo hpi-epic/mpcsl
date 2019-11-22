@@ -1,3 +1,4 @@
+import numpy as np
 from marshmallow import fields
 from marshmallow.validate import Length
 from marshmallow_sqlalchemy import field_for
@@ -5,8 +6,6 @@ from sqlalchemy.ext.mutable import MutableDict
 
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
-
-import numpy as np
 
 INDEPENDENCE_TESTS = ["gaussCI", "disCI", "binCI"]
 

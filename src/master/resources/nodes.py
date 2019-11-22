@@ -1,5 +1,5 @@
-from flask_restful_swagger_2 import swagger
 from flask_restful import Resource
+from flask_restful_swagger_2 import swagger
 from marshmallow import fields
 from sqlalchemy import or_
 

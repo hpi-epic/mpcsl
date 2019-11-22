@@ -1,18 +1,19 @@
 from codecs import getreader
 from datetime import datetime
 from decimal import Decimal
-from src.master.helpers.socketio_events import job_status_change
+
+import ijson
 from flask import current_app, Response, request
 from flask_restful import Resource, abort, reqparse
 from flask_restful_swagger_2 import swagger
-from marshmallow import fields, Schema
-import ijson
 from ijson.common import ObjectBuilder
+from marshmallow import fields, Schema
 
 from src.db import db
 from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET, RESULT_WRITE_BUFF_SIZE
 from src.master.helpers.docker import get_container
 from src.master.helpers.io import marshal, InvalidInputData
+from src.master.helpers.socketio_events import job_status_change
 from src.master.helpers.swagger import get_default_response
 from src.models import Job, JobSchema, ResultSchema, Edge, Result, Sepset, Experiment
 from src.models.base import SwaggerMixin

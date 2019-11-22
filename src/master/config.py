@@ -1,5 +1,5 @@
-import os
 import json
+import os
 
 API_HOST = os.environ.get('API_HOST')
 
@@ -7,7 +7,7 @@ MPCI_ENVIRONMENT = os.environ.get('MPCI_ENVIRONMENT')
 
 # Database
 DB_TYPE = os.environ.get('DB_TYPE', 'postgresql')
-DB_HOST = os.environ.get('DB_HOST', 'database')
+DB_HOST = os.environ.get('DB_HOST', 'localhost:5432')
 DB_DATABASE = os.environ.get('DB_DATABASE', 'postgres')
 DB_USER = os.environ.get('DB_USER', 'postgres')
 DB_PASSWORD = os.environ.get('DB_PASSWORD', 'postgres')

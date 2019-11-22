@@ -1,5 +1,5 @@
-import os
 import json
+import os
 
 from src.db import db
 from src.master.appfactory import AppFactory

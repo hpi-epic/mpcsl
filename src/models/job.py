@@ -1,13 +1,15 @@
 import enum
+
+from marshmallow import fields
 from sqlalchemy import event
 
 from src.db import db
-from marshmallow import fields
-from src.models.base import BaseModel, BaseSchema
 from src.master.helpers.socketio_events import job_status_change
+from src.models.base import BaseModel, BaseSchema
 
 
 class JobStatus(str, enum.Enum):
+    waiting = "waiting"
     running = "running"
     done = "done"
     error = "error"

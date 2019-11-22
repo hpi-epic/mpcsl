@@ -2,10 +2,10 @@ dependencies:
   - name: postgresql
     version: 6.5.8
     repository: https://kubernetes-charts.storage.googleapis.com
-  - name: nginx-ingress
-    version: 1.25.0
-    repository: https://kubernetes-charts.storage.googleapis.com
-    condition: nginx-ingress.enabled
+  # - name: nginx-ingress
+  #   version: 1.25.0
+  #   repository: https://kubernetes-charts.storage.googleapis.com
+    # condition: nginx-ingress.enabled
   - name: pgweb
     version: 0.1.0
   - name: frontend

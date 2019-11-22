@@ -1,6 +1,6 @@
 import numpy as np
-from flask_restful_swagger_2 import swagger
 from flask_restful import Resource, abort
+from flask_restful_swagger_2 import swagger
 from marshmallow import fields, validates, Schema, ValidationError
 
 from src.master.helpers.database import get_db_session

@@ -8,6 +8,8 @@ config:
   dataSourceConnections: '{"pg1":"postgresql://postgres:postgres@database/postgres"}'
   environment: production
 
+seed: False
+
 image:
   repository: milanpro/mpci_backend
   tag: latest
@@ -70,5 +72,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-seed: True

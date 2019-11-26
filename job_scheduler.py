@@ -27,12 +27,19 @@ async def post_job_change(session, job_id, status):
 
 
 async def start_waiting_jobs(session: Session):
+    logging.debug("Start searching for jobs")
     jobs = session.query(Job).filter(Job.status == JobStatus.waiting)
+    logging.debug("%s jobs found", jobs)
     for job in jobs:
-        experiment = session.query(Experiment).get(job.experiment_id)
-        await createJob(job, experiment)
-        job.status = JobStatus.running
-        session.flush()
+        try:
+            experiment = session.query(Experiment).get(job.experiment_id)
+            await createJob(job, experiment)
+            job.status = JobStatus.running
+            session.commit()
+        except Exception as e:
+            logging.error(str(e))
+            job.status = JobStatus.error
+            session.commit()
 
 
 # async def ping_running_jobs(session: Session):
@@ -61,10 +68,13 @@ async def start_job_scheduler():
     # http_session = aiohttp.ClientSession()
     while True:
         # tasks = []
-        await asyncio.sleep(DAEMON_CYCLE_TIME)
-        session = Session()
-        await start_waiting_jobs(session)
-        kube_cleanup_finished_jobs()
+        try:
+            await asyncio.sleep(DAEMON_CYCLE_TIME)
+            session = Session()
+            await start_waiting_jobs(session)
+            #kube_cleanup_finished_jobs()
+        except Exception as e:
+            logging.error(str(e))
 
 
 async def start_background_tasks(app):

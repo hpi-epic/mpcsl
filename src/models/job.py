@@ -1,7 +1,7 @@
 import enum
 
 from marshmallow import fields
-from sqlalchemy import event
+
 
 from src.db import db
 from src.master.helpers.socketio_events import job_status_change
@@ -33,11 +33,6 @@ class Job(BaseModel):
         if len(self.results) == 0:
             return None
         return sorted(self.results, key=lambda x: x.start_time)[-1]
-
-
-@event.listens_for(Job, 'after_update')
-def emitJobChange(mapper, connection, target):
-    job_status_change(target.id, target.status)
 
 
 class JobSchema(BaseSchema):

@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    job-name: FILL
+  name: FILL
+spec:
+  template:
+    metadata:
+      labels:
+        job-name: FILL
+    spec:
+      containers:
+      - command: []
+        image: milanpro/mpci_executor
+        imagePullPolicy: Always
+        name: execution-container
+        resources: {}
+      restartPolicy: Never

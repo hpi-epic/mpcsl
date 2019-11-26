@@ -18,39 +18,20 @@ build:
     context: .
     docker:
       dockerfile: docker/scheduler.Dockerfile
-  - image: milanpro/mpci_executor
-    context: .
-    docker:
-      dockerfile: docker/r-executor.Dockerfile
+  # - image: milanpro/mpci_executor
+  #   context: ./src/executionenvironments/r/
+  #   docker:
+  #     dockerfile: ./r-executor.Dockerfile
   local:
     push: false
 deploy:
   helm:
     releases:
-    - name: mpci-cluster
+    - name: mpcicluster
       chartPath: helm/mpci
+      skipBuildDependencies: true
 profiles:
   - name: dev
-    # build:
-    #   artifacts:
-    #     - image: milanpro/mpci_frontend
-    #       context: .
-    #       sync:
-    #         infer: ['./static/ui/src/**/*.{js,jsx,ts,tsx}']
-    #       docker:
-    #         dockerfile: docker/frontend-dev.Dockerfile
-    #     - image: milanpro/mpci_backend
-    #       context: .
-    #       docker:
-    #         dockerfile: docker/backend.Dockerfile
-    #     - image: milanpro/mpci_scheduler
-    #       context: .
-    #       docker:
-    #         dockerfile: docker/scheduler.Dockerfile
-    #     - image: milanpro/mpci_executor
-    #       context: ./src/executionenvironments/r/
-    #       docker:
-    #         dockerfile: ../../../docker/r-executor.Dockerfile
     patches:
       - op: replace
         path: /build/artifacts/0/docker/dockerfile
@@ -60,19 +41,3 @@ profiles:
         value: ['./static/ui/src/**/*.{js,jsx,ts,tsx}']
     activation:
       - command: dev
-      #wait: true
-      #valuesFiles:
-      #- helm-skaffold-values.yaml
-      # skipBuildDependencies: false # Skip helm dep build
-      # values:
-      #   image: gcr.io/k8s-skaffold/skaffold-helm
-      #   "skaffold-helm-subchart.image": gcr.io/k8s-skaffold/skaffold-helm
-      #recreatePods will pass --recreate-pods to helm upgrade
-      #recreatePods: true
-      #overrides builds an override values.yaml file to run with the helm deploy
-      #overrides:
-      # some:
-      #   key: someValue
-      #setValues get appended to the helm deploy with --set.  
-      #setValues:
-        #some.key: someValue

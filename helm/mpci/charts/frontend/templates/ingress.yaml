@@ -1,7 +1,8 @@
+{{- $fullName := include "frontend.fullname" . -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: frontend-ingress
+  name: {{ $fullName }}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
@@ -10,5 +11,5 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName:  {{ include "frontend.fullname" . }}
+          serviceName:  {{ $fullName }}
           servicePort: http

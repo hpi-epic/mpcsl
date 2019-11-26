@@ -1,16 +1,17 @@
+{{- $fullName := include "backend.fullname" . -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: backend-ingress
+  name: {{ $fullName }}
 spec:
   rules:
   - http:
       paths:
       - path: /api
         backend:
-          serviceName:  {{ include "backend.fullname" . }}
+          serviceName:  {{ $fullName }}
           servicePort: 5000
       - path: /socket.io
         backend:
-          serviceName:  {{ include "backend.fullname" . }}
+          serviceName:  {{ $fullName }}
           servicePort: 5000

@@ -28,7 +28,7 @@ def add_experiment(db, dataset_id):
 def add_dataset(db):
     df = pd.read_csv('test/fixtures/earthquake_10k.csv', index_col=0) \
         .astype('category').apply(lambda c: c.cat.codes, axis=0)
-    df.to_sql('test_data', con=db.engine, index=False)
+    df.to_sql('test_data', con=db.engine, index=False, if_exists="replace")
     db.session.commit()
 
     new_dataset = Dataset(

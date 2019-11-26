@@ -4,10 +4,12 @@ from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flask_restful_swagger_2 import Api
 from flask_socketio import SocketIO
+from sqlalchemy import event
 
 from src.db import db
 from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
+from src.models import Job
 
 
 class AppFactory(object):
@@ -26,6 +28,10 @@ class AppFactory(object):
         if self.app is None:
             raise Exception("Flask app not set")
         self.socketio = SocketIO(self.app)
+
+        @event.listens_for(Job, 'after_update')
+        def emitJobChange(mapper, connection, target):
+            self.socketio.emit('job_status', {'id': target.id, 'status': target.status})
 
     def set_up_api(self):
         self.api = Api(

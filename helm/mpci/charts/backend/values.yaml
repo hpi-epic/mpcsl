@@ -4,6 +4,10 @@
 
 replicaCount: 1
 
+config:
+  dataSourceConnections: '{"pg1":"postgresql://postgres:postgres@database/postgres"}'
+  environment: production
+
 image:
   repository: milanpro/mpci_backend
   tag: latest

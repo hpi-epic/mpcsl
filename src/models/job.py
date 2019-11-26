@@ -4,7 +4,6 @@ from marshmallow import fields
 
 
 from src.db import db
-from src.master.helpers.socketio_events import job_status_change
 from src.models.base import BaseModel, BaseSchema
 
 
@@ -27,6 +26,7 @@ class Job(BaseModel):
     start_time = db.Column(db.DateTime, nullable=False)
     container_id = db.Column(db.String)
     status = db.Column(db.Enum(JobStatus), nullable=False)
+    log = db.Column(db.String)
 
     @property
     def result(self):

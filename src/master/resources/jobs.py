@@ -3,6 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 
 import ijson
+import requests
 from flask import current_app, Response, request
 from flask_restful import Resource, abort, reqparse
 from flask_restful_swagger_2 import swagger
@@ -10,7 +11,7 @@ from ijson.common import ObjectBuilder
 from marshmallow import fields, Schema
 
 from src.db import db
-from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET, RESULT_WRITE_BUFF_SIZE
+from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET, RESULT_WRITE_BUFF_SIZE, SCHEDULER_HOST
 from src.master.helpers.docker import get_container
 from src.master.helpers.io import marshal, InvalidInputData
 from src.master.helpers.socketio_events import job_status_change
@@ -337,7 +338,7 @@ class JobLogsResource(Resource):
         'tags': ['Executor', 'Job']
     })
     def get(self, job_id):
-        job = Job.query.get_or_404(job_id)
+        job: Job = Job.query.get_or_404(job_id)
 
         parser = reqparse.RequestParser()
         parser.add_argument('offset', required=False, type=int, store_missing=False)
@@ -345,8 +346,10 @@ class JobLogsResource(Resource):
         args = parser.parse_args()
         offset = args.get('offset', 0)
         last = args.get('last', 0)
+        log = job.log
 
-        log = get_container(job.container_id).logs().decode()
+        if log is None:
+            log = requests.get(f'http://{SCHEDULER_HOST}/api/log/{job.id}').content.decode()
 
         log = log.split('\n')
         if offset > 0 and last == 0:

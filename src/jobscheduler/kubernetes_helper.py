@@ -2,8 +2,6 @@ import logging
 import os
 import yaml
 from kubernetes import config, client
-# from sqlalchemy import create_engine
-# from sqlalchemy.orm import sessionmaker
 from kubernetes.client.rest import ApiException
 from src.master.config import API_HOST, LOAD_SEPARATION_SET, RELEASE_NAME
 from src.models import Job, Experiment
@@ -11,8 +9,20 @@ from src.models import Job, Experiment
 config.load_incluster_config()
 
 api_instance = client.BatchV1Api()
-
+core_api_instance = client.CoreV1Api()
 JOB_PREFIX = f'{RELEASE_NAME}-execute-'
+
+
+async def get_pod_log(job_id):
+    try:
+        pods: client.V1PodList = core_api_instance.list_namespaced_pod("default", label_selector=f'job-name=={JOB_PREFIX}{job_id}')
+        pod: client.V1Pod = pods.items[0]
+        if pod is None:
+            return None
+        pod_name = pod.metadata.name
+        return core_api_instance.read_namespaced_pod_log(name=pod_name, namespace='default')
+    except ApiException:
+        logging.warning(f'No logs found for job {job_id}')
 
 
 async def create_job(job: Job, experiment: Experiment):
@@ -47,7 +57,7 @@ async def check_running_job(job: Job):
     return False
 
 
-def kube_delete_empty_pods(namespace='default'):
+def kube_delete_empty_pods(session, namespace='default'):
     deleteoptions = client.V1DeleteOptions()
     api_pods = client.CoreV1Api()
     try:
@@ -63,15 +73,23 @@ def kube_delete_empty_pods(namespace='default'):
         if is_execution_pod:
             try:
                 if pod.status.phase == 'Succeeded' or pod.status.phase == 'Failed':
-                    api_response = api_pods.delete_namespaced_pod(podname, namespace, body=deleteoptions)
-                    logging.info("Pod: {} deleted!".format(podname))
-                    logging.debug(api_response)
+                    job_name = pod.metadata.labels["job-name"]
+                    try:
+                        logging.info(f'Saving logs for pod {podname}')
+                        log = core_api_instance.read_namespaced_pod_log(name=podname, namespace=namespace)
+                        job: Job = session.query(Job).filter(Job.container_id == job_name).one()
+                        job.log = log
+                        session.commit()
+                    except ApiException:
+                        logging.warning(f'No logs found for job {job_name}')
+                    api_pods.delete_namespaced_pod(podname, namespace, body=deleteoptions)
+                    logging.info("Pod: {} deleted".format(podname))
             except ApiException as e:
                 logging.error("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e)
     return
 
 
-def kube_cleanup_finished_jobs(namespace='default', state='Finished'):
+def kube_cleanup_finished_jobs(session, namespace='default', state='Finished'):
     deleteoptions = client.V1DeleteOptions()
     try: 
         jobs = api_instance.list_namespaced_job(namespace,
@@ -83,66 +101,16 @@ def kube_cleanup_finished_jobs(namespace='default', state='Finished'):
         jobname = job.metadata.name
 
         if jobname.startswith(JOB_PREFIX) and job.status.succeeded == 1:
-            # Clean up Job
             logging.info("Cleaning up Job: {}. Finished at: {}".format(jobname, job.status.completion_time))
-            try: 
-                # What is at work here. Setting Grace Period to 0 means delete ASAP. Otherwise it defaults to
-                # some value I can't find anywhere. Propagation policy makes the Garbage cleaning Async
-                api_response = api_instance.delete_namespaced_job(jobname,
+            try:
+                api_instance.delete_namespaced_job(jobname,
                                                                   namespace,
                                                                   body=deleteoptions,
                                                                   grace_period_seconds=0,
                                                                   propagation_policy='Background')
-                logging.debug(api_response)
             except ApiException as e:
                 print("Exception when calling BatchV1Api->delete_namespaced_job: %s\n" % e)
 
-    kube_delete_empty_pods(namespace)
+    kube_delete_empty_pods(session, namespace)
 
     return
-
-
-# if __name__ == "__main__":
-    
-    # print(config.list_kube_config_contexts())
-
-
-# algorithm = experiment.algorithm
-
-# params = [
-#     '-j', str(new_job.id),
-#     '-d', str(experiment.dataset_id),
-#     '--api_host', str(API_HOST),
-#     '--send_sepsets', str(int(LOAD_SEPARATION_SET))
-# ]
-# for k, v in experiment.parameters.items():
-#     params.append('--' + k)
-#     params.append(str(v))
-
-# client = get_client()
-# command = algorithm.script_filename + " " + " ".join(params)
-
-# if DOCKER_MOUNT_LOG_VOLUME:
-#     vol = get_or_create_log_volume()
-#     volumes = {vol.name: {'bind': DOCKER_LOG_VOLUME_MOUNT_PATH, 'mode': 'rw'}}
-#     params.append('--log_path')
-#     params.append(DOCKER_LOG_VOLUME_MOUNT_PATH)
-# else:
-#     volumes = None
-
-# try:
-#     container = client.containers.run(
-#         algorithm.docker_image,
-#         command,
-#         detach=True,
-#         network=DOCKER_EXECUTION_NETWORK if DOCKER_EXECUTION_NETWORK else None,
-#         volumes=volumes,
-#         **algorithm.docker_parameters
-#     )
-# except docker.errors.ImageNotFound:
-#     raise BadRequest(
-#         f'Image {algorithm.docker_image} not found. Did you build '
-#         f'the containers available in /src/executionenvironments?')
-
-# new_job.container_id = container.id
-# db.session.commit()

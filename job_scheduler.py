@@ -4,15 +4,31 @@ import logging
 from aiohttp import web, ClientSession
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, API_HOST
 from src.models import Job, JobStatus, Experiment
-from src.jobscheduler.kubernetes_helper import create_job, kube_cleanup_finished_jobs, check_running_job
+from src.jobscheduler.kubernetes_helper import create_job, kube_cleanup_finished_jobs, check_running_job, get_pod_log
 
 
 logging.basicConfig(level=logging.INFO)
 
+engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=False)
+Session = sessionmaker(bind=engine)
 
+routes = web.RouteTableDef()
+
+
+@routes.get('/api/log/{job_id}')
+async def get_job_log(request):
+    job_id = request.match_info['job_id']
+    logging.info(str(job_id))
+    log = await get_pod_log(job_id)
+    if log is None:
+        raise web.HTTPNotFound()
+    return web.Response(text=log)
+
+
+@routes.get('/')
 async def health_check(request):
     return web.Response(text="ok")
 
@@ -26,7 +42,7 @@ async def post_job_change(job_id, status):
             logging.info(await resp.text())
 
 
-async def start_waiting_jobs(session: Session):
+async def start_waiting_jobs(session):
     jobs = session.query(Job).filter(Job.status == JobStatus.waiting)
     for job in jobs:
         try:
@@ -44,7 +60,7 @@ async def start_waiting_jobs(session: Session):
             session.commit()
 
 
-async def kill_errored_jobs(session: Session):
+async def kill_errored_jobs(session):
     jobs = session.query(Job).filter(Job.status == JobStatus.running)
     for job in jobs:
         try:
@@ -59,13 +75,11 @@ async def kill_errored_jobs(session: Session):
 
 async def start_job_scheduler():
     logging.info("Starting Job Scheduler")
-    engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=False)
-    Session = sessionmaker(bind=engine)
     while True:
         try:
             await asyncio.sleep(DAEMON_CYCLE_TIME)
             await asyncio.gather(start_waiting_jobs(Session()), kill_errored_jobs(Session()))
-            kube_cleanup_finished_jobs()
+            kube_cleanup_finished_jobs(Session())
         except Exception as e:
             logging.error(str(e))
 
@@ -83,7 +97,7 @@ def main():
     app = web.Application()
     app.on_startup.append(start_background_tasks)
     app.on_cleanup.append(cleanup_background_tasks)
-    app.add_routes([web.get('/', health_check)])
+    app.add_routes(routes)
     web.run_app(app)
 
 

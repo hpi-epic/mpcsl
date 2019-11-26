@@ -38,6 +38,8 @@ spec:
               value: {{ .Release.Name }}-backend:5000
             - name: DB_HOST
               value: {{ .Release.Name }}-postgresql
+            - name: SCHEDULER_HOST
+              value: {{ .Release.Name }}-scheduler:8080
             - name: MPCI_ENVIRONMENT
               value: {{ .Values.config.environment }}
             - name: FLASK_APP

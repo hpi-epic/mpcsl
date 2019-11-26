@@ -7,7 +7,7 @@ replicaCount: 1
 config:
   environment: production
 
-seed: False
+seed: false
 
 image:
   repository: milanpro/mpci_backend

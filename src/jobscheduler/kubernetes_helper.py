@@ -1,13 +1,12 @@
-import asyncio
 import logging
 import os
 import yaml
-from kubernetes import config, client, watch
+from kubernetes import config, client
 # from sqlalchemy import create_engine
 # from sqlalchemy.orm import sessionmaker
 from kubernetes.client.rest import ApiException
-from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, API_HOST, LOAD_SEPARATION_SET
-from src.models import Job, JobStatus, Experiment
+from src.master.config import API_HOST, LOAD_SEPARATION_SET, RELEASE_NAME
+from src.models import Job, Experiment
 
 
 # async def watchWaitingJobs():
@@ -27,7 +26,7 @@ config.load_incluster_config()
 api_instance = client.BatchV1Api()
 
 
-async def createJob(job: Job, experiment: Experiment):
+async def create_job(job: Job, experiment: Experiment):
     params = ['-j', str(job.id), '-d', str(experiment.dataset_id), '--api_host', str(API_HOST), '--send_sepsets', str(int(LOAD_SEPARATION_SET))]
     for k, v in experiment.parameters.items():
         params.append('--' + k)
@@ -37,20 +36,20 @@ async def createJob(job: Job, experiment: Experiment):
       "-c","Rscript " + algorithm.script_filename + " " + " ".join(params)]
     with open(os.path.join(os.path.dirname(__file__), "executor-job.yaml")) as f:
         default_job = yaml.safe_load(f)
-        job_name = f'execute-{job.id}'
+        job_name = f'{RELEASE_NAME}-execute-{job.id}'
         default_job["metadata"]["labels"]["job-name"] = job_name
         default_job["metadata"]["name"] = job_name
         default_job["spec"]["template"]["metadata"]["labels"]["job-name"] = job_name
         default_job["spec"]["template"]["spec"]["containers"][0]["command"] = command
         try:
-            logging.info("Starting Job with ID %s", str(job.id))
+            logging.info(f'Starting Job with ID {job.id}')
             result = api_instance.create_namespaced_job(namespace="default", body=default_job, pretty=True)
             return result.metadata.name
         except ApiException as e:
             logging.error("Exception when calling BatchV1Api->create_namespaced_job: %s\n" % e)
 
 
-async def checkRunningJob(job: Job):
+async def check_running_job(job: Job):
     result = api_instance.read_namespaced_job_status(job.container_id, "default")
     if result.status.failed > 0:
         api_instance.delete_namespaced_job(job.container_id, "default")
@@ -113,7 +112,6 @@ def kube_cleanup_finished_jobs(namespace='default', state='Finished'):
         jobs = api_instance.list_namespaced_job(namespace,
                                                 pretty=True,
                                                 timeout_seconds=60)
-        #print(jobs)
     except ApiException as e:
         print("Exception when calling BatchV1Api->list_namespaced_job: %s\n" % e)
     

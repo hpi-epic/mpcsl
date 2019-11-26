@@ -16,22 +16,9 @@ jobs:
       - run: 
           name: Get Dependencies
           command: git submodule update --init --recursive src/executionenvironments/r/pcalg
-      - run: sudo rm /usr/local/bin/docker-compose
-      - run: curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-      - run: chmod +x docker-compose 
-      - run: sudo mv docker-compose /usr/local/bin
-      - run: 
-          name: Setup Environment
-          command: bash scripts/setup.sh
-      - run: 
-          name: Run Tests
-          command: bash scripts/test.sh
-      - when:
-          condition: on_success
-          steps:
-            - codecov/upload:
-                file: coverage.xml
-                conf: .codecov.yml
+      - run: sudo snap install microk8s --classic
+      - run: sudo microk8s.status --wait-ready
+      - run: sudo microk8s.enable helm
 
 
 workflows:

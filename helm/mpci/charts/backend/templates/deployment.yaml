@@ -39,7 +39,9 @@ spec:
             - name: DB_HOST
               value: {{ .Release.Name }}-postgresql
             - name: MPCI_ENVIRONMENT
-              value: production
+              value: {{ .Values.config.environment }}
+            - name: DATA_SOURCE_CONNECTIONS
+              value: {{ .Values.config.dataSourceConnections }}
             - name: FLASK_APP
               value: server.py
           ports:

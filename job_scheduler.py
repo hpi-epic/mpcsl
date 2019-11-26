@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, API_HOST
 from src.models import Job, JobStatus, Experiment
-from src.jobscheduler.kubernetes_helper import createJob, kube_cleanup_finished_jobs, checkRunningJob
+from src.jobscheduler.kubernetes_helper import create_job, kube_cleanup_finished_jobs, check_running_job
 
 
 logging.basicConfig(level=logging.INFO)
@@ -30,7 +30,7 @@ async def start_waiting_jobs(session: Session):
     for job in jobs:
         try:
             experiment = session.query(Experiment).get(job.experiment_id)
-            k8s_job_name = await createJob(job, experiment)
+            k8s_job_name = await create_job(job, experiment)
             if isinstance(k8s_job_name, str):
                 job.container_id = k8s_job_name
                 job.status = JobStatus.running
@@ -47,13 +47,14 @@ async def kill_errored_jobs(session: Session):
     jobs = session.query(Job).filter(Job.status == JobStatus.running)
     for job in jobs:
         try:
-            crashed = await checkRunningJob(job)
+            crashed = await check_running_job(job)
             if crashed:
                 job.status = JobStatus.error
                 asyncio.create_task(post_job_change(ClientSession(), job.id, job.status))
                 session.commit()
         except Exception as e:
             logging.error(str(e))
+
 
 async def start_job_scheduler():
     logging.info("Starting Job Scheduler")

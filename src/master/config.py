@@ -2,6 +2,7 @@ import json
 import os
 
 API_HOST = os.environ.get('API_HOST')
+RELEASE_NAME = os.environ.get('RELEASE_NAME', '')
 
 MPCI_ENVIRONMENT = os.environ.get('MPCI_ENVIRONMENT')
 

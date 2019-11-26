@@ -16,22 +16,11 @@ jobs:
       - run: 
           name: Get Dependencies
           command: git submodule update --init --recursive src/executionenvironments/r/pcalg
-      - run: sudo rm /usr/local/bin/docker-compose
-      - run: curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-      - run: chmod +x docker-compose 
-      - run: sudo mv docker-compose /usr/local/bin
-      - run: 
-          name: Setup Environment
-          command: bash scripts/setup.sh
-      - run: 
-          name: Run Tests
-          command: bash scripts/test.sh
-      - when:
-          condition: on_success
-          steps:
-            - codecov/upload:
-                file: coverage.xml
-                conf: .codecov.yml
+      - run: snap install microk8s --classic
+      - run: snap alias microk8s.kubectl kubectl && microk8s.kubectl config view --raw > $HOME/.kube/config
+      - run: apt-get install helm
+      - run: helm init
+      - run: helm install helm/mpci --name mpcicluster
 
 
 workflows:

@@ -5,6 +5,9 @@ metadata:
     job-name: FILL
   name: FILL
 spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 1
   template:
     metadata:
       labels:

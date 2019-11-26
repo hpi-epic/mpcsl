@@ -84,3 +84,8 @@ class AppFactory(object):
         self.set_up_error_handlers()
         self.set_up_socketio()
         return [self.app, self.socketio]
+
+    def migration_up(self):
+        self.set_up_app()
+        self.set_up_db()
+        return self.app

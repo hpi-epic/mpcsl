@@ -40,10 +40,8 @@ spec:
               value: {{ .Release.Name }}-postgresql
             - name: MPCI_ENVIRONMENT
               value: {{ .Values.config.environment }}
-            - name: DATA_SOURCE_CONNECTIONS
-              value: {{ .Values.config.dataSourceConnections }}
             - name: FLASK_APP
-              value: server.py
+              value: migration.py
           ports:
             - name: http
               containerPort: 5000

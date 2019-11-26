@@ -10,11 +10,7 @@ fact = AppFactory()
 [app, socketio] = fact.up()
 db = fact.db
 
-
-def main():
+if __name__ == "__main__":
     isDevelopment = MPCI_ENVIRONMENT != 'production' and MPCI_ENVIRONMENT != 'staging'
     socketio.run(app, host="0.0.0.0", port='5000', debug=isDevelopment)
 
-
-if __name__ == "__main__":
-    main()

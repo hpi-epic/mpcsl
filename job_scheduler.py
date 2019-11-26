@@ -17,12 +17,13 @@ async def health_check(request):
     return web.Response(text="ok")
 
 
-async def post_job_change(session, job_id, status):
+async def post_job_change(job_id, status):
     url = "http://" + API_HOST + "/api/job/" + str(job_id)
     logging.info("Emit change to %s", url)
-    async with session.post(url, json={'status': status}) as resp:
-        resp.raise_for_status()
-        logging.info(await resp.text())
+    async with ClientSession() as session:
+        async with session.post(url, json={'status': status}) as resp:
+            resp.raise_for_status()
+            logging.info(await resp.text())
 
 
 async def start_waiting_jobs(session: Session):
@@ -34,12 +35,12 @@ async def start_waiting_jobs(session: Session):
             if isinstance(k8s_job_name, str):
                 job.container_id = k8s_job_name
                 job.status = JobStatus.running
-                asyncio.create_task(post_job_change(ClientSession(), job.id, job.status))
+                asyncio.create_task(post_job_change(job.id, job.status))
                 session.commit()
         except Exception as e:
             logging.error(str(e))
             job.status = JobStatus.error
-            asyncio.create_task(post_job_change(ClientSession(), job.id, job.status))
+            asyncio.create_task(post_job_change(job.id, job.status))
             session.commit()
 
 
@@ -50,7 +51,7 @@ async def kill_errored_jobs(session: Session):
             crashed = await check_running_job(job)
             if crashed:
                 job.status = JobStatus.error
-                asyncio.create_task(post_job_change(ClientSession(), job.id, job.status))
+                asyncio.create_task(post_job_change(job.id, job.status))
                 session.commit()
         except Exception as e:
             logging.error(str(e))

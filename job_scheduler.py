@@ -1,17 +1,16 @@
 import asyncio
 import logging
 
-from aiohttp import web
-# import docker
+from aiohttp import web, ClientSession
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, API_HOST
-# from src.master.helpers.docker import get_client
 from src.models import Job, JobStatus, Experiment
-from src.jobscheduler.kubernetes_helper import createJob, kube_cleanup_finished_jobs
+from src.jobscheduler.kubernetes_helper import createJob, kube_cleanup_finished_jobs, checkRunningJob
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 async def health_check(request):
@@ -27,52 +26,44 @@ async def post_job_change(session, job_id, status):
 
 
 async def start_waiting_jobs(session: Session):
-    logging.debug("Start searching for jobs")
     jobs = session.query(Job).filter(Job.status == JobStatus.waiting)
-    logging.debug("%s jobs found", jobs)
     for job in jobs:
         try:
             experiment = session.query(Experiment).get(job.experiment_id)
-            await createJob(job, experiment)
-            job.status = JobStatus.running
-            session.commit()
+            k8s_job_name = await createJob(job, experiment)
+            if isinstance(k8s_job_name, str):
+                job.container_id = k8s_job_name
+                job.status = JobStatus.running
+                asyncio.create_task(post_job_change(ClientSession(), job.id, job.status))
+                session.commit()
         except Exception as e:
             logging.error(str(e))
             job.status = JobStatus.error
+            asyncio.create_task(post_job_change(ClientSession(), job.id, job.status))
             session.commit()
 
 
-# async def ping_running_jobs(session: Session):
-#     jobs = session.query(Job).filter(Job.status == JobStatus.running)
-#     for job in jobs:
-#         try:
-#             container = client.containers.get(job.container_id)
-#             if container.status == "exited":
-#                 logging.warning("Container with id %s exited", job.container_id)
-#                 job.status = JobStatus.error
-#                 tasks.append(asyncio.create_task(post_job_change(http_session, job.id, job.status)))
-#         except docker.errors.NotFound:
-#             logging.warning("Container with id %s not found", job.container_id)
-#             job.status = JobStatus.error
-#             tasks.append(asyncio.create_task(post_job_change(http_session, job.id, job.status)))
-#         session.commit()
-#     session.close()
-#     if len(tasks) != 0:
-#         await asyncio.gather(*tasks)
+async def kill_errored_jobs(session: Session):
+    jobs = session.query(Job).filter(Job.status == JobStatus.running)
+    for job in jobs:
+        try:
+            crashed = await checkRunningJob(job)
+            if crashed:
+                job.status = JobStatus.error
+                asyncio.create_task(post_job_change(ClientSession(), job.id, job.status))
+                session.commit()
+        except Exception as e:
+            logging.error(str(e))
 
 async def start_job_scheduler():
     logging.info("Starting Job Scheduler")
-    # client = get_client()
     engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=False)
     Session = sessionmaker(bind=engine)
-    # http_session = aiohttp.ClientSession()
     while True:
-        # tasks = []
         try:
             await asyncio.sleep(DAEMON_CYCLE_TIME)
-            session = Session()
-            await start_waiting_jobs(session)
-            #kube_cleanup_finished_jobs()
+            await asyncio.gather(start_waiting_jobs(Session()), kill_errored_jobs(Session()))
+            kube_cleanup_finished_jobs()
         except Exception as e:
             logging.error(str(e))
 

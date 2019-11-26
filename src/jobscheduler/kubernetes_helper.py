@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 import yaml
-from kubernetes import config, client
+from kubernetes import config, client, watch
 # from sqlalchemy import create_engine
 # from sqlalchemy.orm import sessionmaker
 from kubernetes.client.rest import ApiException
@@ -40,28 +40,22 @@ async def createJob(job: Job, experiment: Experiment):
         job_name = f'execute-{job.id}'
         default_job["metadata"]["labels"]["job-name"] = job_name
         default_job["metadata"]["name"] = job_name
-        #default_job["namespace"] = "default"
         default_job["spec"]["template"]["metadata"]["labels"]["job-name"] = job_name
         default_job["spec"]["template"]["spec"]["containers"][0]["command"] = command
-
-
-    # algorithm.docker_image
-    # ns = os.getenv("K8S_NAMESPACE")
-    # if ns is None:
-    # ns = "default"
-    # k8s_job_metadata = client.V1ObjectMeta(name="execution-job-"+str(job.id), namespace=ns)
-    # k8s_job_template_containers = [client.V1Container(name="execution-container", image="milanpro/mpci_executor", command=[command])]
-    # k8s_job_template_spec = client.V1PodSpec(containers=k8s_job_template_containers, restart_policy="Never")
-    # k8s_job_template = client.V1PodTemplateSpec(spec=k8s_job_template_spec)
-    # k8s_job_spec = client.V1JobSpec(template=k8s_job_template)
-    # k8s_job = client.V1Job(api_version="batch/v1", kind="Job", metadata=k8s_job_metadata, spec=k8s_job_spec)
-
         try:
             logging.info("Starting Job with ID %s", str(job.id))
-            api_response = api_instance.create_namespaced_job(namespace="default", body=default_job, pretty=True)
-            print(api_response)
+            result = api_instance.create_namespaced_job(namespace="default", body=default_job, pretty=True)
+            return result.metadata.name
         except ApiException as e:
-            print("Exception when calling BatchV1Api->create_namespaced_job: %s\n" % e)
+            logging.error("Exception when calling BatchV1Api->create_namespaced_job: %s\n" % e)
+
+
+async def checkRunningJob(job: Job):
+    result = api_instance.read_namespaced_job_status(job.container_id, "default")
+    if result.status.failed > 0:
+        api_instance.delete_namespaced_job(job.container_id, "default")
+        return True
+    return False
 
 
 def kube_delete_empty_pods(namespace='default', phase='Succeeded'):
@@ -117,7 +111,6 @@ def kube_cleanup_finished_jobs(namespace='default', state='Finished'):
     deleteoptions = client.V1DeleteOptions()
     try: 
         jobs = api_instance.list_namespaced_job(namespace,
-                                                include_uninitialized=False,
                                                 pretty=True,
                                                 timeout_seconds=60)
         #print(jobs)
@@ -127,7 +120,6 @@ def kube_cleanup_finished_jobs(namespace='default', state='Finished'):
     # Now we have all the jobs, lets clean up
     # We are also logging the jobs we didn't clean up because they either failed or are still running
     for job in jobs.items:
-        logging.debug(job)
         jobname = job.metadata.name
         jobstatus = job.status.conditions
         if job.status.succeeded == 1:

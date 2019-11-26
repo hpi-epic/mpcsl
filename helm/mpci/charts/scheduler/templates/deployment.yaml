@@ -32,6 +32,8 @@ spec:
               value: {{ .Release.Name }}-backend:5000
             - name: DB_HOST
               value: {{ .Release.Name }}-postgresql
+            - name: RELEASE_NAME
+              value: {{ .Release.Name }}
           ports:
             - name: http-alt
               containerPort: 8080

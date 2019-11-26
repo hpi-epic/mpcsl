@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, API_HOST
 # from src.master.helpers.docker import get_client
 from src.models import Job, JobStatus, Experiment
-from src.jobscheduler.kubernetes_helper import createJob, kube_cleanup_finished_jobs
+from src.jobscheduler.kubernetes_helper import create_job, kube_cleanup_finished_jobs
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -33,7 +33,7 @@ async def start_waiting_jobs(session: Session):
     for job in jobs:
         try:
             experiment = session.query(Experiment).get(job.experiment_id)
-            await createJob(job, experiment)
+            await create_job(job, experiment)
             job.status = JobStatus.running
             session.commit()
         except Exception as e:

@@ -6,7 +6,7 @@ from kubernetes import config, client
 # from sqlalchemy import create_engine
 # from sqlalchemy.orm import sessionmaker
 from kubernetes.client.rest import ApiException
-from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, API_HOST, LOAD_SEPARATION_SET
+from src.master.config import API_HOST, LOAD_SEPARATION_SET, RELEASE_NAME
 from src.models import Job, JobStatus, Experiment
 
 
@@ -27,7 +27,7 @@ config.load_incluster_config()
 api_instance = client.BatchV1Api()
 
 
-async def createJob(job: Job, experiment: Experiment):
+async def create_job(job: Job, experiment: Experiment):
     params = ['-j', str(job.id), '-d', str(experiment.dataset_id), '--api_host', str(API_HOST), '--send_sepsets', str(int(LOAD_SEPARATION_SET))]
     for k, v in experiment.parameters.items():
         params.append('--' + k)
@@ -37,31 +37,16 @@ async def createJob(job: Job, experiment: Experiment):
       "-c","Rscript " + algorithm.script_filename + " " + " ".join(params)]
     with open(os.path.join(os.path.dirname(__file__), "executor-job.yaml")) as f:
         default_job = yaml.safe_load(f)
-        job_name = f'execute-{job.id}'
+        job_name = f'{RELEASE_NAME}-execute-{job.id}'
         default_job["metadata"]["labels"]["job-name"] = job_name
         default_job["metadata"]["name"] = job_name
-        #default_job["namespace"] = "default"
         default_job["spec"]["template"]["metadata"]["labels"]["job-name"] = job_name
         default_job["spec"]["template"]["spec"]["containers"][0]["command"] = command
-
-
-    # algorithm.docker_image
-    # ns = os.getenv("K8S_NAMESPACE")
-    # if ns is None:
-    # ns = "default"
-    # k8s_job_metadata = client.V1ObjectMeta(name="execution-job-"+str(job.id), namespace=ns)
-    # k8s_job_template_containers = [client.V1Container(name="execution-container", image="milanpro/mpci_executor", command=[command])]
-    # k8s_job_template_spec = client.V1PodSpec(containers=k8s_job_template_containers, restart_policy="Never")
-    # k8s_job_template = client.V1PodTemplateSpec(spec=k8s_job_template_spec)
-    # k8s_job_spec = client.V1JobSpec(template=k8s_job_template)
-    # k8s_job = client.V1Job(api_version="batch/v1", kind="Job", metadata=k8s_job_metadata, spec=k8s_job_spec)
-
         try:
-            logging.info("Starting Job with ID %s", str(job.id))
+            logging.info(f'Starting Job with ID {job.id}')
             api_response = api_instance.create_namespaced_job(namespace="default", body=default_job, pretty=True)
-            print(api_response)
         except ApiException as e:
-            print("Exception when calling BatchV1Api->create_namespaced_job: %s\n" % e)
+            logging.error("Exception when calling BatchV1Api->create_namespaced_job: %s\n" % e)
 
 
 def kube_delete_empty_pods(namespace='default', phase='Succeeded'):

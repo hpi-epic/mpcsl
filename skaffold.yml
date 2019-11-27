@@ -41,3 +41,4 @@ profiles:
         value: ['./static/ui/src/**/*.{js,jsx,ts,tsx}']
     activation:
       - command: dev
+      - command: debug

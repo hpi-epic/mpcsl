@@ -182,3 +182,5 @@ rsconnect/
 
 most_recent_backend_commit.pkl
 most_recent_ui_commit.pkl
+
+*.tgz

@@ -44,6 +44,8 @@ spec:
               value: {{ .Values.config.environment }}
             - name: FLASK_APP
               value: migration.py
+            - name: DATA_SOURCE_CONNECTIONS
+              value: {{ .Values.config.dataSourceConnections | toJson | quote }}
           ports:
             - name: http
               containerPort: 5000

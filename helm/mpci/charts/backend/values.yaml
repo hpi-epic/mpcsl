@@ -5,8 +5,7 @@
 replicaCount: 1
 
 config:
-  dataSourceConnections: 
-    pg1: postgresql://postgres:postgres@database/postgres
+  dataSourceConnections: {}
   environment: production
 
 seed: false

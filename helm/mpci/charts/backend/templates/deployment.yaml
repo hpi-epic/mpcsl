@@ -35,20 +35,22 @@ spec:
             - name: PYTHONPATH
               value: "$PYTHONPATH:/app/"
             - name: API_HOST
-              value: {{ .Release.Name }}-backend:5000
+              value: {{ .Release.Name }}-backend
             - name: DB_HOST
               value: {{ .Release.Name }}-postgresql
             - name: SCHEDULER_HOST
-              value: {{ .Release.Name }}-scheduler:8080
+              value: {{ .Release.Name }}-scheduler
             - name: MPCI_ENVIRONMENT
               value: {{ .Values.config.environment }}
             - name: FLASK_APP
               value: migration.py
             - name: DATA_SOURCE_CONNECTIONS
               value: {{ .Values.config.dataSourceConnections | toJson | quote }}
+            - name: PORT
+              value: "{{ .Values.service.port }}"
           ports:
             - name: http
-              containerPort: 5000
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

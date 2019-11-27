@@ -4,6 +4,8 @@ import os
 API_HOST = os.environ.get('API_HOST')
 SCHEDULER_HOST = os.environ.get('SCHEDULER_HOST')
 RELEASE_NAME = os.environ.get('RELEASE_NAME', '')
+PORT = os.environ.get("PORT")
+K8S_NAMESPACE = os.environ.get("K8S_NAMESPACE", "default")
 
 MPCI_ENVIRONMENT = os.environ.get('MPCI_ENVIRONMENT')
 
@@ -34,10 +36,3 @@ DAEMON_CYCLE_TIME = 5
 RESULT_READ_BUFF_SIZE = int(os.environ.get('RESULT_READ_BUFF_SIZE', 16 * 1024))
 RESULT_WRITE_BUFF_SIZE = int(os.environ.get('RESULT_WRITE_BUFF_SIZE', 1024))
 LOAD_SEPARATION_SET = os.environ.get('LOAD_SEPARATION_SET', 'false').lower() == 'true'
-
-DOCKER_EXECUTION_NETWORK = os.environ.get('DOCKER_EXECUTION_NETWORK', 'mpci_default')
-DOCKER_BASE_URL = os.environ.get('DOCKER_BASE_URL', 'unix://var/run/docker.sock')
-
-DOCKER_MOUNT_LOG_VOLUME = os.environ.get('DOCKER_MOUNT_LOG_VOLUME', 'true').lower() == 'true'
-DOCKER_LOG_VOLUME_NAME = os.environ.get('DOCKER_MOUNT_LOG_VOLUME', 'mpci_worker_logs')
-DOCKER_LOG_VOLUME_MOUNT_PATH = os.environ.get('DOCKER_LOG_VOLUME_MOUNT_PATH', '/logs')

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - command: []
-        image: milanpro/mpci_executor
+        image: FILL
         imagePullPolicy: Always
         name: execution-container
         resources: {}

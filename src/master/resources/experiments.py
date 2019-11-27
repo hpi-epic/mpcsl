@@ -1,11 +1,10 @@
-import docker
+import requests
 from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 from marshmallow import Schema, fields
 from marshmallow.validate import Length, Range, OneOf
 
 from src.db import db
-from src.master.helpers.docker import get_client
 from src.master.helpers.io import load_data, marshal, InvalidInputData
 from src.master.helpers.swagger import get_default_response
 from src.models import Experiment, ExperimentSchema, Algorithm, Job
@@ -49,12 +48,10 @@ class ExperimentResource(Resource):
         experiment = Experiment.query.get_or_404(experiment_id)
         data = marshal(ExperimentSchema, experiment)
 
-        client = get_client()
         for job in Job.query.filter(Job.experiment_id == experiment_id):
             try:
-                container = client.containers.get(job.container_id)
-                container.remove()
-            except docker.errors.NotFound:
+                requests.post(f'http://{SCHEDULER_HOST}/api/delete/{job.container_id}')
+            except requests.RequestException:
                 pass
 
         db.session.delete(experiment)

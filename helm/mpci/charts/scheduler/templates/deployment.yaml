@@ -29,23 +29,27 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: API_HOST
-              value: {{ .Release.Name }}-backend:5000
+              value: {{ .Release.Name }}-backend
             - name: DB_HOST
               value: {{ .Release.Name }}-postgresql
             - name: RELEASE_NAME
               value: {{ .Release.Name }}
+            - name: PORT
+              value: "{{ .Values.service.port }}"
+            - name: K8S_NAMESPACE
+              value: {{ .Release.Namespace }}
           ports:
-            - name: http-alt
-              containerPort: 8080
+            - name: aiohttp
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /
-              port: http-alt
+              port: aiohttp
           readinessProbe:
             httpGet:
               path: /
-              port: http-alt
+              port: aiohttp
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

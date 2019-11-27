@@ -12,7 +12,6 @@ from marshmallow import fields, Schema
 
 from src.db import db
 from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET, RESULT_WRITE_BUFF_SIZE, SCHEDULER_HOST
-from src.master.helpers.docker import get_container
 from src.master.helpers.io import marshal, InvalidInputData
 from src.master.helpers.socketio_events import job_status_change
 from src.master.helpers.swagger import get_default_response
@@ -80,10 +79,10 @@ class JobResource(Resource):
         'tags': ['Job']
     })
     def delete(self, job_id):
-        job = Job.query.get_or_404(job_id)
+        job: Job = Job.query.get_or_404(job_id)
 
         if job.status == JobStatus.running:
-            get_container(job.container_id).kill()
+            requests.post(f'http://{SCHEDULER_HOST}/api/delete/{job.container_id}')
             job.status = JobStatus.cancelled
         else:
             job.status = JobStatus.hidden

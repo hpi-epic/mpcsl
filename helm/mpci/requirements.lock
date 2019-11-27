@@ -1,0 +1,21 @@
+dependencies:
+- name: postgresql
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 6.5.8
+- name: nginx-ingress
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 1.25.0
+- name: pgweb
+  repository: ""
+  version: 0.1.0
+- name: frontend
+  repository: ""
+  version: 0.1.0
+- name: backend
+  repository: ""
+  version: 0.1.0
+- name: scheduler
+  repository: ""
+  version: 0.1.0
+digest: sha256:6500f02b755f80b2ed6d9b7ec1378bb9b41286a448f043364f5abb8d23e68a0a
+generated: "2019-11-27T11:38:19.789139+01:00"

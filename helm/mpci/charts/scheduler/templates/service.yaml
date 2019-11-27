@@ -7,9 +7,9 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: 8080
+    - port: 80
+      targetPort: {{ .Values.service.port }}
       protocol: TCP
-      name: http-alt
+      name: http
   selector:
     {{- include "scheduler.selectorLabels" . | nindent 4 }}

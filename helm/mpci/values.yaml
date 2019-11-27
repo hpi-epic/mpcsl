@@ -4,6 +4,9 @@
 
 replicaCount: 0
 
+pgweb:
+  enabled: false
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""

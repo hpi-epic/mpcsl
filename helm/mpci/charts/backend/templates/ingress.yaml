@@ -10,8 +10,8 @@ spec:
       - path: /api
         backend:
           serviceName:  {{ $fullName }}
-          servicePort: 5000
+          servicePort: http
       - path: /socket.io
         backend:
           serviceName:  {{ $fullName }}
-          servicePort: 5000
+          servicePort: http

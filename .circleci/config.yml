@@ -20,8 +20,8 @@ jobs:
       - run: sudo microk8s.status --wait-ready
       - run: sudo microk8s.enable helm storage dns
       - run: sudo microk8s.helm init --wait
-      - run: sudo microk8s.kubectl dependency update /home/circleci/project/helm/mpci/
-      - run: sudo microk8s.helm install --name mpcicluster /home/circleci/project/helm/mpci/
+      - run: sudo microk8s.helm dependency update helm/mpci/
+      - run: sudo microk8s.helm install --name mpcicluster helm/mpci/
       - run: sudo microk8s.kubectl exec -it $(kubectl get pods | grep -m1 backend |awk '{ print $1 }') flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py
       - run: sudo microk8s.kubectl exec -it $(kubectl get pods | grep -m1 backend |awk '{ print $1 }') pytest --cov-report xml --cov=src test/
 

@@ -20,6 +20,10 @@ from src.models.base import SwaggerMixin
 from src.models.job import JobStatus
 
 
+def kill_container(container):
+        requests.post(f'http://{SCHEDULER_HOST}/api/delete/{container}')
+
+
 class JobResource(Resource):
     @swagger.doc({
         'description': 'Returns a single job',
@@ -82,7 +86,7 @@ class JobResource(Resource):
         job: Job = Job.query.get_or_404(job_id)
 
         if job.status == JobStatus.running:
-            requests.post(f'http://{SCHEDULER_HOST}/api/delete/{job.container_id}')
+            kill_container(job.container_id)
             job.status = JobStatus.cancelled
         else:
             job.status = JobStatus.hidden

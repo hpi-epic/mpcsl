@@ -17,17 +17,15 @@ jobs:
     machine:
       image: ubuntu-1604:201903-01
       docker_layer_caching: false
+    environment:
+      FLASK_APP: migration.py
     steps:
       - checkout
-      - run: sudo snap install microk8s --classic
-      - run: sudo microk8s.status --wait-ready
-      - run: sudo microk8s.enable helm storage dns
-      - run: sudo microk8s.helm init --wait
-      - run: sudo microk8s.helm dependency update helm/mpci/
-      - run: sudo microk8s.helm install --name mpcicluster helm/mpci/ --set backend.image.tag=$CIRCLE_SHA1
-      - run: sleep 90
-      - run: sudo microk8s.kubectl exec -it $(sudo microk8s.kubectl get pods | grep -m1 backend |awk '{ print $1 }') flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py
-      - run: sudo microk8s.kubectl exec -it $(sudo microk8s.kubectl get pods | grep -m1 backend |awk '{ print $1 }') pytest --cov-report xml --cov=src test/
+      - run: sudo apt-get install postgresql
+      - run: pip install -r requirements.txt
+      - run: flask db upgrade 
+      - run: flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py
+      - run: pytest --cov-report xml --cov=src test/
 
 
 

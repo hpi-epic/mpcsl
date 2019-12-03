@@ -24,7 +24,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
     steps:
       - checkout
-      - run: pip install -r requirements.txt
+      - run: pip install --user -r requirements.txt
       - run: flask db upgrade 
       - run: flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py
       - run: pytest --cov-report xml --cov=src test/

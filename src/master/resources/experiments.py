@@ -5,6 +5,7 @@ from marshmallow import Schema, fields
 from marshmallow.validate import Length, Range, OneOf
 
 from src.db import db
+from src.master.config import SCHEDULER_HOST
 from src.master.helpers.io import load_data, marshal, InvalidInputData
 from src.master.helpers.swagger import get_default_response
 from src.models import Experiment, ExperimentSchema, Algorithm, Job

@@ -18,7 +18,8 @@ JOB_PREFIX = f'{RELEASE_NAME}-execute-'
 
 async def get_pod_log(job_id):
     try:
-        pods: client.V1PodList = core_api_instance.list_namespaced_pod(namespace=K8S_NAMESPACE, label_selector=f'job-name=={JOB_PREFIX}{job_id}')
+        pods: client.V1PodList = core_api_instance.list_namespaced_pod(namespace=K8S_NAMESPACE,
+                                                                       label_selector=f'job-name=={JOB_PREFIX}{job_id}')
         pod: client.V1Pod = pods.items[0]
         if pod is None:
             return None
@@ -34,19 +35,24 @@ async def delete_job_and_pods(job_name):
     except ApiException:
         logging.warning(f'Could not delete job {job_name}')
     try:
-        core_api_instance.delete_collection_namespaced_pod(namespace=K8S_NAMESPACE, label_selector=f'job-name=={job_name}', propagation_policy='Background')
+        core_api_instance.delete_collection_namespaced_pod(namespace=K8S_NAMESPACE,
+                                                           label_selector=f'job-name=={job_name}',
+                                                           propagation_policy='Background')
     except ApiException:
         logging.warning(f'Could not delete pods for job {job_name}')
 
 
 async def create_job(job: Job, experiment: Experiment):
-    params = ['-j', str(job.id), '-d', str(experiment.dataset_id), '--api_host', str(API_HOST), '--send_sepsets', str(int(LOAD_SEPARATION_SET))]
+    params = ['-j', str(job.id),
+              '-d', str(experiment.dataset_id),
+              '--api_host', str(API_HOST),
+              '--send_sepsets', str(int(LOAD_SEPARATION_SET))]
     for k, v in experiment.parameters.items():
         params.append('--' + k)
         params.append(str(v))
     algorithm: Algorithm = experiment.algorithm
     command = ["/bin/sh",
-      "-c","Rscript " + algorithm.script_filename + " " + " ".join(params)]
+               "-c", "Rscript " + algorithm.script_filename + " " + " ".join(params)]
     with open(os.path.join(os.path.dirname(__file__), "executor-job.yaml")) as f:
         default_job = yaml.safe_load(f)
         job_name = f'{JOB_PREFIX}{job.id}'
@@ -67,7 +73,11 @@ async def check_running_job(job: Job):
     result = api_instance.read_namespaced_job_status(job.container_id, namespace=K8S_NAMESPACE)
     if result.status.failed is not None and result.status.failed > 0:
         deleteoptions = client.V1DeleteOptions()
-        api_instance.delete_namespaced_job(job.container_id, namespace=K8S_NAMESPACE, body=deleteoptions, grace_period_seconds=0, propagation_policy='Background')
+        api_instance.delete_namespaced_job(job.container_id,
+                                           namespace=K8S_NAMESPACE,
+                                           body=deleteoptions,
+                                           grace_period_seconds=0,
+                                           propagation_policy='Background')
         return True
     return False
 
@@ -106,7 +116,7 @@ def kube_delete_empty_pods(session):
 
 def kube_cleanup_finished_jobs(session, state='Finished'):
     deleteoptions = client.V1DeleteOptions()
-    try: 
+    try:
         jobs = api_instance.list_namespaced_job(namespace=K8S_NAMESPACE,
                                                 pretty=True,
                                                 timeout_seconds=60)
@@ -118,7 +128,11 @@ def kube_cleanup_finished_jobs(session, state='Finished'):
         if jobname.startswith(JOB_PREFIX) and job.status.succeeded == 1:
             logging.info("Cleaning up Job: {}. Finished at: {}".format(jobname, job.status.completion_time))
             try:
-                api_instance.delete_namespaced_job(jobname, namespace=K8S_NAMESPACE, body=deleteoptions, grace_period_seconds=0, propagation_policy='Background')
+                api_instance.delete_namespaced_job(jobname,
+                                                   namespace=K8S_NAMESPACE,
+                                                   body=deleteoptions,
+                                                   grace_period_seconds=0,
+                                                   propagation_policy='Background')
             except ApiException as e:
                 print("Exception when calling BatchV1Api->delete_namespaced_job: %s\n" % e)
 

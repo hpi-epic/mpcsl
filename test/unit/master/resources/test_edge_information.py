@@ -33,3 +33,22 @@ class EdgeTest(BaseResourceTest):
         # Then
         assert result['id'] == edge.id
         assert result['result_id'] == edge.result_id
+
+    def test_add_edge_information(self):
+        # Given
+        result = ResultFactory()
+        node1 = NodeFactory(dataset=result.job.experiment.dataset)
+        node2 = NodeFactory(dataset=result.job.experiment.dataset)
+        payload = {
+            'from_node_id': node1.id,
+            'to_node_id': node2.id,
+            'annotation': 'approved',
+            'result_id': result.id
+        }
+
+        # When
+        result = self.post(self.url_for(EdgeInformationResource, edge_information_id=result.id),
+                           json=payload,
+                           parse_result=False)
+        # Then
+        assert result.status_code == 200

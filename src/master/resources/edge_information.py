@@ -65,10 +65,10 @@ class EdgeInformationListResource(Resource):
         'responses': get_default_response(EdgeInformationSchema.get_swagger()),
         'tags': ['Edge Information']
     })
-    def post(self):
+    def post(self, result_id):
         data = load_data(EdgeInformationSchema)
 
-        edge_information = EdgeInformation.query.filter(EdgeInformation.result_id == data['result_id'],
+        edge_information = EdgeInformation.query.filter(EdgeInformation.result_id == result_id,
                                                         EdgeInformation.from_node_id == data['from_node_id'],
                                                         EdgeInformation.to_node_id == data['from_node_id'])\
                                                 .one_or_none()

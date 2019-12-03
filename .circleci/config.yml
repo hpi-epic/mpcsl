@@ -28,6 +28,12 @@ jobs:
       - run: flask db upgrade 
       - run: flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py
       - run: pytest --cov-report xml --cov=src test/
+      - when:
+          condition: on_success
+          steps:
+            - codecov/upload:
+                file: coverage.xml
+                conf: .codecov.yml
 
 
 

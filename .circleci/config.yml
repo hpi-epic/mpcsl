@@ -15,13 +15,13 @@ jobs:
 
   test:
     machine:
-      image: ubuntu-1604:201903-01
+      image: circleci/python:3.7.5
       docker_layer_caching: false
     environment:
       FLASK_APP: migration.py
     steps:
       - checkout
-      - run: sudo apt-get install postgresql
+      - run: sudo apt-get update && sudo apt-get install postgresql
       - run: pip install -r requirements.txt
       - run: flask db upgrade 
       - run: flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py

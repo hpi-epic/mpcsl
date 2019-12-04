@@ -1,9 +1,9 @@
-[submodule "services/frontend-image/src"]
+[submodule "frontend"]
 	path = services/frontend-image/src
 	url = git@github.com:hpi-epic/mpci-frontend.git
 	branch = master
   update = rebase
-[submodule "executionenvironments/r/pcalg"]
+[submodule "pcalg"]
 	path = executionenvironments/r/pcalg
 	url = git@github.com:ChristopherSchmidt89/pcalg.git
 	branch = master

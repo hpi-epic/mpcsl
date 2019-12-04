@@ -7,6 +7,7 @@ serviceResource:
   containerModule: backend-image
 dependencies:
   - postgres
+  - migrate-db
 values:
   image:
     repository: ${modules.backend-image.outputs.deployment-image-name}

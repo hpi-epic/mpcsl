@@ -31,7 +31,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: BACKEND_HOST
-              value: {{ .Release.Name }}-backend
+              value: {{ .Release.Namespace }}-backend
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

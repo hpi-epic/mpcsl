@@ -2,7 +2,6 @@ kind: Module
 description: Helm chart for the postgres admin
 type: helm
 name: pgweb
-releaseName: ${var.releaseName}
 values:
   postgresqlPassword: postgres
   postgresqlUsername: postgres

@@ -1,7 +1,5 @@
 kind: Project
 name: mpci
-variables:
-  releaseName: mpcicluster
 environments:
   - name: local
     providers:

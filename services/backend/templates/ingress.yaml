@@ -9,9 +9,9 @@ spec:
       paths:
       - path: /api
         backend:
-          serviceName:  {{ $fullName }}
+          serviceName:  {{ .Release.Namespace }}-backend
           servicePort: http
       - path: /socket.io
         backend:
-          serviceName:  {{ $fullName }}
+          serviceName:  {{ .Release.Namespace }}-backend
           servicePort: http

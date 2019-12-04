@@ -29,9 +29,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: API_HOST
-              value: {{ .Release.Name }}-backend
+              value: {{ .Release.Namespace }}-backend
             - name: DB_HOST
-              value: {{ .Release.Name }}-postgresql
+              value: db-postgresql
             - name: RELEASE_NAME
               value: {{ .Release.Name }}
             - name: PORT

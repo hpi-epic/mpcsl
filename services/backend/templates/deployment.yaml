@@ -35,11 +35,11 @@ spec:
             - name: PYTHONPATH
               value: "$PYTHONPATH:/app/"
             - name: API_HOST
-              value: {{ .Release.Name }}-backend
+              value: {{ .Release.Namespace }}-backend
             - name: DB_HOST
-              value: {{ .Release.Name }}-postgresql
+              value: db-postgresql
             - name: SCHEDULER_HOST
-              value: {{ .Release.Name }}-scheduler
+              value: {{ .Release.Namespace }}-scheduler
             - name: MPCI_ENVIRONMENT
               value: {{ .Values.config.environment }}
             - name: FLASK_APP

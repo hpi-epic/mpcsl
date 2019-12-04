@@ -2,7 +2,6 @@ kind: Module
 description: Helm chart for the mpci frontend
 type: helm
 name: frontend
-releaseName: ${var.releaseName}
 serviceResource:
   kind: Deployment
   containerModule: frontend-image

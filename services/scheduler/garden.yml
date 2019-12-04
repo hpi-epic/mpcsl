@@ -2,7 +2,6 @@ kind: Module
 description: Helm chart for the mpci scheduler
 type: helm
 name: scheduler
-releaseName: ${var.releaseName}
 serviceResource:
   kind: Deployment
   containerModule: scheduler-image

@@ -11,5 +11,5 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName:  {{ $fullName }}
+          serviceName:  {{ .Release.Namespace }}-frontend
           servicePort: http

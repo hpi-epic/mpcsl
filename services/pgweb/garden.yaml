@@ -2,6 +2,8 @@ kind: Module
 description: Helm chart for the postgres admin
 type: helm
 name: pgweb
+dependencies:
+  - postgres
 values:
   postgresqlPassword: postgres
   postgresqlUsername: postgres

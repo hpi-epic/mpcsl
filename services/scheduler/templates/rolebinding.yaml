@@ -10,7 +10,7 @@ items:
     name: {{ .Release.Name }}-scheduler-role
   subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Namespace }}-scheduler
-    namespace: default
+    name: {{ include "scheduler.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
 kind: List
 metadata: {}

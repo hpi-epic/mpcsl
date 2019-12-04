@@ -12,10 +12,20 @@ values:
     repository: ${modules.backend-image.outputs.deployment-image-name}
     tag: ${modules.backend-image.version}
 tasks:
-  - name: seed-db
-    command: [/bin/sh, -c]
+  - name: migrate-db
     args:
-      - python
-      - seed.py
+      [flask, db, upgrade]
     dependencies:
       - postgres
+  - name: db-setup-algorithms
+    args:
+      [python, setup_algorithms.py]
+    dependencies:
+      - postgres
+      - migrate-db
+  - name: seed-db
+    args:
+      [python, seed.py]
+    dependencies:
+      - postgres
+      - db-setup-algorithms

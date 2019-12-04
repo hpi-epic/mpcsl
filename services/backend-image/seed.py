@@ -47,8 +47,9 @@ def add_dataset(db):
 if __name__ == "__main__":
     appfactory = AppFactory()
 
-    [app, _] = appfactory.up()
+    app = appfactory.migration_up()
 
     with app.app_context():
+        print("==> Seeding Test Data")
         dataset_id = add_dataset(db)
         add_experiment(db, dataset_id)

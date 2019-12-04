@@ -5,8 +5,17 @@ name: backend
 serviceResource:
   kind: Deployment
   containerModule: backend-image
+dependencies:
+  - postgres
 values:
   image:
     repository: ${modules.backend-image.outputs.deployment-image-name}
     tag: ${modules.backend-image.version}
-
+tasks:
+  - name: seed-db
+    command: [/bin/sh, -c]
+    args:
+      - python
+      - seed.py
+    dependencies:
+      - postgres

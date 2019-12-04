@@ -30,9 +30,9 @@ jobs:
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+    working_directory: ~/project/services/backend-image
     steps:
       - checkout
-      - run: cd services/backend-image
       - run: pip install --user -r requirements.txt
       - run: flask db upgrade 
       - run: flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py

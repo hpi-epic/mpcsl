@@ -13,7 +13,7 @@ seed: false
 image:
   repository: milanpro/mpci_backend
   tag: latest
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""

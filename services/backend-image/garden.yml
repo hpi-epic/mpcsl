@@ -1,0 +1,12 @@
+
+kind: Module
+description: The voting UI container image
+name: backend-image
+dockerfile: backend.Dockerfile
+type: container
+---
+kind: Module
+description: The voting UI container image
+name: scheduler-image
+dockerfile: scheduler.Dockerfile
+type: container

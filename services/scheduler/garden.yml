@@ -1,0 +1,13 @@
+kind: Module
+description: Helm chart for the mpci scheduler
+type: helm
+name: scheduler
+releaseName: ${var.releaseName}
+serviceResource:
+  kind: Deployment
+  containerModule: scheduler-image
+values:
+  image:
+    repository: ${modules.scheduler-image.outputs.deployment-image-name}
+    tag: ${modules.scheduler-image.version}
+

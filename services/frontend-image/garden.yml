@@ -1,0 +1,5 @@
+
+kind: Module
+description: The voting UI container image
+name: frontend-image
+type: container

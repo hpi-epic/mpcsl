@@ -36,14 +36,9 @@ git clone --recurse-submodules git@github.com:hpi-epic/mpci.git
 To make your life easier to get from a git clone to an up-and-running project we prepared some scripts for you.
 Here’s a quick mapping of what our scripts are named and what they’re responsible for doing:
 
-- `bash scripts/bootstrap.sh` – installs/updates all dependencies
-- `bash scripts/setup.sh` – sets up a project to be used for the first time
-- `bash scripts/update.sh` – updates a project to run at its current version
-- `bash scripts/server.sh` – starts app
-- `bash scripts/demo.sh` – starts app with example dataset and experiment pre-configured
-- `bash scripts/test.sh` – runs tests
-- `bash scripts/cibuild.sh` – invoked by continuous integration servers to run tests
-- `bash scripts/console.sh` – opens a console
+- `bash scripts/setup_algorithms.sh` – installs/updates all dependencies
+- `bash scripts/build_images.sh` – sets up a project to be used for the first time
+- `bash scripts/push_images.sh` – updates a project to run at its current version
 
 The example dataset for `demo.sh` is generated from an EARTHQUAKE bayesian network on [this page](http://www.bnlearn.com/bnrepository/discrete-small.html#earthquake).
 Some of the scripts accept parameters that are passed through the underlying docker commands.
@@ -54,7 +49,7 @@ We provide three different ways how to run the Causal Inference Pipeline:
 
 1. `backend` – starts just the backend with a postgres and a database ui - uses `docker-compose.yml`
 
-1. `staging` – deploys the backend with an additional nginx server, that is used
+2. `staging` – deploys the backend with an additional nginx server, that is used
 to serve static files and provide the backend functionality by connecting to uWSGI.
 The transpilation of the UI files will be done during build. - uses `docker-compose-staging.yml`
 

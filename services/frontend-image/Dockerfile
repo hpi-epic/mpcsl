@@ -1,12 +1,12 @@
 FROM node:latest as build-stage
 
 WORKDIR /app
-COPY ./static/ui/package.json /app/
-COPY ./static/ui/yarn.lock /app/
+COPY ./src/package.json /app/
+COPY ./src/yarn.lock /app/
 
 RUN yarn install
 
-COPY ./static/ui/ .
+COPY ./src/ .
 
 RUN yarn build
 

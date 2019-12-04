@@ -5,7 +5,6 @@ WORKDIR /app
 COPY requirements.txt ./requirements.txt
 RUN pip install -r ./requirements.txt
 
-COPY confdefault ./confdefault
 COPY conf ./conf
 COPY src ./src
 COPY job_scheduler.py setup.cfg ./

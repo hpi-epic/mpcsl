@@ -1,0 +1,10 @@
+kind: Module
+description: Helm chart for the mpci frontend
+type: helm
+name: postgres
+chart: 'stable/postgresql'
+releaseName: ${var.releaseName}
+values:
+  postgresqlPassword: postgres
+  postgresqlUsername: postgres
+

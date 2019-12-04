@@ -1,3 +1,0 @@
-MPCI Cluster started as {{ .Release.Name }}
-
-If you are not using minikube, nginx-ingress has to be enabled.

@@ -6,7 +6,7 @@ from kubernetes.client.rest import ApiException
 from src.master.config import API_HOST, LOAD_SEPARATION_SET, RELEASE_NAME, K8S_NAMESPACE
 from src.models import Job, Experiment, Algorithm
 
-if not os.environ.get("IN_CLUSTER", True):
+if os.environ.get("IN_CLUSTER") == "false":
     config.load_kube_config()
 else:
     config.load_incluster_config()

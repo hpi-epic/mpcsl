@@ -8,9 +8,16 @@ jobs:
       docker_layer_caching: false
     steps:
       - checkout
-      - run: echo "$DOCKERREG_TOKEN" | docker login --username milanpro --password-stdin
       - run: docker build -t milanpro/mpci_backend:$CIRCLE_SHA1 -f docker/backend.Dockerfile .
-      - run: docker push milanpro/mpci_backend:$CIRCLE_SHA1
+  build-push-backend:
+    machine:
+      image: ubuntu-1604:201903-01
+      docker_layer_caching: false
+    steps:
+      - checkout
+      - run: echo "$DOCKERREG_TOKEN" | docker login --username milanpro --password-stdin
+      - run: docker build -t milanpro/mpci_backend -f docker/backend.Dockerfile .
+      - run: docker push milanpro/mpci_backend
 
 
   test:
@@ -40,5 +47,14 @@ jobs:
 workflows:
   build-and-test:
     jobs:
-      - build-backend
+      - build-backend:
+          filters:
+            branches:
+              ignore:
+                - master
+      - build-push-backend:
+          filters:
+            branches:
+              only:
+                - master
       - test

@@ -24,19 +24,30 @@ jobs:
   test:
     docker:
       - image: circleci/python:3.7.5
-        environment:
-          FLASK_APP: migration.py
       - image: postgres:12
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-    working_directory: ~/project/services/backend-image
     steps:
       - checkout
-      - run: pip install --user -r requirements.txt
-      - run: flask db upgrade 
-      - run: flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py
-      - run: pytest --cov-report xml --cov=src test/
+      - run: 
+          name: Installing pip packages
+          command: pip install --user -r requirements.txt
+          working_directory: ~/project/services/backend-image
+      - run:
+          name: Migrating database
+          command: flask db upgrade 
+          environment:
+            FLASK_APP: migration.py
+          working_directory: ~/project/services/backend-image
+      - run:
+          name: Linting
+          command: flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py
+          working_directory: ~/project/services/backend-image
+      - run:
+          name: Testing
+          command: pytest --cov-report xml --cov=src test/
+          working_directory: ~/project/services/backend-image
       - when:
           condition: on_success
           steps:

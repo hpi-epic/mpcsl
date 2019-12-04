@@ -52,7 +52,7 @@ jobs:
           condition: on_success
           steps:
             - codecov/upload:
-                file: coverage.xml
+                file: services/backend-image/coverage.xml
                 conf: .codecov.yml
 
 

@@ -5,5 +5,5 @@ name: pgweb
 dependencies:
   - postgres
 values:
-  postgresqlPassword: postgres
-  postgresqlUsername: postgres
+  postgresqlPassword: ${var.postgres-password}
+  postgresqlUsername: ${var.postgres-user}

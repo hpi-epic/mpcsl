@@ -12,4 +12,6 @@ values:
   image:
     repository: ${modules.scheduler-image.outputs.deployment-image-name}
     tag: ${modules.scheduler-image.version}
+  postgresqlPassword: ${var.postgres-password}
+  postgresqlUsername: ${var.postgres-user}
 

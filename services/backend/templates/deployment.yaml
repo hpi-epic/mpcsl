@@ -46,6 +46,10 @@ spec:
               value: {{ .Values.config.dataSourceConnections | toJson | quote }}
             - name: PORT
               value: "{{ .Values.service.port }}"
+            - name: DB_USER
+              value: {{ .Values.postgresqlUsername }}
+            - name: DB_PASSWORD
+              value: {{ .Values.postgresqlPassword }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

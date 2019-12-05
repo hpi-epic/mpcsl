@@ -1,5 +1,5 @@
 kind: Module
-description: The voting UI container image
+description: The r executor container image
 name: r-executor-image
 dockerfile: r-executor.Dockerfile
 image: milanpro/mpci_executor

@@ -1,9 +1,9 @@
 kind: Module
-description: Helm chart for the database
+description: Helm chart for the postgresql database
 type: helm
 name: postgres
 chart: stable/postgresql
 releaseName: db
 values:
-  postgresqlPassword: postgres
-  postgresqlUsername: postgres
+  postgresqlPassword: ${var.postgres-password}
+  postgresqlUsername: ${var.postgres-user}

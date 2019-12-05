@@ -1,12 +1,12 @@
 
 kind: Module
-description: The voting UI container image
+description: The mpci backend container image
 name: backend-image
 dockerfile: backend.Dockerfile
 type: container
 ---
 kind: Module
-description: The voting UI container image
+description: The mpci scheduler container image
 name: scheduler-image
 dockerfile: scheduler.Dockerfile
 type: container

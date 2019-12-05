@@ -47,9 +47,9 @@ spec:
             - name: PORT
               value: "{{ .Values.service.port }}"
             - name: POSTGRES_USER
-              value: {{ .Values.postgresqlUsername }}
+              value: {{ .Values.postgresqlUsername | quote }}
             - name: POSTGRES_PASSWORD
-              value: {{ .Values.postgresqlPassword }}
+              value: {{ .Values.postgresqlPassword | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

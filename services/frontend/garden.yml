@@ -11,4 +11,3 @@ values:
   image:
     repository: ${modules.frontend-image.outputs.deployment-image-name}
     tag: ${modules.frontend-image.version}
-

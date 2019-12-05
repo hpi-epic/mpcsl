@@ -14,4 +14,3 @@ values:
     tag: ${modules.scheduler-image.version}
   postgresqlPassword: ${var.postgres-password}
   postgresqlUsername: ${var.postgres-user}
-

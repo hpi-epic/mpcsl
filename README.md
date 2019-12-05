@@ -6,7 +6,7 @@ This repository contains the backend of a Causal Inference pipeline build during
 - Set up causal inference experiments for different causal inference algorithms in R with different hyperparameter settings and dataset choice
 - Run the experiments as jobs directly in our backend
 - Manage all currently running jobs on the backend
-- Deliver the results and meta information of past experiments 
+- Deliver the results and meta information of past experiments
 - Show distributions and perform interventions on results
 - Annotate results with additional infromation
 - Extend the pipeline with new algorithms in their own execution environments (e.g. C++)
@@ -23,26 +23,37 @@ Additionally, the data model can be seen as ER diagram:
 
 ### Requirements
 
- -  [Garden](https://github.com/garden-io/garden)
- -  [Minikube](https://github.com/kubernetes/minikube)
+- [Garden](https://github.com/garden-io/garden)
+- [Minikube](https://github.com/kubernetes/minikube)
 
 As the user interface files are stored in a different [repository](https://github.com/hpi-epic/mpci-frontend),
 you have to clone the repo using:
+
 ```
 git clone --recurse-submodules git@github.com:hpi-epic/mpci.git
 ```
+
 After starting your local kubernetes cluster using `minikube start` all services can be deployed to minikube using `garden deploy` inside the repository.
 
+### TLDR
+
+1. `minikube start`
+2. `garden deploy` (When postgres times out just cancle and rerun)
+3. `garden run task seed-db`
+4. Goto `minikube ip` in browser
+
 ### Known Issues
+
 - Garden could hang on deploying postgres. Just restart the deployment ([issue](https://github.com/garden-io/garden/issues/1381))
 
 ### Setup Algorithms
+
 `garden run task db-setup-algorithms` loads the [algorithms](services/backend-image/conf/algorithms.json) into the database.
 
 ### Seeding Example Dataset/Experiment
+
 With `garden run task seed-db` an example dataset will be loaded into the database.
 The example dataset is generated from an EARTHQUAKE bayesian network on [this page](http://www.bnlearn.com/bnrepository/discrete-small.html#earthquake).
-
 
 ### Try it out
 
@@ -56,12 +67,12 @@ given default host and port settings.
 
 ## Contributors
 
-* [Alexander Kastius](https://github.com/Raandom)
-* [Victor Kuenstler](https://github.com/VictorKuenstler)
-* [Tobias Nack](https://github.com/Dencrash)
-* [Jonathan Schneider](https://github.com/jonaschn)
-* [Daniel Thevessen](https://github.com/danthe96)
-* [Theresa Zobel](https://github.com/threxx)
-* [Constantin Lange](https://github.com/constantin-lange)
-* [Marius Danner](https://github.com/MariusDanner)
-* [Milan Proell](https://github.com/milanpro)
+- [Alexander Kastius](https://github.com/Raandom)
+- [Victor Kuenstler](https://github.com/VictorKuenstler)
+- [Tobias Nack](https://github.com/Dencrash)
+- [Jonathan Schneider](https://github.com/jonaschn)
+- [Daniel Thevessen](https://github.com/danthe96)
+- [Theresa Zobel](https://github.com/threxx)
+- [Constantin Lange](https://github.com/constantin-lange)
+- [Marius Danner](https://github.com/MariusDanner)
+- [Milan Proell](https://github.com/milanpro)

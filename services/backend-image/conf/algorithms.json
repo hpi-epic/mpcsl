@@ -2,7 +2,7 @@
   {
     "name": "pcalg",
     "script_filename": "pcalg.r",
-    "docker_image":  "milanpro/mpci_executor",
+    "docker_image": "milanpro/mpci_executor",
     "description": "Standard pcalg R-implementation",
     "valid_parameters": {
       "alpha": {
@@ -14,11 +14,7 @@
       "independence_test": {
         "type": "enum",
         "required": true,
-        "values": [
-          "gaussCI",
-          "disCI",
-          "binCI"
-        ]
+        "values": ["gaussCI", "disCI", "binCI"]
       },
       "cores": {
         "type": "int",
@@ -36,11 +32,7 @@
       },
       "skeleton_method": {
         "type": "enum",
-        "values": [
-          "stable.fast",
-          "stable",
-          "original"
-        ]
+        "values": ["stable.fast", "stable", "original"]
       }
     },
     "docker_parameters": {}
@@ -48,7 +40,7 @@
   {
     "name": "parallelpc",
     "script_filename": "parallelpc.r",
-    "docker_image":  "milanpro/mpci_executor",
+    "docker_image": "milanpro/mpci_executor",
     "description": "ParallelPC R-implementation",
     "valid_parameters": {
       "alpha": {
@@ -60,11 +52,7 @@
       "independence_test": {
         "type": "enum",
         "required": true,
-        "values": [
-          "gaussCI",
-          "disCI",
-          "binCI"
-        ]
+        "values": ["gaussCI", "disCI", "binCI"]
       },
       "cores": {
         "type": "int",
@@ -87,7 +75,7 @@
   {
     "name": "bnlearn",
     "script_filename": "bnlearn.r",
-    "docker_image":  "milanpro/mpci_executor",
+    "docker_image": "milanpro/mpci_executor",
     "description": "Bnlearn pcalg.stable R-implementation",
     "valid_parameters": {
       "alpha": {

@@ -14,9 +14,9 @@ spec:
         job-name: FILL
     spec:
       containers:
-      - command: []
-        image: FILL
-        imagePullPolicy: Always
-        name: execution-container
-        resources: {}
+        - command: []
+          image: FILL
+          imagePullPolicy: Always
+          name: execution-container
+          resources: {}
       restartPolicy: Never

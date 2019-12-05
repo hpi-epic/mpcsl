@@ -16,19 +16,16 @@ values:
   postgresqlUsername: ${var.postgres-user}
 tasks:
   - name: migrate-db
-    args:
-      [flask, db, upgrade]
+    args: [flask, db, upgrade]
     dependencies:
       - postgres
   - name: db-setup-algorithms
-    args:
-      [python, setup_algorithms.py]
+    args: [python, setup_algorithms.py]
     dependencies:
       - postgres
       - migrate-db
   - name: seed-db
-    args:
-      [python, seed.py]
+    args: [python, seed.py]
     dependencies:
       - postgres
       - db-setup-algorithms

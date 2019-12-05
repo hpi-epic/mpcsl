@@ -13,8 +13,8 @@ MPCI_ENVIRONMENT = os.environ.get('MPCI_ENVIRONMENT')
 DB_TYPE = os.environ.get('DB_TYPE', 'postgresql')
 DB_HOST = os.environ.get('DB_HOST', 'localhost:5432')
 DB_DATABASE = os.environ.get('DB_DATABASE', 'postgres')
-DB_USER = os.environ.get('DB_USER')
-DB_PASSWORD = os.environ.get('DB_PASSWORD')
+DB_USER = os.environ.get('POSTGRES_USER')
+DB_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 
 # Remote databases for loading
 DATA_SOURCE_CONNECTIONS = json.loads(os.environ.get('DATA_SOURCE_CONNECTIONS', '{}'))

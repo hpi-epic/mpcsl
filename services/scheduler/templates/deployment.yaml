@@ -38,9 +38,9 @@ spec:
               value: "{{ .Values.service.port }}"
             - name: K8S_NAMESPACE
               value: {{ .Release.Namespace }}
-            - name: DB_USER
+            - name: POSTGRES_USERs
               value: {{ .Values.postgresqlUsername }}
-            - name: DB_PASSWORD
+            - name: POSTGRES_PASSWORD
               value: {{ .Values.postgresqlPassword }}
           ports:
             - name: aiohttp

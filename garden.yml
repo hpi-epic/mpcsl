@@ -6,5 +6,5 @@ environments:
       - name: local-kubernetes
     variables:
       frontend-image: prod
-      postgres-user: postgres
-      postgres-password: postgres
+      postgres-user: admin
+      postgres-password: 123456

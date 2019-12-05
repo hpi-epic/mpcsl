@@ -32,13 +32,10 @@ you have to clone the repo using:
 ```
 git clone --recurse-submodules git@github.com:hpi-epic/mpci.git
 ```
-
-After starting your local kubernetes cluster using `minikube start` all services can be deployed to minikube using `garden deploy` inside the repository.
-
-### TLDR
+### Getting Started
 
 1. `minikube start`
-2. `garden deploy` (When postgres times out just cancle and rerun)
+2. `garden deploy` (When postgres times out just cancel and rerun)
 3. `garden run task seed-db`
 4. Goto `minikube ip` in browser
 
@@ -55,15 +52,11 @@ After starting your local kubernetes cluster using `minikube start` all services
 With `garden run task seed-db` an example dataset will be loaded into the database.
 The example dataset is generated from an EARTHQUAKE bayesian network on [this page](http://www.bnlearn.com/bnrepository/discrete-small.html#earthquake).
 
-### Try it out
-
-After an successful deploy using `garden deploy` go to the minikube cluster ip in your preferred browser. To get the minikube cluster ip run `minikube ip`.
-
-## Endpoint Documentation
+<!-- ## Endpoint Documentation
 
 A Swagger documentation of our REST endpoints is available using
 http://localhost:5000/static/swagger/index.html
-given default host and port settings.
+given default host and port settings. -->
 
 ## Contributors
 

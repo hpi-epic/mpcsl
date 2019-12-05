@@ -1,4 +1,4 @@
-[submodule "src"]
+[submodule "frontend"]
 	path = services/frontend-image/src
 	url = git@github.com:hpi-epic/mpci-frontend.git
 	branch = master

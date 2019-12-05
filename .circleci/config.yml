@@ -22,12 +22,12 @@ jobs:
 
 
   test:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     docker:
       - image: circleci/python:3.7.5
       - image: postgres:12
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
     steps:
       - checkout
       - run: 

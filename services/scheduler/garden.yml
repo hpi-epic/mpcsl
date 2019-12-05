@@ -8,7 +8,6 @@ serviceResource:
 dependencies:
   - postgres
   - migrate-db
-  - r-executor-image
 values:
   image:
     repository: ${modules.scheduler-image.outputs.deployment-image-name}

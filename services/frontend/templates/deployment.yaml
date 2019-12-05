@@ -32,6 +32,8 @@ spec:
           env:
             - name: BACKEND_HOST
               value: {{ .Release.Namespace }}-backend
+            - name: PORT
+              value: {{ .Values.service.port }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -1,5 +1,5 @@
 kind: Module
-description: Helm chart for the mpci frontend
+description: Helm chart for the database
 type: helm
 name: postgres
 chart: stable/postgresql
@@ -7,4 +7,3 @@ releaseName: db
 values:
   postgresqlPassword: postgres
   postgresqlUsername: postgres
-

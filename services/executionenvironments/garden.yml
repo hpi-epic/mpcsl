@@ -1,0 +1,6 @@
+kind: Module
+description: The voting UI container image
+name: r-executor-image
+dockerfile: r-executor.Dockerfile
+image: milanpro/mpci_executor
+type: container

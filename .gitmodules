@@ -4,6 +4,6 @@
 	branch = master
   update = rebase
 [submodule "pcalg"]
-	path = executionenvironments/r/pcalg
+	path = services/executionenvironments/r/pcalg
 	url = git@github.com:ChristopherSchmidt89/pcalg.git
 	branch = master

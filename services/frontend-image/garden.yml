@@ -1,5 +1,5 @@
-
 kind: Module
 description: The voting UI container image
 name: frontend-image
+dockerfile: frontend-${var.frontend-image}.Dockerfile
 type: container

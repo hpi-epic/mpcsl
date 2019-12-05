@@ -10,3 +10,6 @@ description: The voting UI container image
 name: scheduler-image
 dockerfile: scheduler.Dockerfile
 type: container
+build:
+  dependencies:
+    - name: backend-image

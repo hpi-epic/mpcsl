@@ -6,9 +6,9 @@ COPY requirements.txt ./requirements.txt
 RUN pip install -r ./requirements.txt
 
 COPY conf ./conf
+COPY src ./src
 COPY test ./test
 COPY migrations ./migrations
-COPY src ./src
 COPY seed.py server.py migration.py setup_algorithms.py setup.cfg ./
 
 EXPOSE 5000

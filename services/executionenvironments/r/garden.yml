@@ -2,5 +2,5 @@ kind: Module
 description: The r executor container image
 name: r-executor-image
 dockerfile: r-executor.Dockerfile
-image: milanpro/mpci_executor
+image: milanpro/mpci_execution_r
 type: container

@@ -2,7 +2,7 @@
   {
     "name": "pcalg",
     "script_filename": "pcalg.r",
-    "docker_image": "milanpro/mpci_executor",
+    "docker_image": "milanpro/mpci_execution_r",
     "description": "Standard pcalg R-implementation",
     "valid_parameters": {
       "alpha": {
@@ -40,7 +40,7 @@
   {
     "name": "parallelpc",
     "script_filename": "parallelpc.r",
-    "docker_image": "milanpro/mpci_executor",
+    "docker_image": "milanpro/mpci_execution_r",
     "description": "ParallelPC R-implementation",
     "valid_parameters": {
       "alpha": {
@@ -75,7 +75,7 @@
   {
     "name": "bnlearn",
     "script_filename": "bnlearn.r",
-    "docker_image": "milanpro/mpci_executor",
+    "docker_image": "milanpro/mpci_execution_r",
     "description": "Bnlearn pcalg.stable R-implementation",
     "valid_parameters": {
       "alpha": {

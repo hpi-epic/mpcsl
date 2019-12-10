@@ -7,6 +7,10 @@ spec:
   rules:
   - http:
       paths:
+      - path: /swagger.json
+        backend:
+          serviceName:  {{ .Release.Namespace }}-backend
+          servicePort: http
       - path: /api
         backend:
           serviceName:  {{ .Release.Namespace }}-backend

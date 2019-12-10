@@ -52,11 +52,9 @@ git clone --recurse-submodules git@github.com:hpi-epic/mpci.git
 With `garden run task seed-db` an example dataset will be loaded into the database.
 The example dataset is generated from an EARTHQUAKE bayesian network on [this page](http://www.bnlearn.com/bnrepository/discrete-small.html#earthquake).
 
-<!-- ## Endpoint Documentation
+## Endpoint Documentation
 
-A Swagger documentation of our REST endpoints is available using
-http://localhost:5000/static/swagger/index.html
-given default host and port settings. -->
+A Swagger documentation of our REST endpoints is available using `/swagger/index.html` given default host and port settings.
 
 ## Contributors
 

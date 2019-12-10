@@ -87,7 +87,6 @@ class JobTest(BaseResourceTest):
             result = self.delete(self.url_for(JobResource, job_id=job.id))
 
         # Then
-        print(result)
         assert result['id'] == job.id
         assert result['status'] == JobStatus.cancelled
         m.assert_called_once_with(job.container_id)

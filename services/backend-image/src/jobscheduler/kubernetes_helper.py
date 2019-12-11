@@ -29,6 +29,16 @@ async def get_pod_log(job_id):
         logging.warning(f'No logs found for job {job_id}')
 
 
+async def get_node_list():
+    try:
+        nodes: client.V1NodeList = core_api_instance.list_node()
+        names = [node.metadata.name for node in nodes.items]
+        return names
+    except ApiException as e:
+        logging.error(e)
+        return []
+
+
 async def delete_job_and_pods(job_name):
     try:
         api_instance.delete_namespaced_job(job_name, namespace=K8S_NAMESPACE, propagation_policy='Background')

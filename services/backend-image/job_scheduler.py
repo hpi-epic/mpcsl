@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, API_HOST, PORT
 from src.models import Job, JobStatus, Experiment
-from src.jobscheduler.kubernetes_helper import create_job, kube_cleanup_finished_jobs
+from src.jobscheduler.kubernetes_helper import create_job, kube_cleanup_finished_jobs, get_node_list
 from src.jobscheduler.kubernetes_helper import check_running_job, get_pod_log, delete_job_and_pods
 
 
@@ -33,6 +33,12 @@ async def delete_job(request):
     job_name = request.match_info['job_name']
     await delete_job_and_pods(job_name)
     return web.HTTPSuccessful()
+
+
+@routes.get('/api/nodes')
+async def get_nodes(request):
+    nodes = await get_node_list()
+    return web.json_response(nodes)
 
 
 @routes.get('/')

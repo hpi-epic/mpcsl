@@ -12,6 +12,7 @@ from .jobs import JobListResource, JobResource, JobLogsResource, JobResultResour
 from .nodes import NodeResource, ResultNodeListResource, NodeContextResource, NodeConfounderResource
 from .results import ResultListResource, ResultResource, GraphExportResource
 from .sepsets import SepsetResource, ResultSepsetListResource
+from .kubernetes import K8SNodeListResource
 
 __all__ = [
     'AlgorithmListResource',
@@ -44,5 +45,6 @@ __all__ = [
     'MarginalDistributionResource',
     'ConditionalDistributionResource',
     'InterventionalDistributionResource',
-    'ExecutorResource'
+    'ExecutorResource',
+    'K8SNodeListResource'
 ]

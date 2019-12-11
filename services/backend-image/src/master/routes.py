@@ -46,4 +46,4 @@ def set_up_routes(api):
     api.add_resource(InterventionalDistributionResource, base_url('/intervention'))
     api.add_resource(EdgeResource, base_url('/edge/<int:edge_id>'))
     api.add_resource(SepsetResource, base_url('/sepset/<int:sepset_id>'))
-    api.add_resource(K8SNodeListResource, base_url('/nodes'))
+    api.add_resource(K8SNodeListResource, base_url('/k8s/nodes'))

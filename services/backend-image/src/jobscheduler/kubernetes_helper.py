@@ -32,7 +32,7 @@ async def get_pod_log(job_id):
 async def get_node_list():
     try:
         nodes: client.V1NodeList = core_api_instance.list_node()
-        names = [node.metadata.name for node in nodes.items]
+        names = [node.metadata.labels["kubernetes.io/hostname"] for node in nodes.items]
         return names
     except ApiException as e:
         logging.error(e)
@@ -71,6 +71,11 @@ async def create_job(job: Job, experiment: Experiment):
         default_job["spec"]["template"]["metadata"]["labels"]["job-name"] = job_name
         default_job["spec"]["template"]["spec"]["containers"][0]["command"] = command
         default_job["spec"]["template"]["spec"]["containers"][0]["image"] = algorithm.docker_image
+        if job.node_hostname is not None:
+            nodeSelector = {
+                "kubernetes.io/hostname": job.node_hostname
+            }
+            default_job["spec"]["template"]["spec"]["nodeSelector"] = nodeSelector
         try:
             logging.info(f'Starting Job with ID {job.id}')
             result = api_instance.create_namespaced_job(namespace=K8S_NAMESPACE, body=default_job, pretty=True)

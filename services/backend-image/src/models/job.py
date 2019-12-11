@@ -25,6 +25,7 @@ class Job(BaseModel):
     experiment = db.relationship('Experiment', backref=db.backref('jobs', cascade="all, delete-orphan"))
     start_time = db.Column(db.DateTime, nullable=False)
     container_id = db.Column(db.String)
+    node_hostname = db.Column(db.String)
     status = db.Column(db.Enum(JobStatus), nullable=False)
     log = db.Column(db.String)
 

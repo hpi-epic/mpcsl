@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from flask import request
 from flask_restful import Resource, abort
 from flask_restful_swagger_2 import swagger
 
@@ -43,9 +44,12 @@ class ExecutorResource(Resource):
 
         if not check_dataset_hash(experiment.dataset):
             abort(409, message='The underlying data has been modified')
-
+        body = request.json
+        node_hostname = None
+        if body is not None:
+            node_hostname = body["node"]
         new_job = Job(experiment=experiment, start_time=datetime.now(),
-                      status=JobStatus.waiting)
+                      status=JobStatus.waiting, node_hostname=node_hostname)
         db.session.add(new_job)
         db.session.commit()
 

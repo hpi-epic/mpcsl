@@ -8,3 +8,14 @@ environments:
       frontend-image: prod
       postgres-user: admin
       postgres-password: 123456
+  - name: delos
+    providers:
+      - name: kubernetes
+        context: delos
+        deploymentRegistry:
+          hostname: "docker.io"
+          namespace: "milanpro"
+    variables:
+      frontend-image: prod
+      postgres-user: admin
+      postgres-password: admin

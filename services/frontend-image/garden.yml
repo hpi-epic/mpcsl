@@ -2,10 +2,11 @@ kind: Module
 description: The mpci frontend container image
 name: frontend-image
 dockerfile: frontend-${var.frontend-image}.Dockerfile
+image: mpci_frontend
 type: container
 build:
   dependencies:
     - name: frontend-builder
       copy:
         - source: build
-          target: src/build
+          target: src

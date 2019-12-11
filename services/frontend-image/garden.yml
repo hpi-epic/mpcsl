@@ -3,3 +3,9 @@ description: The mpci frontend container image
 name: frontend-image
 dockerfile: frontend-${var.frontend-image}.Dockerfile
 type: container
+build:
+  dependencies:
+    - name: frontend-builder
+      copy:
+        - source: build
+          target: src/build

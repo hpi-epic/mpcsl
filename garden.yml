@@ -10,6 +10,8 @@ environments:
       frontend-image: prod
       postgres-user: admin
       postgres-password: 123456
+      node-host: ""
+      postgres-storage-class: ""
   - name: delos
     providers:
       - name: kubernetes
@@ -17,7 +19,25 @@ environments:
         deploymentRegistry:
           hostname: docker.io
           namespace: milanpro
+    production: true
     variables:
       frontend-image: prod
       postgres-user: admin
       postgres-password: admin
+      node-host: vm-mpws2019.eaalab.hpi.uni-potsdam.de
+      postgres-storage-class: nfs-client
+  - name: porsche
+    providers:
+      - name: kubernetes
+        context: delos
+        namespace: porsche-mpci
+        deploymentRegistry:
+          hostname: docker.io
+          namespace: milanpro
+    production: true
+    variables:
+      frontend-image: prod
+      postgres-user: admin
+      postgres-password: admin
+      node-host: vm-mpws2018-proj.eaalab.hpi.uni-potsdam.de
+      postgres-storage-class: nfs-client

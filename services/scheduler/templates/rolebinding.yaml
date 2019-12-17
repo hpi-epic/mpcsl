@@ -15,11 +15,11 @@ items:
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
-    name: {{ .Release.Name }}-scheduler-clusterbinding
+    name: {{ .Release.Namespace }}-scheduler-clusterbinding
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: {{ .Release.Name }}-scheduler-clusterrole
+    name: {{ .Release.Namespace }}-scheduler-clusterrole
   subjects:
   - kind: ServiceAccount
     name: {{ include "scheduler.serviceAccountName" . }}

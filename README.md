@@ -45,7 +45,7 @@ git clone --recurse-submodules git@github.com:hpi-epic/mpci.git
 
 ### Setup Algorithms
 
-`garden run task db-setup-algorithms` loads the [algorithms](services/backend-image/conf/algorithms.json) into the database.
+`garden run task db-setup-algorithms` loads the [algorithms](services/python-images/conf/algorithms.json) into the database.
 
 ### Seeding Example Dataset/Experiment
 

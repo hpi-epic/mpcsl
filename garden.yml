@@ -1,5 +1,7 @@
 kind: Project
 name: mpci
+variables:
+  execution-image-namespace: milanpro
 environments:
   - name: local
     providers:
@@ -13,8 +15,8 @@ environments:
       - name: kubernetes
         context: delos
         deploymentRegistry:
-          hostname: "docker.io"
-          namespace: "milanpro"
+          hostname: docker.io
+          namespace: milanpro
     variables:
       frontend-image: prod
       postgres-user: admin

@@ -21,7 +21,7 @@ from src.models.job import JobStatus
 
 
 def kill_container(container):
-        requests.post(f'http://{SCHEDULER_HOST}/api/delete/{container}')
+    requests.post(f'http://{SCHEDULER_HOST}/api/delete/{container}')
 
 
 class JobResource(Resource):

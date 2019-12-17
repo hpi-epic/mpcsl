@@ -3,7 +3,7 @@ import os
 import yaml
 from kubernetes import config, client
 from kubernetes.client.rest import ApiException
-from src.master.config import API_HOST, LOAD_SEPARATION_SET, RELEASE_NAME, K8S_NAMESPACE
+from src.master.config import API_HOST, LOAD_SEPARATION_SET, RELEASE_NAME, K8S_NAMESPACE, EXECUTION_IMAGE_NAMESPACE
 from src.models import Job, Experiment, Algorithm
 
 if os.environ.get("IN_CLUSTER") == "false":
@@ -20,6 +20,8 @@ async def get_pod_log(job_id):
     try:
         pods: client.V1PodList = core_api_instance.list_namespaced_pod(namespace=K8S_NAMESPACE,
                                                                        label_selector=f'job-name=={JOB_PREFIX}{job_id}')
+        if len(pods.items) == 0:
+            return " -- EMPTY LOGS -- "
         pod: client.V1Pod = pods.items[0]
         if pod is None:
             return None
@@ -27,6 +29,7 @@ async def get_pod_log(job_id):
         return core_api_instance.read_namespaced_pod_log(name=pod_name, namespace=K8S_NAMESPACE)
     except ApiException:
         logging.warning(f'No logs found for job {job_id}')
+        return " -- EMPTY LOGS -- "
 
 
 async def get_node_list():
@@ -70,7 +73,8 @@ async def create_job(job: Job, experiment: Experiment):
         default_job["metadata"]["name"] = job_name
         default_job["spec"]["template"]["metadata"]["labels"]["job-name"] = job_name
         default_job["spec"]["template"]["spec"]["containers"][0]["command"] = command
-        default_job["spec"]["template"]["spec"]["containers"][0]["image"] = algorithm.docker_image
+        default_job["spec"]["template"]["spec"]["containers"][0]["image"] = \
+            f'{EXECUTION_IMAGE_NAMESPACE}/{algorithm.docker_image}'
         if job.node_hostname is not None:
             nodeSelector = {
                 "kubernetes.io/hostname": job.node_hostname
@@ -85,15 +89,19 @@ async def create_job(job: Job, experiment: Experiment):
 
 
 async def check_running_job(job: Job):
-    result = api_instance.read_namespaced_job_status(job.container_id, namespace=K8S_NAMESPACE)
-    if result.status.failed is not None and result.status.failed > 0:
-        deleteoptions = client.V1DeleteOptions()
-        api_instance.delete_namespaced_job(job.container_id,
-                                           namespace=K8S_NAMESPACE,
-                                           body=deleteoptions,
-                                           grace_period_seconds=0,
-                                           propagation_policy='Background')
-        return True
+    try:
+        result = api_instance.read_namespaced_job_status(job.container_id, namespace=K8S_NAMESPACE)
+        if result.status.failed is not None and result.status.failed > 0:
+            deleteoptions = client.V1DeleteOptions()
+            api_instance.delete_namespaced_job(job.container_id,
+                                               namespace=K8S_NAMESPACE,
+                                               body=deleteoptions,
+                                               grace_period_seconds=0,
+                                               propagation_policy='Background')
+            return True
+    except ApiException as e:
+        if e.status == 404:
+            return True
     return False
 
 

@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: milanpro/mpci_scheduler
+  repository: mpci_scheduler
   tag: latest
   pullPolicy: IfNotPresent
 

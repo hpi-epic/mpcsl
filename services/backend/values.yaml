@@ -11,7 +11,7 @@ config:
 seed: false
 
 image:
-  repository: milanpro/mpci_backend
+  repository: mpci_backend
   tag: latest
   pullPolicy: IfNotPresent
 

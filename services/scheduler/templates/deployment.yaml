@@ -42,6 +42,8 @@ spec:
               value: {{ .Values.postgresqlUsername | quote }}
             - name: POSTGRES_PASSWORD
               value: {{ .Values.postgresqlPassword | quote }}
+            - name: EXECUTION_IMAGE_NAMESPACE
+              value: {{ .Values.executionImageNamespace | quote }}
           ports:
             - name: aiohttp
               containerPort: {{ .Values.service.port }}

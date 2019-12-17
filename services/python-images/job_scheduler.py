@@ -79,8 +79,10 @@ async def kill_errored_jobs(session):
         try:
             crashed = await check_running_job(job)
             if crashed:
+                job: Job
                 job.status = JobStatus.error
                 asyncio.create_task(post_job_change(job.id, job.status))
+                job.log = " -- EMPTY LOGS -- "  # TODO: Better error logs
                 session.commit()
         except Exception as e:
             logging.error(str(e))

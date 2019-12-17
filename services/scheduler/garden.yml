@@ -1,0 +1,17 @@
+kind: Module
+description: Helm chart for the mpci scheduler
+type: helm
+name: scheduler
+serviceResource:
+  kind: Deployment
+  containerModule: scheduler-image
+dependencies:
+  - postgres
+  - migrate-db
+values:
+  image:
+    repository: ${modules.scheduler-image.outputs.deployment-image-name}
+    tag: ${modules.scheduler-image.version}
+  postgresqlPassword: ${var.postgres-password}
+  postgresqlUsername: ${var.postgres-user}
+  executionImageNamespace: ${var.execution-image-namespace}

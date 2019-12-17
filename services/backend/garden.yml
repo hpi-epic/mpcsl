@@ -1,0 +1,31 @@
+kind: Module
+description: Helm chart for the mpci backend
+type: helm
+name: backend
+serviceResource:
+  kind: Deployment
+  containerModule: backend-image
+dependencies:
+  - postgres
+  - migrate-db
+values:
+  image:
+    repository: ${modules.backend-image.outputs.deployment-image-name}
+    tag: ${modules.backend-image.version}
+  postgresqlPassword: ${var.postgres-password}
+  postgresqlUsername: ${var.postgres-user}
+tasks:
+  - name: migrate-db
+    args: [flask, db, upgrade]
+    dependencies:
+      - postgres
+  - name: db-setup-algorithms
+    args: [python, setup_algorithms.py]
+    dependencies:
+      - postgres
+      - migrate-db
+  - name: seed-db
+    args: [python, seed.py]
+    dependencies:
+      - postgres
+      - db-setup-algorithms

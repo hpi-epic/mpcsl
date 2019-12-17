@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "scheduler.fullname" . }}
+  labels:
+    {{- include "scheduler.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "scheduler.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "scheduler.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "scheduler.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: API_HOST
+              value: {{ .Release.Namespace }}-backend
+            - name: DB_HOST
+              value: db-postgresql
+            - name: RELEASE_NAME
+              value: {{ .Release.Name }}
+            - name: PORT
+              value: "{{ .Values.service.port }}"
+            - name: K8S_NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: POSTGRES_USER
+              value: {{ .Values.postgresqlUsername | quote }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.postgresqlPassword | quote }}
+            - name: EXECUTION_IMAGE_NAMESPACE
+              value: {{ .Values.executionImageNamespace | quote }}
+          ports:
+            - name: aiohttp
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: aiohttp
+          readinessProbe:
+            httpGet:
+              path: /
+              port: aiohttp
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

@@ -1,0 +1,16 @@
+kind: Module
+description: The mpci backend container image
+name: backend-image
+dockerfile: backend.Dockerfile
+image: mpci_backend
+type: container
+---
+kind: Module
+description: The mpci scheduler container image
+name: scheduler-image
+dockerfile: scheduler.Dockerfile
+image: mpci_scheduler
+type: container
+build:
+  dependencies:
+    - name: backend-image

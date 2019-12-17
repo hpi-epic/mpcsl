@@ -1,4 +1,4 @@
-# Master Project: Causal Inference Pipeline [![Docs](https://img.shields.io/badge/docs-wiki-blue.svg)](https://github.com/hpi-epic/mpci/wiki) [![Build Status](https://travis-ci.com/hpi-epic/mpci.svg?token=SsowzqaXUAS2f1Cszp23&branch=master)](https://travis-ci.com/hpi-epic/mpci) [![codecov](https://codecov.io/gh/hpi-epic/mpci/branch/master/graph/badge.svg?token=64S6naWbgu)](https://codecov.io/gh/hpi-epic/mpci)
+# Master Project: Causal Inference Pipeline [![Docs](https://img.shields.io/badge/docs-wiki-blue.svg)](https://github.com/hpi-epic/mpci/wiki) [![CircleCI](https://circleci.com/gh/hpi-epic/mpci/tree/master.svg?style=svg&circle-token=a927c6324dcaf0d443e633300a3aa93d240c4193)](https://circleci.com/gh/hpi-epic/mpci/tree/master) [![codecov](https://codecov.io/gh/hpi-epic/mpci/branch/master/graph/badge.svg?token=64S6naWbgu)](https://codecov.io/gh/hpi-epic/mpci)
 
 This repository contains the backend of a Causal Inference pipeline build during the Master Project 2018/19 at the HPI chair for Enterprise Platform and Integration Concepts. The pipeline currently includes the following features, all of which are accessible via a REST API:
 
@@ -6,83 +6,64 @@ This repository contains the backend of a Causal Inference pipeline build during
 - Set up causal inference experiments for different causal inference algorithms in R with different hyperparameter settings and dataset choice
 - Run the experiments as jobs directly in our backend
 - Manage all currently running jobs on the backend
-- Deliver the results and meta information of past experiments 
+- Deliver the results and meta information of past experiments
 - Show distributions and perform interventions on results
 - Annotate results with additional infromation
 - Extend the pipeline with new algorithms in their own execution environments (e.g. C++)
 
-The following image shows the holistic architecture as a FMC diagram:
+<!-- The following image shows the holistic architecture as a FMC diagram:
 
 <img src="https://user-images.githubusercontent.com/1437509/55085207-92d90480-50a6-11e9-8f7e-e10fced882db.png" width="600" title="FMC Architecture Diagram">
 
 Additionally, the data model can be seen as ER diagram:
 
-<img src="https://user-images.githubusercontent.com/2228622/55068955-43351180-5083-11e9-9cc3-1f7d5ffcd83b.png" width="600" title="ER Datamodel Diagram">
+<img src="https://user-images.githubusercontent.com/2228622/55068955-43351180-5083-11e9-9cc3-1f7d5ffcd83b.png" width="600" title="ER Datamodel Diagram"> -->
 
 ## Setup
 
-### Docker
+### Requirements
 
-The complete setup is done using [Docker](https://docs.docker.com/install/) that means that you will require docker to be running for a local execution.
+- [Garden](https://github.com/garden-io/garden)
+- [Minikube](https://github.com/kubernetes/minikube)
+
 As the user interface files are stored in a different [repository](https://github.com/hpi-epic/mpci-frontend),
 you have to clone the repo using:
 
 ```
 git clone --recurse-submodules git@github.com:hpi-epic/mpci.git
 ```
+### Getting Started
 
-### [Scripts to rule them all](https://github.blog/2015-06-30-scripts-to-rule-them-all/)
+1. `minikube start`
+2. `garden deploy` (When postgres times out just cancel and rerun)
+3. `garden run task seed-db`
+4. Goto `minikube ip` in browser
 
-To make your life easier to get from a git clone to an up-and-running project we prepared some scripts for you.
-Here’s a quick mapping of what our scripts are named and what they’re responsible for doing:
+### Known Issues
 
-- `bash scripts/bootstrap.sh` – installs/updates all dependencies
-- `bash scripts/setup.sh` – sets up a project to be used for the first time
-- `bash scripts/update.sh` – updates a project to run at its current version
-- `bash scripts/server.sh` – starts app
-- `bash scripts/demo.sh` – starts app with example dataset and experiment pre-configured
-- `bash scripts/test.sh` – runs tests
-- `bash scripts/cibuild.sh` – invoked by continuous integration servers to run tests
-- `bash scripts/console.sh` – opens a console
+- Garden could hang on deploying postgres. Just restart the deployment ([issue](https://github.com/garden-io/garden/issues/1381))
 
-The example dataset for `demo.sh` is generated from an EARTHQUAKE bayesian network on [this page](http://www.bnlearn.com/bnrepository/discrete-small.html#earthquake).
-Some of the scripts accept parameters that are passed through the underlying docker commands.
-For example, you can start a server in detached mode with `bash scripts/server.sh --detach`
-or run a specific test with `bash scripts/test.sh test/unit/master/resources/test_job.py`.
+### Setup Algorithms
 
-We provide three different ways how to run the Causal Inference Pipeline:
+`garden run task db-setup-algorithms` loads the [algorithms](services/python-images/conf/algorithms.json) into the database.
 
-1. `backend` – starts just the backend with a postgres and a database ui - uses `docker-compose.yml`
+### Seeding Example Dataset/Experiment
 
-1. `staging` – deploys the backend with an additional nginx server, that is used
-to serve static files and provide the backend functionality by connecting to uWSGI.
-The transpilation of the UI files will be done during build. - uses `docker-compose-staging.yml`
-
-1. `production` – same setup as `staging` but without database ui. Make sure to override DB credentials - uses `docker-compose-prod.yml`
-
-Change the environment variable `MPCI_ENVIRONMENT` in `conf/backend.env` accordingly to choose the desired setup.
-The default is `backend`.
-
-A database user interface is available using http://localhost:8081 given a `backend` or `staging` setup.
-
-### Try it out
-
-Just run `bash scripts/demo.sh` and open http://localhost:5000 in your browser.
-Make sure to change the `MPCI_ENVIRONMENT` in your `conf/backend.env` to `staging` to also deploy the user interface.
-
+With `garden run task seed-db` an example dataset will be loaded into the database.
+The example dataset is generated from an EARTHQUAKE bayesian network on [this page](http://www.bnlearn.com/bnrepository/discrete-small.html#earthquake).
 
 ## Endpoint Documentation
 
-A Swagger documentation of our REST endpoints is available using
-http://localhost:5000/static/swagger/index.html
-given default host and port settings.
+A Swagger documentation of our REST endpoints is available using `/swagger/index.html` given default host and port settings.
 
 ## Contributors
 
-* [Alexander Kastius](https://github.com/Raandom)
-* [Victor Kuenstler](https://github.com/VictorKuenstler)
-* [Tobias Nack](https://github.com/Dencrash)
-* [Jonathan Schneider](https://github.com/jonaschn)
-* [Daniel Thevessen](https://github.com/danthe96)
-* [Theresa Zobel](https://github.com/threxx)
-* [Constantin Lange](https://github.com/constantin-lange)
+- [Alexander Kastius](https://github.com/Raandom)
+- [Victor Kuenstler](https://github.com/VictorKuenstler)
+- [Tobias Nack](https://github.com/Dencrash)
+- [Jonathan Schneider](https://github.com/jonaschn)
+- [Daniel Thevessen](https://github.com/danthe96)
+- [Theresa Zobel](https://github.com/threxx)
+- [Constantin Lange](https://github.com/constantin-lange)
+- [Marius Danner](https://github.com/MariusDanner)
+- [Milan Proell](https://github.com/milanpro)

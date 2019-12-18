@@ -11,8 +11,8 @@ from src.db import db
 from src.master.helpers.database import add_dataset_nodes
 from src.models import Dataset, Node
 from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource, \
-    DatasetAvailableSourcesResource
-from test.factories import DatasetFactory
+    DatasetAvailableSourcesResource, DatasetExperimentResource
+from test.factories import DatasetFactory, ExperimentFactory
 from .base import BaseResourceTest
 
 
@@ -129,3 +129,10 @@ class DatasetTest(BaseResourceTest):
 
         # Then
         assert result['data_sources'] == ['HANA', 'postgres']
+
+    def test_dataset_experiment(self):
+        ds = DatasetFactory()
+        ex = ExperimentFactory()
+        ex.dataset = ds
+        result = self.get(self.url_for(DatasetExperimentResource, dataset_id=ds.id))
+        assert(result[0]['id'] == ex.id)

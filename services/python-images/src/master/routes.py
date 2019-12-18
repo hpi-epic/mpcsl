@@ -7,7 +7,7 @@ from .resources import DatasetLoadResource, DatasetListResource, \
     NodeResource, EdgeResource, SepsetResource, NodeContextResource, MarginalDistributionResource, \
     DatasetAvailableSourcesResource, NodeConfounderResource, ConditionalDistributionResource, \
     ExecutorResource, InterventionalDistributionResource, EdgeInformationResource, EdgeInformationListResource, \
-    ResultImportantEdgeListResource, K8SNodeListResource
+    ResultImportantEdgeListResource, K8SNodeListResource, DatasetExperimentResource
 
 
 def base_url(url):
@@ -19,6 +19,7 @@ def set_up_routes(api):
     api.add_resource(AlgorithmResource, base_url('/algorithm/<int:algorithm_id>'))
     api.add_resource(DatasetLoadResource, base_url('/dataset/<int:dataset_id>/load'))
     api.add_resource(DatasetResource, base_url('/dataset/<int:dataset_id>'))
+    api.add_resource(DatasetExperimentResource, base_url('/dataset/<int:dataset_id>/experiments'))
     api.add_resource(DatasetListResource, base_url('/datasets'))
     api.add_resource(DatasetAvailableSourcesResource, base_url('/datasources'))
     api.add_resource(ExperimentResource, base_url('/experiment/<int:experiment_id>'))

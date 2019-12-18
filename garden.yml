@@ -10,7 +10,7 @@ environments:
       frontend-image: prod
       postgres-user: admin
       postgres-password: 123456
-      node-host: ""
+      node-hosts: ""
       postgres-storage-class: ""
   - name: delos
     providers:
@@ -24,7 +24,7 @@ environments:
       frontend-image: prod
       postgres-user: admin
       postgres-password: admin
-      node-host: vm-mpws2019.eaalab.hpi.uni-potsdam.de
+      node-hosts: vm-mpws2019.eaalab.hpi.uni-potsdam.de
       postgres-storage-class: nfs-client
   - name: porsche
     providers:
@@ -39,5 +39,5 @@ environments:
       frontend-image: prod
       postgres-user: admin
       postgres-password: admin
-      node-host: vm-mpws2018-proj.eaalab.hpi.uni-potsdam.de
+      node-hosts: vm-mpws2018-proj.eaalab.hpi.uni-potsdam.de, mpci.epic-hpi.de
       postgres-storage-class: nfs-client

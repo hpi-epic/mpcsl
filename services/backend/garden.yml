@@ -14,7 +14,8 @@ values:
     tag: ${modules.backend-image.version}
   postgresqlPassword: ${var.postgres-password}
   postgresqlUsername: ${var.postgres-user}
-  nodeHost: ${var.node-host}
+  ingress:
+    hosts: ${var.node-hosts}
 tasks:
   - name: migrate-db
     args: [flask, db, upgrade]

@@ -4,9 +4,13 @@ name: frontend-image
 dockerfile: frontend-${var.frontend-image}.Dockerfile
 image: mpci_frontend
 type: container
+include:
+  - frontend-${var.frontend-image}.Dockerfile
+  - nginx.conf
+  - swagger/**/*
 build:
   dependencies:
     - name: frontend-builder
       copy:
         - source: build
-          target: src
+          target: .

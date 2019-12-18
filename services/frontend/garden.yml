@@ -11,4 +11,5 @@ values:
   image:
     repository: ${modules.frontend-image.outputs.deployment-image-name}
     tag: ${modules.frontend-image.version}
-  nodeHost: ${var.node-host}
+  ingress:
+    hosts: ${var.node-hosts}

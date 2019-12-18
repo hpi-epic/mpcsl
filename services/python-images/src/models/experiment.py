@@ -11,8 +11,8 @@ INDEPENDENCE_TESTS = ["gaussCI", "disCI", "binCI"]
 
 
 class Experiment(BaseModel):
-    dataset_id = db.Column(db.Integer, db.ForeignKey('dataset.id'), nullable=False)
-    dataset = db.relationship('Dataset')
+    dataset_id = db.Column(db.Integer, db.ForeignKey('dataset.id'),  nullable=False)
+    dataset = db.relationship('Dataset', backref=db.backref('experiments', cascade="all, delete-orphan"))
 
     name = db.Column(db.String)
     algorithm_id = db.Column(db.Integer, db.ForeignKey('algorithm.id'))

@@ -14,7 +14,7 @@ from src.master.db import data_source_connections
 from src.master.helpers.database import add_dataset_nodes
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
-from src.models import Dataset, DatasetSchema
+from src.models import Dataset, DatasetSchema, ExperimentSchema
 from src.models.swagger import SwaggerMixin
 
 
@@ -160,6 +160,37 @@ class DatasetLoadResource(Resource):
         resp = Response(f.getvalue(), mimetype='text/csv')
         resp.headers.add("X-Content-Length", f.tell())
         return resp
+
+
+class DatasetExperimentResource(Resource):
+    @swagger.doc({
+        'description': 'Returns all experiments belonging to this dataset',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'Dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': {
+            '200': {
+                'description': 'Success',
+            },
+            '404': {
+                'description': 'Dataset not found'
+            },
+            '500': {
+                'description': 'Internal server error (likely due to broken query)'
+            }
+        },
+        'tags': ['Executor']
+    })
+    def get(self, dataset_id):
+        ds = Dataset.query.get_or_404(dataset_id)
+        print(ds)
+        return marshal(ExperimentSchema, ds.experiments, many=True)
 
 
 class DataSourceListSchema(Schema, SwaggerMixin):

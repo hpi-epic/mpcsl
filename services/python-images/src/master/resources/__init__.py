@@ -1,6 +1,6 @@
 from .algorithms import AlgorithmResource, AlgorithmListResource
 from .datasets import DatasetLoadResource, DatasetListResource, DatasetResource, \
-    DatasetAvailableSourcesResource
+    DatasetAvailableSourcesResource, DatasetExperimentResource
 from .distributions import MarginalDistributionResource, ConditionalDistributionResource, \
     InterventionalDistributionResource
 from .edge_information import EdgeInformationResource, EdgeInformationListResource
@@ -17,6 +17,7 @@ from .kubernetes import K8SNodeListResource
 __all__ = [
     'AlgorithmListResource',
     'AlgorithmResource',
+    'DatasetExperimentResource',
     'DatasetLoadResource',
     'DatasetListResource',
     'DatasetResource',

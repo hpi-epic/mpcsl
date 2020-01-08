@@ -9,3 +9,6 @@ values:
   postgresqlUsername: ${var.postgres-user}
   persistence:
     storageClass: ${var.postgres-storage-class}
+  master:
+    nodeSelector:
+      "kubernetes.io/hostname": ${var.node-name}

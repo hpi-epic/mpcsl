@@ -16,6 +16,7 @@ values:
   postgresqlUsername: ${var.postgres-user}
   ingress:
     hosts: ${var.node-hosts}
+  nodeName: ${var.node-name}
 tasks:
   - name: migrate-db
     args: [flask, db, upgrade]

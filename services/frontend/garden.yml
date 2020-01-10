@@ -13,3 +13,4 @@ values:
     tag: ${modules.frontend-image.version}
   ingress:
     hosts: ${var.node-hosts}
+  nodeName: ${var.node-name}

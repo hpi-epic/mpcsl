@@ -7,3 +7,4 @@ dependencies:
 values:
   postgresqlPassword: ${var.postgres-password}
   postgresqlUsername: ${var.postgres-user}
+  nodeName: ${var.node-name}

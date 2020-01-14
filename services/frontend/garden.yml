@@ -1,0 +1,16 @@
+kind: Module
+description: Helm chart for the mpci frontend
+type: helm
+name: frontend
+dependencies:
+  - backend
+serviceResource:
+  kind: Deployment
+  containerModule: frontend-image
+values:
+  image:
+    repository: ${modules.frontend-image.outputs.deployment-image-name}
+    tag: ${modules.frontend-image.version}
+  ingress:
+    hosts: ${var.node-hosts}
+  nodeName: ${var.node-name}

@@ -1,0 +1,14 @@
+kind: Module
+description: Helm chart for the postgresql database
+type: helm
+name: postgres
+chart: stable/postgresql
+releaseName: db
+values:
+  postgresqlPassword: ${var.postgres-password}
+  postgresqlUsername: ${var.postgres-user}
+  persistence:
+    storageClass: ${var.postgres-storage-class}
+  master:
+    nodeSelector:
+      "kubernetes.io/hostname": ${var.node-name}

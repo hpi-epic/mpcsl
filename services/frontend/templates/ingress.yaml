@@ -1,0 +1,30 @@
+{{- $fullName := include "frontend.fullname" . -}}
+{{- $hosts := splitList "," .Values.ingress.hosts -}}
+{{- $namespace := .Release.Namespace -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  {{- if eq (len $hosts) 0 -}}
+    - http:
+        paths:
+        - path: /
+          backend:
+            serviceName: {{ $namespace }}-frontend
+            servicePort: http
+  {{- else -}}
+  {{- range $i, $val := $hosts }}
+    - host: {{ $val | trim | quote }}
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: {{ $namespace }}-frontend
+            servicePort: http
+  {{- end -}}
+  {{- end -}}

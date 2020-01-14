@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    job-name: FILL
+  name: FILL
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        job-name: FILL
+    spec:
+      containers:
+        - command: []
+          image: FILL
+          imagePullPolicy: Always
+          name: execution-container
+          resources: {}
+      restartPolicy: Never

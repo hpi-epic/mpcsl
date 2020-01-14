@@ -1,0 +1,23 @@
+{{ if .Values.seed }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "backend.fullname" . }}-seed
+spec:
+  template:
+    spec:
+      #ttlSecondsAfterFinished: 30
+      containers:
+      - name: {{ .Chart.Name }}-seed
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        command: ["python", "seed.py"]
+        env:
+            - name: PYTHONPATH
+              value: "$PYTHONPATH:/app/"
+            - name: API_HOST
+              value: {{ .Chart.Name }}:5000
+            - name: DB_HOST
+              value: {{ .Release.Name }}-postgresql
+      restartPolicy: OnFailure
+  backoffLimit: 6
+  {{ end }}

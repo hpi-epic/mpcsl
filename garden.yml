@@ -1,0 +1,46 @@
+kind: Project
+name: mpci
+variables:
+  execution-image-namespace: milanpro
+environments:
+  - name: local
+    providers:
+      - name: local-kubernetes
+    variables:
+      frontend-image: prod
+      postgres-user: admin
+      postgres-password: 123456
+      node-hosts: ""
+      postgres-storage-class: ""
+      node-name: minikube
+  - name: delos
+    providers:
+      - name: kubernetes
+        context: delos
+        deploymentRegistry:
+          hostname: docker.io
+          namespace: milanpro
+    production: true
+    variables:
+      frontend-image: prod
+      postgres-user: admin
+      postgres-password: admin
+      node-hosts: vm-mpws2019.eaalab.hpi.uni-potsdam.de
+      postgres-storage-class: nfs-client
+      node-name: vm-mpws2019
+  - name: porsche
+    providers:
+      - name: kubernetes
+        context: delos
+        namespace: porsche-mpci
+        deploymentRegistry:
+          hostname: docker.io
+          namespace: milanpro
+    production: true
+    variables:
+      frontend-image: prod
+      postgres-user: admin
+      postgres-password: admin
+      node-hosts: vm-mpws2018-proj.eaalab.hpi.uni-potsdam.de, mpci.epic-hpi.de
+      postgres-storage-class: nfs-client
+      node-name: vm-mpws2018-proj

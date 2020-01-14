@@ -1,0 +1,73 @@
+version: 2.1
+orbs: 
+  codecov: codecov/codecov@1.0.2
+jobs:
+  # build-backend:
+  #   machine:
+  #     image: gardendev/garden:latest
+  #     docker_layer_caching: false
+  #   steps:
+  #     - checkout
+  #     - configure_kubectl_context
+  #     - run: docker build -t milanpro/mpci_backend:$CIRCLE_SHA1 -f docker/backend.Dockerfile .
+  # build-push-backend:
+  #   machine:
+  #     image: ubuntu-1604:201903-01
+  #     docker_layer_caching: false
+  #   steps:
+  #     - checkout
+  #     - run: echo "$DOCKERREG_TOKEN" | docker login --username milanpro --password-stdin
+  #     - run: docker build -t milanpro/mpci_backend -f docker/backend.Dockerfile .
+  #     - run: docker push milanpro/mpci_backend
+
+
+  test:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    docker:
+      - image: circleci/python:3.7.5
+      - image: postgres:12
+    steps:
+      - checkout
+      - run: 
+          name: Installing pip packages
+          command: pip install --user -r requirements.txt
+          working_directory: ~/project/services/python-images
+      - run:
+          name: Migrating database
+          command: flask db upgrade 
+          environment:
+            FLASK_APP: migration.py
+          working_directory: ~/project/services/python-images
+      - run:
+          name: Linting
+          command: flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py
+          working_directory: ~/project/services/python-images
+      - run:
+          name: Testing
+          command: pytest --cov-report xml --cov=src test/
+          working_directory: ~/project/services/python-images
+      - when:
+          condition: on_success
+          steps:
+            - codecov/upload:
+                file: services/python-images/coverage.xml
+                conf: .codecov.yml
+
+
+
+workflows:
+  build-and-test:
+    jobs:
+      # - build-backend:
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
+      # - build-push-backend:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      - test

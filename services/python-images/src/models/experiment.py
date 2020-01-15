@@ -49,21 +49,6 @@ class Experiment(BaseModel):
             }
         return execution_time_statistics
 
-    @property
-    def avg_execution_time(self):
-        execution_time_sum = 0
-        execution_time_count = 0
-        for job in self.jobs:
-            for result in job.results:
-                if (result) and (result.execution_time is not None):
-                    execution_time_sum = execution_time_sum + result.execution_time
-                    execution_time_count = execution_time_count + 1
-
-        if execution_time_count != 0:
-            avg_execution_time = execution_time_sum / execution_time_count
-            return avg_execution_time
-        return 0.0
-
 
 class ExperimentSchema(BaseSchema):
     name = field_for(Experiment, 'name', required=True, validate=Length(min=1))

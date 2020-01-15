@@ -5,8 +5,6 @@ from src.db import db
 from src.models.base import BaseModel, BaseSchema
 
 
-from flask import current_app
-
 class Result(BaseModel):
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
     job = db.relationship('Job', backref=db.backref('results'))
@@ -29,11 +27,11 @@ class Result(BaseModel):
             for edge in node.edge_froms:
                 if edge.is_ground_truth:
                     ground_truth.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label='', weight=1)
-    
+
         ground_truth_statistics = {}
 
         if ground_truth.edges():
-            jaccard_coefficients =  Result.get_jaccard_coefficients(g1, ground_truth)
+            jaccard_coefficients = Result.get_jaccard_coefficients(g1, ground_truth)
             error_types = Result.get_error_types(g1, ground_truth)
             ground_truth_statistics = {
                 'graph_edit_distance': nx.graph_edit_distance(ground_truth, g1),
@@ -41,7 +39,6 @@ class Result(BaseModel):
                 'error_types': error_types
             }
         return ground_truth_statistics
-        
 
     @staticmethod
     def get_jaccard_coefficients(G, H):
@@ -77,7 +74,7 @@ class Result(BaseModel):
         try:
             false_negatives_rate = len(false_negatives)/(len(false_negatives) + len(true_positives))
         except ZeroDivisionError:
-            false_negatives_rate = 0 
+            false_negatives_rate = 0
 
         error_types = {
             'false_positives': (false_positives_rate, false_positives),
@@ -87,7 +84,7 @@ class Result(BaseModel):
         }
 
         return error_types
-    
+
 
 class ResultSchema(BaseSchema):
     ground_truth_statistics = fields.Dict()

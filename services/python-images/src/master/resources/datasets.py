@@ -90,7 +90,7 @@ class DatasetGroundTruthUpload(Resource):
         try:
             file = request.files['graph_file']
             graph = nx.parse_gml(file.stream.read().decode('utf-8'))
-        except:
+        except Exception:
             raise BadRequest(f'Could not parse file: "{file.filename}"')
         ds = Dataset.query.get_or_404(dataset_id)
         already_has_ground_truth = False

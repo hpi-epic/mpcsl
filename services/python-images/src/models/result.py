@@ -77,10 +77,10 @@ class Result(BaseModel):
             false_negatives_rate = 0
 
         error_types = {
-            'false_positives': (false_positives_rate, false_positives),
-            'true negative': (1-false_positives_rate, true_negatives),
-            'false_negatives': (false_negatives_rate, false_negatives),
-            'true_positives': (1-false_negatives_rate, true_positives)
+            'false_positives': {'rate': false_positives_rate, 'edges': false_positives},
+            'true negative': {'rate': 1-false_positives_rate, 'edges': true_negatives},
+            'false_negatives': {'rate': false_negatives_rate, 'edges': false_negatives},
+            'true_positives': {'rate': 1-false_negatives_rate, 'edges': true_positives}
         }
 
         return error_types

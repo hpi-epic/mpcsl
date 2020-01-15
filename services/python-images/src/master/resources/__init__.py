@@ -1,6 +1,7 @@
+
 from .algorithms import AlgorithmResource, AlgorithmListResource
 from .datasets import DatasetLoadResource, DatasetListResource, DatasetResource, \
-    DatasetAvailableSourcesResource, DatasetExperimentResource
+    DatasetAvailableSourcesResource, DatasetExperimentResource, DatasetGroundTruthUpload
 from .distributions import MarginalDistributionResource, ConditionalDistributionResource, \
     InterventionalDistributionResource
 from .edge_information import EdgeInformationResource, EdgeInformationListResource
@@ -21,6 +22,7 @@ __all__ = [
     'DatasetLoadResource',
     'DatasetListResource',
     'DatasetResource',
+    'DatasetGroundTruthUpload',
     'DatasetAvailableSourcesResource',
     'ExperimentListResource',
     'ExperimentResource',

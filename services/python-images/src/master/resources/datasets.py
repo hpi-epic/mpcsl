@@ -1,12 +1,15 @@
 import csv
 import io
+import networkx as nx
 
-from flask import Response
-from flask_restful import Resource, abort
+
 from flask_restful_swagger_2 import swagger
+from flask import Response, request
+from flask_restful import Resource, abort
 from marshmallow import Schema, fields
 from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import BadRequest
+
 
 from src.db import db
 from src.master.config import DATA_SOURCE_CONNECTIONS
@@ -14,7 +17,8 @@ from src.master.db import data_source_connections
 from src.master.helpers.database import add_dataset_nodes
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
-from src.models import Dataset, DatasetSchema, ExperimentSchema
+from src.models import Dataset, DatasetSchema, Edge, ExperimentSchema
+
 from src.models.swagger import SwaggerMixin
 
 
@@ -59,6 +63,67 @@ class DatasetResource(Resource):
         db.session.delete(ds)
         db.session.commit()
         return data
+
+
+class DatasetGroundTruthUpload(Resource):
+    @swagger.doc({
+        'description': 'Add Ground-Truth to Dataset',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'Dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }, {
+                'name': 'graph_file',
+                'description': 'Path to Graph File',
+                'in': 'formData',
+                'type': 'file',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(DatasetSchema.get_swagger()),
+        'tags': ['Dataset']
+    })
+    def post(self, dataset_id):
+        try:
+            file = request.files['graph_file']
+            graph = nx.parse_gml(file.stream.read().decode('utf-8'))
+        except Exception:
+            raise BadRequest(f'Could not parse file: "{file.filename}"')
+        ds = Dataset.query.get_or_404(dataset_id)
+        already_has_ground_truth = False
+        for node in ds.nodes:
+            for edge in node.edge_froms:
+                if edge.is_ground_truth:
+                    already_has_ground_truth = True
+                    break
+            if already_has_ground_truth:
+                break
+
+        if already_has_ground_truth:
+            raise BadRequest(f'Ground-Truth Graph for Dataset {dataset_id} already exists!')
+
+        for edge in graph.edges:
+            from_node_label = edge[0]
+            to_node_label = edge[1]
+            from_node_index = None
+            to_node_index = None
+
+            for node in ds.nodes:
+                if from_node_label == node.name:
+                    from_node_index = node.id
+                if to_node_label == node.name:
+                    to_node_index = node.id
+            edge = Edge(result_id=None, from_node_id=from_node_index,
+                        to_node_id=to_node_index, weight=None, is_ground_truth=True)
+            db.session.add(edge)
+
+        db.session.commit()
+
+        # What to return?
+        return marshal(DatasetSchema, ds)
 
 
 class DatasetListResource(Resource):

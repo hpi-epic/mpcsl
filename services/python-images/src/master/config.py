@@ -15,7 +15,7 @@ DB_TYPE = os.environ.get('DB_TYPE', 'postgresql')
 DB_HOST = os.environ.get('DB_HOST', 'localhost:5432')
 DB_DATABASE = os.environ.get('DB_DATABASE', 'postgres')
 DB_USER = os.environ.get('POSTGRES_USER', "admin")
-DB_PASSWORD = os.environ.get('POSTGRES_PASSWORD', "123456")
+DB_PASSWORD = os.environ.get('POSTGRES_PASSWORD', "admin")
 
 # Remote databases for loading
 DATA_SOURCE_CONNECTIONS = json.loads(os.environ.get('DATA_SOURCE_CONNECTIONS', '{}'))

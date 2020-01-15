@@ -32,7 +32,7 @@ class AppFactory(object):
         @event.listens_for(Job, 'after_update')
         def emitJobUpdate(mapper, connection, target):
             self.socketio.emit('job', {'id': target.id})
-        
+
         @event.listens_for(Job, 'after_insert')
         def emitJobInsert(mapper, connection, target):
             self.socketio.emit('job', {'id': target.id})

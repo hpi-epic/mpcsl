@@ -9,7 +9,7 @@ environments:
     variables:
       frontend-image: prod
       postgres-user: admin
-      postgres-password: 123456
+      postgres-password: admin
       node-hosts: ""
       postgres-storage-class: ""
       node-name: minikube

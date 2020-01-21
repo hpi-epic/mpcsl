@@ -7,8 +7,6 @@ certifi==2018.11.29
 chardet==3.0.4
 Click==7.0
 decorator==4.3.2
-docker==3.7.0
-docker-pycreds==0.4.0
 eventlet==0.25.1
 factory-boy==2.11.1
 Faker==1.0.0

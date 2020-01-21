@@ -28,8 +28,6 @@ class Result(BaseModel):
                 if edge.is_ground_truth:
                     ground_truth.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label='', weight=1)
 
-        ground_truth_statistics = {}
-
         if ground_truth.edges():
             jaccard_coefficients = Result.get_jaccard_coefficients(g1, ground_truth)
             error_types = Result.get_error_types(g1, ground_truth)
@@ -38,7 +36,7 @@ class Result(BaseModel):
                 'mean_jaccard_coefficient': sum(jaccard_coefficients) / len(jaccard_coefficients),
                 'error_types': error_types
             }
-        return ground_truth_statistics
+            return ground_truth_statistics
 
     @staticmethod
     def get_jaccard_coefficients(G, H):

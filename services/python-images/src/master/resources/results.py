@@ -120,6 +120,53 @@ class ResultCompareResource(Resource):
         return ground_truth_statistics
 
 
+class ResultCompareGTResource(Resource):
+
+    @swagger.doc({
+        'description': 'Returns the graph to ground truth comparison statistics',
+        'parameters': [
+            {
+                'name': 'result_id',
+                'description': 'Result identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(ResultLoadSchema.get_swagger()),
+        'tags': ['Result']
+    })
+    def get(self, result_id):
+        result: Result = Result.query.get_or_404(result_id)
+        hasGroundTruth = False
+
+        # For performance improvements check beforehand if there is any ground truth edge
+        for edge in result.edges:
+            if edge.is_ground_truth:
+                hasGroundTruth = True
+                break
+        if not hasGroundTruth:
+            return
+
+        g1 = load_networkx_graph(result)
+        ground_truth = nx.DiGraph(id=-1, name=f'Graph_{result.id}_gt')
+        for node in result.job.experiment.dataset.nodes:
+            ground_truth.add_node(node.id, label=node.name)
+        for node in result.job.experiment.dataset.nodes:
+            for edge in node.edge_froms:
+                if edge.is_ground_truth:
+                    ground_truth.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label='', weight=1)
+
+        jaccard_coefficients = Result.get_jaccard_coefficients(g1, ground_truth)
+        error_types = Result.get_error_types(g1, ground_truth)
+        return {
+            'graph_edit_distance': nx.graph_edit_distance(ground_truth, g1),
+            'mean_jaccard_coefficient':
+                sum(jaccard_coefficients) / len(jaccard_coefficients) if jaccard_coefficients else 0,
+            'error_types': error_types
+        }
+
+
 class GraphExportResource(Resource):
     supported_types = ['GEXF', 'GraphML', 'GML', 'node_link_data.json']
 

@@ -114,7 +114,7 @@ class ResultCompareResource(Resource):
         ground_truth_statistics = {
             'graph_edit_distance': nx.graph_edit_distance(ground_truth, g1),
             'mean_jaccard_coefficient':
-                    sum(jaccard_coefficients) / len(jaccard_coefficients) if jaccard_coefficients else 0
+                sum(jaccard_coefficients) / len(jaccard_coefficients) if jaccard_coefficients else 0,
             'error_types': error_types
         }
         return ground_truth_statistics

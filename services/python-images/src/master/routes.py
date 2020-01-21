@@ -7,7 +7,7 @@ from .resources import DatasetLoadResource, DatasetListResource, \
     NodeResource, EdgeResource, SepsetResource, NodeContextResource, MarginalDistributionResource, \
     DatasetAvailableSourcesResource, NodeConfounderResource, ConditionalDistributionResource, \
     ExecutorResource, InterventionalDistributionResource, EdgeInformationResource, EdgeInformationListResource, \
-    ResultImportantEdgeListResource, K8SNodeListResource, DatasetExperimentResource
+    ResultImportantEdgeListResource, K8SNodeListResource, DatasetExperimentResource, ResultCompareResource
 
 
 def base_url(url):
@@ -40,6 +40,7 @@ def set_up_routes(api):
     api.add_resource(ResultImportantEdgeListResource, base_url('/result/<int:result_id>/edges/important/<int:amount>'))
     api.add_resource(ResultSepsetListResource, base_url('/result/<int:result_id>/sepsets'))
     api.add_resource(GraphExportResource, base_url('/result/<int:result_id>/export'))
+    api.add_resource(ResultCompareResource, base_url('/result/<int:result_id>/compare/<int:other_result_id>'))
     api.add_resource(NodeResource, base_url('/node/<int:node_id>'))
     api.add_resource(NodeContextResource, base_url('/node/<int:node_id>/result/<int:result_id>/context'))
     api.add_resource(NodeConfounderResource, base_url('/node/<int:node_id>/result/<int:result_id>/confounders'))

@@ -15,7 +15,6 @@ from src.models import Result, ResultSchema, Node, NodeSchema
 from src.models.swagger import SwaggerMixin
 
 
-
 class ResultListResource(Resource):
 
     @swagger.doc({
@@ -84,7 +83,8 @@ class ResultResource(Resource):
 class ResultCompareResource(Resource):
 
     @swagger.doc({
-        'description': 'Returns the same statistics as the ground truth statistics but with this graph acting as the ground truth',
+        'description': 'Returns the same statistics as the ground truth statistics but with \
+             this graph acting as the ground truth',
         'parameters': [
             {
                 'name': 'result_id',

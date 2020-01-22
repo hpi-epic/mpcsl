@@ -9,4 +9,4 @@ pyhdb.protocol.constants.MAX_SEGMENT_SIZE = pyhdb.protocol.constants.MAX_MESSAGE
 
 data_source_connections = {}
 for name, connstring in DATA_SOURCE_CONNECTIONS.items():
-    data_source_connections[name] = create_engine(connstring)
+    data_source_connections[name] = create_engine(connstring, pool_size=200, max_overflow=100)

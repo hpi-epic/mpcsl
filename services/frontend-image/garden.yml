@@ -8,6 +8,7 @@ include:
   - frontend.Dockerfile
   - nginx.conf
   - swagger/**/*
+  - src/src/**/*
 build:
   dependencies:
     - name: frontend-builder

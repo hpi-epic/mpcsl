@@ -1,11 +1,11 @@
 kind: Module
 description: The mpci frontend container image
 name: frontend-image
-dockerfile: frontend-${var.frontend-image}.Dockerfile
+dockerfile: frontend.Dockerfile
 image: mpci_frontend
 type: container
 include:
-  - frontend-${var.frontend-image}.Dockerfile
+  - frontend.Dockerfile
   - nginx.conf
   - swagger/**/*
 build:

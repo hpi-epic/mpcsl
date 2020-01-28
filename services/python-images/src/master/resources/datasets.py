@@ -1,6 +1,8 @@
 import csv
 import io
 import networkx as nx
+import json
+import datetime
 
 
 from flask_restful_swagger_2 import swagger
@@ -20,6 +22,11 @@ from src.master.helpers.swagger import get_default_response
 from src.models import Dataset, DatasetSchema, Edge, ExperimentSchema
 
 from src.models.swagger import SwaggerMixin
+
+
+def myconverter(o):
+    if isinstance(o, datetime.datetime):
+        return o.__str__()
 
 
 class DatasetResource(Resource):
@@ -63,6 +70,51 @@ class DatasetResource(Resource):
         db.session.delete(ds)
         db.session.commit()
         return data
+
+
+class DatasetMetadataSchema(Schema, SwaggerMixin):
+    variables = fields.Integer()
+    time_created = fields.DateTime()
+    observations = fields.Integer()
+    data_source = fields.String()
+    query = fields.String()
+    has_ground_truth = fields.Boolean()
+
+
+class DatasetMetadataResource(Resource):
+    @swagger.doc({
+        'description': 'Returns metadata of a single dataset',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'Dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(DatasetMetadataSchema.get_swagger()),
+        'tags': ['Dataset']
+    })
+    def get(self, dataset_id):
+        ds = Dataset.query.get_or_404(dataset_id)
+        already_has_ground_truth = False
+        for node in ds.nodes:
+            for edge in node.edge_froms:
+                if edge.is_ground_truth:
+                    already_has_ground_truth = True
+                    break
+            if already_has_ground_truth:
+                break
+        data = {
+            'variables': len(ds.nodes),
+            'time_created': ds.time_created,
+            'observations': 0,
+            'data_source': ds.data_source,
+            'query': ds.load_query,
+            'has_ground_truth': already_has_ground_truth
+        }
+        return json.dumps(data, default=myconverter)
 
 
 class DatasetGroundTruthUpload(Resource):

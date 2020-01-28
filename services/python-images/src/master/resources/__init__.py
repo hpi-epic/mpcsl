@@ -11,7 +11,8 @@ from .experiments import ExperimentListResource, ExperimentResource
 from .jobs import JobListResource, JobResource, JobLogsResource, JobResultResource, \
     ExperimentJobListResource
 from .nodes import NodeResource, ResultNodeListResource, NodeContextResource, NodeConfounderResource
-from .results import ResultListResource, ResultResource, GraphExportResource
+from .results import ResultListResource, ResultResource, GraphExportResource, ResultCompareResource, \
+    ResultCompareGTResource
 from .sepsets import SepsetResource, ResultSepsetListResource
 from .kubernetes import K8SNodeListResource
 
@@ -49,5 +50,7 @@ __all__ = [
     'ConditionalDistributionResource',
     'InterventionalDistributionResource',
     'ExecutorResource',
-    'K8SNodeListResource'
+    'K8SNodeListResource',
+    'ResultCompareResource',
+    'ResultCompareGTResource'
 ]

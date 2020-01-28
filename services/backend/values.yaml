@@ -13,7 +13,7 @@ seed: false
 image:
   repository: mpci_backend
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""

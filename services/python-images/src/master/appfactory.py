@@ -9,7 +9,7 @@ from sqlalchemy import event
 from src.db import db
 from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
-from src.models import Job
+from src.models import Job, Experiment, Dataset
 
 
 class AppFactory(object):
@@ -30,8 +30,40 @@ class AppFactory(object):
         self.socketio = SocketIO(self.app)
 
         @event.listens_for(Job, 'after_update')
-        def emitJobChange(mapper, connection, target):
-            self.socketio.emit('job_status', {'id': target.id, 'status': target.status})
+        def emitJobUpdate(mapper, connection, target):
+            self.socketio.emit('job', {'id': target.id})
+
+        @event.listens_for(Job, 'after_insert')
+        def emitJobInsert(mapper, connection, target):
+            self.socketio.emit('job', {'id': target.id})
+
+        @event.listens_for(Job, 'after_delete')
+        def emitJobDelete(mapper, connection, target):
+            self.socketio.emit('job', {'id': target.id})
+
+        @event.listens_for(Experiment, 'after_update')
+        def emitExperimentUpdate(mapper, connection, target):
+            self.socketio.emit('experiment', {'id': target.id})
+
+        @event.listens_for(Experiment, 'after_insert')
+        def emitExperimentInsert(mapper, connection, target):
+            self.socketio.emit('experiment', {'id': target.id})
+
+        @event.listens_for(Experiment, 'after_delete')
+        def emitExperimentDelete(mapper, connection, target):
+            self.socketio.emit('experiment', {'id': target.id})
+
+        @event.listens_for(Dataset, 'after_update')
+        def emitDatasetUpdate(mapper, connection, target):
+            self.socketio.emit('dataset', {'id': target.id})
+
+        @event.listens_for(Dataset, 'after_insert')
+        def emitDatasetInsert(mapper, connection, target):
+            self.socketio.emit('dataset', {'id': target.id})
+
+        @event.listens_for(Dataset, 'after_delete')
+        def emitDatasetDelete(mapper, connection, target):
+            self.socketio.emit('dataset', {'id': target.id})
 
     def set_up_api(self):
         self.api = Api(

@@ -35,13 +35,9 @@ git clone --recurse-submodules git@github.com:hpi-epic/mpci.git
 ### Getting Started
 
 1. `minikube start`
-2. `garden deploy` (When postgres times out just cancel and rerun)
+2. `garden deploy`
 3. `garden run task seed-db`
 4. Goto `minikube ip` in browser
-
-### Known Issues
-
-- Garden could hang on deploying postgres. Just restart the deployment ([issue](https://github.com/garden-io/garden/issues/1381))
 
 ### Setup Algorithms
 

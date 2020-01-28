@@ -1,5 +1,5 @@
 from src.db import db
-from src.master.resources.results import ResultListResource, ResultResource
+from src.master.resources.results import ResultListResource, ResultResource, ResultCompareResource
 from src.models import Node, Result, Edge
 from test.factories import ResultFactory, NodeFactory, EdgeFactory, SepsetFactory
 from .base import BaseResourceTest
@@ -49,6 +49,14 @@ class ResultTest(BaseResourceTest):
             assert sepset['id'] in sepset_ids
             sepset_ids.remove(sepset['id'])
         assert len(sepset_ids) == 0
+
+    def test_result_compare(self):
+        result1 = ResultFactory()
+        result2 = ResultFactory()
+        resp = self.get(self.url_for(ResultCompareResource, result_id=result1.id, other_result_id=result2.id))
+        assert 'mean_jaccard_coefficient' in resp
+        assert 'graph_edit_distance' in resp
+        assert 'error_types' in resp
 
     def test_delete_result(self):
         result = ResultFactory()

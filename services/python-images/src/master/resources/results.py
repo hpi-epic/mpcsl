@@ -80,6 +80,85 @@ class ResultResource(Resource):
         return data
 
 
+class ResultCompareResource(Resource):
+
+    @swagger.doc({
+        'description': 'Returns the same statistics as the ground truth statistics but with \
+             this graph acting as the ground truth',
+        'parameters': [
+            {
+                'name': 'result_id',
+                'description': 'Result identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },
+            {
+                'name': 'other_result_id',
+                'description': 'Result identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(ResultLoadSchema.get_swagger()),
+        'tags': ['Result']
+    })
+    def get(self, result_id, other_result_id):
+        result = Result.query.get_or_404(result_id)
+        other_result = Result.query.get_or_404(other_result_id)
+        ground_truth = load_networkx_graph(result)
+        g1 = load_networkx_graph(other_result)
+        jaccard_coefficients = Result.get_jaccard_coefficients(g1, ground_truth)
+        error_types = Result.get_error_types(g1, ground_truth)
+        ground_truth_statistics = {
+            'graph_edit_distance': nx.graph_edit_distance(ground_truth, g1),
+            'mean_jaccard_coefficient':
+                sum(jaccard_coefficients) / len(jaccard_coefficients) if jaccard_coefficients else 0,
+            'error_types': error_types
+        }
+        return ground_truth_statistics
+
+
+class ResultCompareGTResource(Resource):
+
+    @swagger.doc({
+        'description': 'Returns the graph to ground truth comparison statistics',
+        'parameters': [
+            {
+                'name': 'result_id',
+                'description': 'Result identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(ResultLoadSchema.get_swagger()),
+        'tags': ['Result']
+    })
+    def get(self, result_id):
+        result: Result = Result.query.get_or_404(result_id)
+
+        ground_truth = nx.DiGraph(id=-1, name=f'Graph_{result.id}_gt')
+        for node in result.job.experiment.dataset.nodes:
+            ground_truth.add_node(node.id, label=node.name)
+        for node in result.job.experiment.dataset.nodes:
+            for edge in node.edge_froms:
+                if edge.is_ground_truth:
+                    ground_truth.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label='', weight=1)
+
+        if ground_truth.edges():
+            g1 = load_networkx_graph(result)
+            jaccard_coefficients = Result.get_jaccard_coefficients(g1, ground_truth)
+            error_types = Result.get_error_types(g1, ground_truth)
+            return {
+                'graph_edit_distance': nx.graph_edit_distance(ground_truth, g1),
+                'mean_jaccard_coefficient':
+                    sum(jaccard_coefficients) / len(jaccard_coefficients) if jaccard_coefficients else 0,
+                'error_types': error_types
+            }
+
+
 class GraphExportResource(Resource):
     supported_types = ['GEXF', 'GraphML', 'GML', 'node_link_data.json']
 

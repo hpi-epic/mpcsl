@@ -1,7 +1,8 @@
 [
   {
-    "name": "pcalg",
-    "script_filename": "pcalg.r",
+    "package": "pcalg",
+    "function": "pc",
+    "script_filename": "pcalg_pc.r",
     "docker_image": "mpci_execution_r",
     "description": "Standard pcalg R-implementation",
     "valid_parameters": {
@@ -38,8 +39,9 @@
     "docker_parameters": {}
   },
   {
-    "name": "parallelpc",
-    "script_filename": "parallelpc.r",
+    "package": "ParallelPC",
+    "function": "pc_parallel",
+    "script_filename": "ParallelPC_pc_parallel.r",
     "docker_image": "mpci_execution_r",
     "description": "ParallelPC R-implementation",
     "valid_parameters": {
@@ -73,8 +75,9 @@
     "docker_parameters": {}
   },
   {
-    "name": "bnlearn",
-    "script_filename": "bnlearn.r",
+    "package": "bnlearn",
+    "function": "pc.stable",
+    "script_filename": "bnlearn_pc_stable.r",
     "docker_image": "mpci_execution_r",
     "description": "Bnlearn pcalg.stable R-implementation",
     "valid_parameters": {

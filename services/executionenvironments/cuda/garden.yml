@@ -1,0 +1,6 @@
+kind: Module
+description: The cupc executor container image
+name: cupc-executor-image
+dockerfile: Dockerfile
+image: milanpro/mpci_execution_cupc
+type: container

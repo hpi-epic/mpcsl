@@ -1,8 +1,6 @@
 import csv
 import io
 import networkx as nx
-import json
-import datetime
 
 
 from flask_restful_swagger_2 import swagger
@@ -22,11 +20,6 @@ from src.master.helpers.swagger import get_default_response
 from src.models import Dataset, DatasetSchema, Edge, ExperimentSchema
 
 from src.models.swagger import SwaggerMixin
-
-
-def myconverter(o):
-    if isinstance(o, datetime.datetime):
-        return o.__str__()
 
 
 class DatasetResource(Resource):
@@ -98,23 +91,8 @@ class DatasetMetadataResource(Resource):
     })
     def get(self, dataset_id):
         ds = Dataset.query.get_or_404(dataset_id)
-        already_has_ground_truth = False
-        for node in ds.nodes:
-            for edge in node.edge_froms:
-                if edge.is_ground_truth:
-                    already_has_ground_truth = True
-                    break
-            if already_has_ground_truth:
-                break
-        data = {
-            'variables': len(ds.nodes),
-            'time_created': ds.time_created,
-            'observations': 0,
-            'data_source': ds.data_source,
-            'query': ds.load_query,
-            'has_ground_truth': already_has_ground_truth
-        }
-        return json.dumps(data, default=myconverter)
+        data = ds.ds_metadata()
+        return data
 
 
 class DatasetGroundTruthUpload(Resource):

@@ -11,6 +11,7 @@ class Algorithm(BaseModel):
     script_filename = db.Column(db.String)
     docker_image = db.Column(db.String)
     description = db.Column(db.String)
+    needs_gpu = db.Column(db.Boolean)
     valid_parameters = db.Column(MutableDict.as_mutable(db.JSON))
     docker_parameters = db.Column(MutableDict.as_mutable(db.JSON), default={})
 

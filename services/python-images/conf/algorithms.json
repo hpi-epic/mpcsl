@@ -149,6 +149,7 @@
         "minimum": -1
       }
     },
+    "needs_gpu": true,
     "docker_parameters": {"runtime": "nvidia"}
   }
 ]

@@ -2,7 +2,6 @@ from .base import BaseResourceTest
 from src.models import JobStatus
 from test.factories import ExperimentFactory
 from src.master.resources.executor import ExecutorResource
-from hashlib import blake2b
 
 
 class ExecutorTest(BaseResourceTest):

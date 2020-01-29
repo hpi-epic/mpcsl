@@ -127,7 +127,8 @@
     "docker_parameters": {}
   },
   {
-    "name": "cupc",
+    "function": "cupc",
+    "package": "cuPC-S",
     "script_filename": "cupc.r",
     "docker_image":  "mpci_execution_cuda",
     "description": "cupc - CUDA implementation",

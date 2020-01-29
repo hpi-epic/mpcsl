@@ -28,6 +28,7 @@ class Job(BaseModel):
     node_hostname = db.Column(db.String)
     status = db.Column(db.Enum(JobStatus), nullable=False)
     log = db.Column(db.String)
+    parallel = db.Column(db.Boolean)
 
     @property
     def result(self):

@@ -29,6 +29,7 @@ class Job(BaseModel):
     status = db.Column(db.Enum(JobStatus), nullable=False)
     log = db.Column(db.String)
     parallel = db.Column(db.Boolean)
+    gpus = db.Column(db.Integer)
 
     @property
     def result(self):

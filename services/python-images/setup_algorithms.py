@@ -19,7 +19,8 @@ def set_up_algorithms(db):
                     data, errors = AlgorithmSchema().load(algorithm)
                     if len(errors) > 0:
                         raise InvalidInputData(payload=errors)
-                    alg_in_db = db.session.query(Algorithm).filter(Algorithm.package == data['package']).filter(Algorithm.function == data['function']).one_or_none()
+                    alg_in_db = db.session.query(Algorithm).filter(Algorithm.package == data['package'])\
+                        .filter(Algorithm.function == data['function']).one_or_none()
                     if not alg_in_db:
                         alg = Algorithm(**data)
                         db.session.add(alg)

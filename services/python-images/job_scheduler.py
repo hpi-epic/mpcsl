@@ -1,15 +1,16 @@
 import asyncio
 import logging
 
-from aiohttp import web, ClientSession
+from aiohttp import web
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, API_HOST, PORT
-from src.models import Job, JobStatus, Experiment
+from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, PORT
+from src.models import Job, JobStatus, Experiment, JobErrorCode
 from src.jobscheduler.kubernetes_helper import create_job, kube_cleanup_finished_jobs, get_node_list
 from src.jobscheduler.kubernetes_helper import check_running_job, get_pod_log, delete_job_and_pods
-
+from src.jobscheduler.kubernetes_helper import EMPTY_LOGS
+from src.jobscheduler.backend_requests import post_job_change
 
 logging.basicConfig(level=logging.INFO)
 
@@ -46,16 +47,8 @@ async def health_check(request):
     return web.Response(text="ok")
 
 
-async def post_job_change(job_id, status):
-    url = "http://" + API_HOST + "/api/job/" + str(job_id)
-    logging.info("Emit change to %s", url)
-    async with ClientSession() as session:
-        async with session.post(url, json={'status': status}) as resp:
-            resp.raise_for_status()
-            logging.info(await resp.text())
-
-
 async def start_waiting_jobs(session):
+    logging.info("--- Check waiting jobs routine ---")
     jobs = session.query(Job).filter(Job.status == JobStatus.waiting)
     for job in jobs:
         try:
@@ -67,16 +60,18 @@ async def start_waiting_jobs(session):
                     if isinstance(k8s_job_name, str):
                         job.container_id = k8s_job_name
                         job.status = JobStatus.running
-                        asyncio.create_task(post_job_change(job.id, job.status))
+                        asyncio.create_task(post_job_change(job.id, None))
                         session.commit()
         except Exception as e:
             logging.error(str(e))
             job.status = JobStatus.error
-            asyncio.create_task(post_job_change(job.id, job.status))
+            job.error_code = JobErrorCode.UNKNOWN
             session.commit()
+            asyncio.create_task(post_job_change(job.id, job.error_code))
 
 
 async def kill_errored_jobs(session):
+    logging.info("--- Kill errored jobs routine ---")
     jobs = session.query(Job).filter(Job.status == JobStatus.running)
     for job in jobs:
         try:
@@ -84,22 +79,30 @@ async def kill_errored_jobs(session):
             if crashed:
                 job: Job
                 job.status = JobStatus.error
-                asyncio.create_task(post_job_change(job.id, job.status))
-                job.log = " -- EMPTY LOGS -- "  # TODO: Better error logs
+                job.error_code = JobErrorCode.UNKNOWN
+                if job.log is None:
+                    job.log = EMPTY_LOGS
                 session.commit()
+                asyncio.create_task(post_job_change(job.id, job.error_code))
+        except Exception as e:
+            logging.error(str(e))
+
+
+async def loop_async_with_session(fnc):
+    while True:
+        try:
+            await asyncio.sleep(DAEMON_CYCLE_TIME)
+            await fnc(Session())
         except Exception as e:
             logging.error(str(e))
 
 
 async def start_job_scheduler():
     logging.info("Starting Job Scheduler")
-    while True:
-        try:
-            await asyncio.sleep(DAEMON_CYCLE_TIME)
-            await asyncio.gather(start_waiting_jobs(Session()), kill_errored_jobs(Session()))
-            kube_cleanup_finished_jobs(Session())
-        except Exception as e:
-            logging.error(str(e))
+    task1: asyncio.Task = asyncio.create_task(loop_async_with_session(start_waiting_jobs))
+    task2 = asyncio.create_task(loop_async_with_session(kill_errored_jobs))
+    task3 = asyncio.create_task(loop_async_with_session(kube_cleanup_finished_jobs))
+    await asyncio.gather(task1, task2, task3)
 
 
 async def start_background_tasks(app):

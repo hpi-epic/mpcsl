@@ -47,6 +47,7 @@ class ExecutorResource(Resource):
         node_hostname = None
         parallel = True
         runs = 1
+        gpus = None
         body = request.json
         if body:
             node_hostname = body.get("node")

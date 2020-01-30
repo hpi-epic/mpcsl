@@ -152,7 +152,7 @@ async def handle_pending_pod(pod, session):
             delete_pod(pod.metadata.name)
             asyncio.create_task(post_job_change(job.id, job.error_code))
         elif last_condition.status == "True":
-            cont_statuses = pod.status.containerStatuses
+            cont_statuses = pod.status.container_statuses
             if cont_statuses is not None:
                 last_cont_status = cont_statuses[-1]
                 if last_cont_status.state is not None and last_cont_status.state.waiting is not None\
@@ -160,7 +160,7 @@ async def handle_pending_pod(pod, session):
                     job = get_job_for_pod(pod, session)
                     job.status = JobStatus.error
                     job.log = EMPTY_LOGS
-                    job.error_code = JobErrorCode.UNSCHEDULABLE
+                    job.error_code = JobErrorCode.IMAGE_NOT_FOUND
                     session.commit()
                     delete_job(job.container_id)
                     delete_pod(pod.metadata.name)

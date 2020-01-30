@@ -65,6 +65,36 @@ class DatasetResource(Resource):
         return data
 
 
+class DatasetMetadataSchema(Schema, SwaggerMixin):
+    variables = fields.Integer()
+    time_created = fields.DateTime()
+    observations = fields.Integer()
+    data_source = fields.String()
+    query = fields.String()
+    has_ground_truth = fields.Boolean()
+
+
+class DatasetMetadataResource(Resource):
+    @swagger.doc({
+        'description': 'Returns metadata of a single dataset',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'Dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(DatasetMetadataSchema.get_swagger()),
+        'tags': ['Dataset']
+    })
+    def get(self, dataset_id):
+        ds = Dataset.query.get_or_404(dataset_id)
+        data = ds.ds_metadata()
+        return data
+
+
 class DatasetGroundTruthUpload(Resource):
     @swagger.doc({
         'description': 'Add Ground-Truth to Dataset',

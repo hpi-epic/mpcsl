@@ -7,7 +7,7 @@ from src.models import Algorithm, Experiment, Dataset
 
 
 def add_experiment(db, dataset_id):
-    alg = db.session.query(Algorithm).filter(Algorithm.name == 'pcalg').first()
+    alg = db.session.query(Algorithm).filter(Algorithm.package == 'pcalg').first()
     new_experiment = Experiment(
         algorithm_id=alg.id,
         dataset_id=dataset_id,

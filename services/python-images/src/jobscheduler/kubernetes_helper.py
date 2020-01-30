@@ -72,14 +72,21 @@ async def create_job(job: Job, experiment: Experiment):
         default_job["metadata"]["labels"]["job-name"] = job_name
         default_job["metadata"]["name"] = job_name
         default_job["spec"]["template"]["metadata"]["labels"]["job-name"] = job_name
-        default_job["spec"]["template"]["spec"]["containers"][0]["command"] = command
-        default_job["spec"]["template"]["spec"]["containers"][0]["image"] = \
+        container = default_job["spec"]["template"]["spec"]["containers"][0]
+        container["command"] = command
+        container["image"] = \
             f'{EXECUTION_IMAGE_NAMESPACE}/{algorithm.docker_image}'
         if job.node_hostname is not None:
             nodeSelector = {
                 "kubernetes.io/hostname": job.node_hostname
             }
             default_job["spec"]["template"]["spec"]["nodeSelector"] = nodeSelector
+        if job.gpus is not None:
+            container["resources"] = {
+                "limits": {
+                    "nvidia.com/gpu": str(job.gpus)
+                }
+            }
         try:
             logging.info(f'Starting Job with ID {job.id}')
             result = api_instance.create_namespaced_job(namespace=K8S_NAMESPACE, body=default_job, pretty=True)

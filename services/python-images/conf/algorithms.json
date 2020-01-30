@@ -177,5 +177,32 @@
       }
     },
     "docker_parameters": {}
+  },
+  {
+    "function": "cupc",
+    "package": "cuPC-S",
+    "script_filename": "cupc.r",
+    "docker_image":  "mpci_execution_cuda",
+    "description": "cupc - CUDA implementation",
+    "valid_parameters": {
+      "alpha": {
+        "type": "float",
+        "required": true,
+        "minimum": 0.0,
+        "maximum": 1.0
+      },
+      "verbose": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0
+      },
+      "subset_size": {
+        "type": "int",
+        "minimum": -1
+      }
+    },
+    "needs_gpu": true,
+    "docker_parameters": {"runtime": "nvidia"}
   }
 ]

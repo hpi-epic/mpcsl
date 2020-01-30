@@ -44,13 +44,19 @@ class ExecutorResource(Resource):
 
         if not check_dataset_hash(experiment.dataset):
             abort(409, message='The underlying data has been modified')
-        body = request.json
         node_hostname = None
-        if body is not None:
-            node_hostname = body["node"]
-        new_job = Job(experiment=experiment, start_time=datetime.now(),
-                      status=JobStatus.waiting, node_hostname=node_hostname)
-        db.session.add(new_job)
+        parallel = True
+        runs = 1
+        body = request.json
+        if body:
+            node_hostname = body.get("node")
+            runs = body.get('runs')
+            parallel = body.get('parallel')
+            gpus = body.get('gpus')
+        for i in range(runs):
+            new_job = Job(experiment=experiment, start_time=datetime.now(),
+                          status=JobStatus.waiting, node_hostname=node_hostname, parallel=parallel, gpus=gpus)
+            db.session.add(new_job)
         db.session.commit()
 
         return marshal(JobSchema, new_job)

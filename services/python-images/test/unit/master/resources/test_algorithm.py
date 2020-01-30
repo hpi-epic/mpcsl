@@ -31,7 +31,8 @@ class AlgorithmTest(BaseResourceTest):
 
         # Then
         assert result['id'] == alg.id
-        assert result['name'] == alg.name
+        assert result['package'] == alg.package
+        assert result['function'] == alg.function
         assert result['script_filename'] == alg.script_filename
         assert result['docker_image'] == alg.docker_image
         assert result['description'] == alg.description

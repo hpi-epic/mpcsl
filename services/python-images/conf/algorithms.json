@@ -157,32 +157,29 @@
           "pred-loglik-cg"
         ]
       },
-      "debug": {
+      "verbose": {
         "type": "int",
         "minimum": 0,
         "maximum": 1,
         "default": 0
       },
       "restarts": {
-        "type": "int",      
+        "type": "int",
+        "minimum": 0,
         "default": 0
       },
-      "tabu": {
-        "type": "int",
-        "minimum": 0
-      },
-      "max.tabu": {
-        "type": "int",
-        "minimum": 0
-      },
       "perturb": {
-        "type": "int"
+        "type": "int",
+        "minimum": 0,
+        "default": 1
       },
-      "max.iter": {
-        "type": "int"
+      "maxiter": {
+        "type": "int",
+        "default": -1
       },
       "maxp": {
-        "type": "int"
+        "type": "int",
+        "default": -1
       },
       "optimized": {
         "type": "int",
@@ -197,6 +194,60 @@
       } 
     },
     "docker_parameters": {}
+  },
+  {
+    "package": "bnlearn",
+    "function": "gs",
+    "script_filename": "bnlearn_gs.r",
+    "docker_image": "mpci_execution_r",
+    "description": "Bnlearn Grow Shrink R-implementation",
+    "valid_parameters": {
+      "cores": {
+        "type": "int",
+        "minimum": 1
+      },
+      "independence_test": {
+        "type": "enum",
+        "required": true,
+        "values": [
+          "cor",
+          "zf",
+          "mi-g",
+          "mi-g-sh",
+          "x2",
+          "x2-adf",
+          "mi",
+          "mi-adf",
+          "mi-sh",
+          "mi-cg"
+        ]
+      },
+      "alpha": {
+        "type": "float",
+        "required": true,
+        "minimum": 0.0,
+        "maximum": 1.0
+      },
+      "B": {
+        "type": "int",
+        "minimum": 1
+      },
+      "subset_size": {
+        "type": "int",
+        "minimum": -1
+      },
+      "verbose": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "undirected": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1
+      }
+    },
+    "docker_parameters": {} 
   },
   {
     "function": "cupc",

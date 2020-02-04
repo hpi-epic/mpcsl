@@ -15,21 +15,15 @@ option_list_v <- list(
                                 help="Score used for the bnlearn hc", metavar=""),
                     make_option(c("-v", "--verbose"), type="integer", default=0,
                                 help="More detailed output is provided", metavar=""),
-                    make_option(c("--debug"), type="integer", default=0,
-                                help="More detailed output is provided", metavar=""),
                     make_option(c("--send_sepsets"), type="integer", default=0,
                                 help="If 1, sepsets will be sent with the results", metavar=""),
                     make_option(c("--restarts"), type="integer", default=0,
                                 help="The number of random restarts", metavar=""),
-                    make_option(c("--tabu"), type="integer",
-                                help="The length of the tabu list used in the tabu function", metavar=""),
-                    make_option(c("--maxtabu"), type="integer",
-                                help="The iterations tabu search can perform without improving the best network score", metavar=""),
-                    make_option(c("--perturb"), type="integer", default="1",
+                    make_option(c("--perturb"), type="integer", default=1,
                                 help="The number of attempts to randomly insert/remove/reverse an arc on every random restart", metavar=""),
-                    make_option(c("--maxiter"), type="integer", default="Inf",
+                    make_option(c("--maxiter"), type="integer", default=Inf,
                                 help="The maximum number of iterations", metavar=""),
-                    make_option(c("--maxp"), type="integer", default="Inf",
+                    make_option(c("--maxp"), type="integer", default=Inf,
                                 help="The maximum number of parents for a node", metavar=""),
                     make_option(c("-o", "--optimized"), type="integer", default=1,
                                 help="If TRUE (the default), score caching is used to speed up structure learning", metavar=""),
@@ -64,9 +58,19 @@ if (opt$score == "loglik-cg" || opt$score == "aic-cg" || opt$score == "bic-cg" |
 }
 
 verbose <- opt$verbose > 0
+optimized <- opt$optimized > 0
+maxiter_value <- opt$maxiter
+if(maxiter_value == -1){
+    maxiter_value <- Inf
+}
+maxp_value <- opt$maxp
+if(maxp_value == -1){
+    maxp_value <- Inf
+}
+
 taken <- double()
 start <- Sys.time()
-result = hc(matrix_df, debug=verbose, score=opt$score)
+result = hc(matrix_df, score=opt$score, debug=verbose, restart=opt$restart, perturb=opt$perturb, max.iter=maxiter_value, maxp=maxp_value, optimized=optimized)
 end <- Sys.time()
 taken <- as.double(difftime(end,start,unit="s"))
 colorize_log('\033[32m',taken)

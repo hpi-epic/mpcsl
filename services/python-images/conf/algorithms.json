@@ -250,6 +250,47 @@
     "docker_parameters": {} 
   },
   {
+    "package": "bnlearn",
+    "function": "mmhc",
+    "script_filename": "bnlearn_mmhc.r",
+    "docker_image": "mpci_execution_r",
+    "description": "Bnlearn Max-Min Hill Climb R-implementation",
+    "valid_parameters": {
+      "restrict": {
+        "type": "enum",
+        "required": true,
+        "values": [
+          "pc.stable",
+          "gs",
+          "iamb",
+          "fast.iamb",
+          "inter.iamb",
+          "iamb.fdr"
+        ]
+      },
+      "maximize": {
+        "type": "enum",
+        "required": true,
+        "values": [
+          "hc",
+          "tabu"
+        ]
+      },
+      "restrict_args": {
+        "type": "character"
+      },
+      "maximze_args": {
+        "type": "character"
+      },
+      "verbose": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1
+      }
+    },
+    "docker_parameters": {} 
+  },
+  {
     "function": "cupc",
     "package": "cuPC-S",
     "script_filename": "cupc.r",

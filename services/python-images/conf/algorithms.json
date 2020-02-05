@@ -277,10 +277,10 @@
         ]
       },
       "restrict_args": {
-        "type": "character"
+        "type": "str"
       },
       "maximze_args": {
-        "type": "character"
+        "type": "str"
       },
       "verbose": {
         "type": "int",

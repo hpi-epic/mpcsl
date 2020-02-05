@@ -50,8 +50,15 @@ for(i in 1:length(maximize_split[[1]])){
 verbose <- opt$verbose > 0
 
 # Optional Constrained-Based Parameters
-if(opt$restrict != "pc.stable"){
+B <- NULL
+max_sx <- NULL
+undirected <- FALSE
+if(opt$restrict != "pc.stable" && opt$restrict != "gs"){
     stop("Restriction Function not supported yet")
+}else{
+    if (!is.null(restrict_hash[["B"]])) B <- restrict_hash[["B"]];
+    if (!is.null(restrict_hash[["max.sx"]])) max_sx <- restrict_hash[["max.sx"]];
+    if (!is.null(restrict_hash[["undirected"]])) undirected <- restrict_hash[["undirected"]];
 }
 # Optional Score-Based Parameters
 restart <- 0
@@ -69,12 +76,10 @@ if(opt$maximize != "hc"){
     if (!is.null(maximize_hash[["optimized"]])) optimized <- maximize_hash[["optimized"]]; 
 }
 
-print("Step 1")
 tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
 df <- tmp_result[[1]]
 dataset_loading_time <- tmp_result[[2]]
 
-print("Step 2")
 if (restrict_hash[["test"]] == "mi-cg") {
 	matrix_df <- df%>%dplyr::mutate_all(funs(if(length(unique(.))<opt$discrete_limit) as.factor(.)  else as.numeric(as.numeric(.))))
 } else if ( restrict_hash[["test"]] == "cor" || restrict_hash[["test"]] == "zf" || 
@@ -94,22 +99,36 @@ if (restrict_hash[["test"]] == "mi-cg") {
 	stop("No valid independence test specified")
 }
 
-print("Step 3")
 taken <- double()
 start <- Sys.time()
-result = rsmax2(matrix_df, 
+if(opt$restrict == "pc.stable" && opt$maximize == "hc"){
+    result = rsmax2(matrix_df, 
         restrict=opt$restrict, restrict.args=list(test=restrict_hash[["test"]], 
-                                                  alpha=as.numeric(restrict_hash[["alpha"]])), 
+                                                  alpha=as.numeric(restrict_hash[["alpha"]]),
+                                                  max.sx=as.numreric(max_sx)), 
         maximize=opt$maximize, maximize.args=list(score=maximize_hash[["score"]],
-                                                  restart=restart,
-                                                  perturb=perturb,
-                                                  max.iter=max_iter,
-                                                  maxp=maxp,
-                                                  optimized=optimized),
-        debug=verbose
-)
-
-print("Step 4")
+                                                  restart=as.numeric(restart),
+                                                  perturb=as.numeric(perturb),
+                                                  max.iter=as.numeric(max_iter),
+                                                  maxp=as.numeric(maxp),
+                                                  optimized=as.logical(optimized)),
+        debug=verbose)
+}
+if(opt$restrict == "gs" && opt$maximize == "hc"){
+    result = rsmax2(matrix_df, 
+        restrict=opt$restrict, restrict.args=list(test=restrict_hash[["test"]], 
+                                                  alpha=as.numeric(restrict_hash[["alpha"]]),
+                                                  max.sx=as.numeric(max_sx),
+                                                  B=as.numeric(B),
+                                                  undirected=undirected), 
+        maximize=opt$maximize, maximize.args=list(score=maximize_hash[["score"]],
+                                                  restart=as.numeric(restart),
+                                                  perturb=as.numeric(perturb),
+                                                  max.iter=as.numeric(max_iter),
+                                                  maxp=as.numeric(maxp),
+                                                  optimized=as.logical(optimized)),
+        debug=verbose)
+}
 end <- Sys.time()
 taken <- as.double(difftime(end,start,unit="s"))
 colorize_log('\033[32m',taken)

@@ -280,6 +280,7 @@
         "type": "str"
       },
       "maximize_args": {
+
         "type": "str"
       },
       "verbose": {

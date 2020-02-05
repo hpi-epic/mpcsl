@@ -35,11 +35,12 @@ get_dataset <- function(api_host, dataset_id, job_id) {
     start_time <- Sys.time()
     df_request <- RETRY("GET", url, times = 5, quiet=FALSE)
     check_request(api_host, df_request, job_id)
+    dataset_loading_time <- as.double(difftime(Sys.time(),start_time,unit="s"))
     colorize_log(ANSI_GREEN, paste('Successfully loaded dataset (size ', headers(df_request)$`x-content-length`,
-                ' bytes) in', (Sys.time() - start_time), 'sec'))
+                ' bytes) in', dataset_loading_time))
 
     df <- read.csv(text=content(df_request, 'text'), header=TRUE, check.names=FALSE)
-    return(df)
+    return(list(df,dataset_loading_time))
 }
 
 estimate_weight <- function(from_node, to_node, graph, df, continuous=FALSE) {
@@ -56,7 +57,7 @@ estimate_weight <- function(from_node, to_node, graph, df, continuous=FALSE) {
     return(mi)
 }
 
-store_graph_result <- function(api_host, graph, sepsets, df, job_id, independence_test, send_sepsets, meta_results) {
+store_graph_result <- function(api_host, graph, sepsets, df, job_id, independence_test, send_sepsets, meta_results, execution_time, dataset_loading_time) {
     edges <- edges(graph)
     edge_list <- list(from_node=c(), to_node=c())
     i <- 1
@@ -64,7 +65,12 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, independenc
         for (edge in edges[[node]]){
             edge_list[['from_node']][[i]] <- as.numeric(colnames(df)[strtoi(node)])
             edge_list[['to_node']][[i]] <- as.numeric(colnames(df)[strtoi(edge)])
-            edge_list[['weight']][[i]] <- 0
+
+            weight <- estimate_weight(
+                node, edge, graph, df,
+                continuous=(independence_test != 'binCI' && independence_test != 'disCI')
+            )
+            edge_list[['weight']][[i]] <- weight
 
             i <- i + 1
         }
@@ -100,33 +106,9 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, independenc
         job_id=strtoi(job_id),
         edge_list=if(nrow(edge_list) == 0) list() else edge_list,
         meta_results=meta_results,
-        sepset_list=if(nrow(sepset_list) == 0) list() else sepset_list
-    ), auto_unbox=TRUE)
-    
-    graph_request <- RETRY("POST", paste0('http://', api_host, '/api/job/', job_id, '/result'),
-                                 body=result_json, 
-                                 add_headers("Content-Type" = "application/json"), times = 5, quiet=FALSE)
-    check_request(api_host, graph_request, job_id)
-    colorize_log(ANSI_GREEN, paste0('Successfully executed job ', job_id))
-    return(graph_request)
-}
-
-store_graph_result_bn <- function(api_host, bn_result, df, job_id, independence_test, meta_results) {
-    edge_list <- list(from_node=c(), to_node=c())
-
-    for (i in 1:(length(bn_result$'arcs')/2) ){
-        edge_list[['from_node']][[i]] <- as.numeric(bn_result$'arcs'[i])
-        edge_list[['to_node']][[i]] <- as.numeric(bn_result$'arcs'[i+(length(bn_result$'arcs')/2)])
-        edge_list[['weight']][[i]] <- 0
-    }
-    edge_list <- data.frame(edge_list)
-
-    
-    result_json <- jsonlite::toJSON(list(
-        job_id=strtoi(job_id),
-        edge_list=if(nrow(edge_list) == 0) list() else edge_list,
-        meta_results=meta_results,
-        sepset_list=list()
+        sepset_list=if(nrow(sepset_list) == 0) list() else sepset_list,
+        execution_time =execution_time,
+        dataset_loading_time=dataset_loading_time
     ), auto_unbox=TRUE)
     
     graph_request <- RETRY("POST", paste0('http://', api_host, '/api/job/', job_id, '/result'),

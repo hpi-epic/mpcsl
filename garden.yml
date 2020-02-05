@@ -1,7 +1,7 @@
 kind: Project
 name: mpci
 variables:
-  execution-image-namespace: conlange
+  execution-image-namespace: milanpro
 environments:
   - name: local
     providers:

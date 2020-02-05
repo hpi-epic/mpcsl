@@ -251,10 +251,10 @@
   },
   {
     "package": "bnlearn",
-    "function": "mmhc",
-    "script_filename": "bnlearn_mmhc.r",
+    "function": "rsmax2",
+    "script_filename": "bnlearn_rsmax2.r",
     "docker_image": "mpci_execution_r",
-    "description": "Bnlearn Max-Min Hill Climb R-implementation",
+    "description": "Bnlearn Hybrid of Constrained-Based and Score-Based R-implementation",
     "valid_parameters": {
       "restrict": {
         "type": "enum",
@@ -277,16 +277,21 @@
         ]
       },
       "restrict_args": {
-        "type": "character"
+        "type": "str"
       },
-      "maximze_args": {
-        "type": "character"
+      "maximize_args": {
+        "type": "str"
       },
       "verbose": {
         "type": "int",
         "minimum": 0,
         "maximum": 1
-      }
+      },
+      "discrete_limit": {
+        "type": "int",
+        "minimum": 3,
+        "default": 4
+      } 
     },
     "docker_parameters": {} 
   },

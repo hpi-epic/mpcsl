@@ -1,3 +1,3 @@
-def job_status_change(id, status):
+def job_status_change(id, error_code):
     from src.app import socketio
-    socketio.emit('job_status', {'id': id, 'status': status})
+    socketio.emit('job', {'id': id, 'error_code': error_code})

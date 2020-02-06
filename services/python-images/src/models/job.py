@@ -16,6 +16,12 @@ class JobStatus(str, enum.Enum):
     hidden = "hidden"
 
 
+class JobErrorCode(int, enum.Enum):
+    UNSCHEDULABLE = -1
+    IMAGE_NOT_FOUND = -2
+    UNKNOWN = -127
+
+
 class Job(BaseModel):
     experiment_id = db.Column(
         db.Integer,
@@ -29,6 +35,8 @@ class Job(BaseModel):
     status = db.Column(db.Enum(JobStatus), nullable=False)
     log = db.Column(db.String)
     parallel = db.Column(db.Boolean)
+    gpus = db.Column(db.Integer)
+    error_code = db.Column(db.Enum(JobErrorCode))
 
     @property
     def result(self):

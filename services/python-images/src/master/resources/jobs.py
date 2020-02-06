@@ -109,8 +109,10 @@ class JobResource(Resource):
     })
     def post(self, job_id):
         content = request.json
-        status = content['status']
-        job_status_change(job_id, JobStatus[status])
+        error_code = content['error_code']
+        if error_code is not None:
+            error_code = int(error_code)
+        job_status_change(job_id, error_code)
         return "ok"
 
 

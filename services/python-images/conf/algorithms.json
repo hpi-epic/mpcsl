@@ -1,7 +1,8 @@
 [
   {
-    "name": "pcalg",
-    "script_filename": "pcalg.r",
+    "package": "pcalg",
+    "function": "pc",
+    "script_filename": "pcalg_pc.r",
     "docker_image": "mpci_execution_r",
     "description": "Standard pcalg R-implementation",
     "valid_parameters": {
@@ -38,8 +39,9 @@
     "docker_parameters": {}
   },
   {
-    "name": "parallelpc",
-    "script_filename": "parallelpc.r",
+    "package": "ParallelPC",
+    "function": "pc_parallel",
+    "script_filename": "ParallelPC_pc_parallel.r",
     "docker_image": "mpci_execution_r",
     "description": "ParallelPC R-implementation",
     "valid_parameters": {
@@ -73,8 +75,9 @@
     "docker_parameters": {}
   },
   {
-    "name": "bnlearn",
-    "script_filename": "bnlearn.r",
+    "package": "bnlearn",
+    "function": "pc.stable",
+    "script_filename": "bnlearn_pc_stable.r",
     "docker_image": "mpci_execution_r",
     "description": "Bnlearn pcalg.stable R-implementation",
     "valid_parameters": {
@@ -122,5 +125,202 @@
       }
     },
     "docker_parameters": {}
+  },
+  {
+    "package": "bnlearn",
+    "function": "hc",
+    "script_filename": "bnlearn_hc.r",
+    "docker_image": "mpci_execution_r",
+    "description": "Bnlearn Hill Climb R-implementation",
+    "valid_parameters": {
+      "score": {
+        "type": "enum",
+        "required": true,
+        "values": [
+          "loglik",
+          "aic",
+          "bic",
+          "pred-loglik",
+          "bde",
+          "bds",
+          "mbde",
+          "bdla",
+          "k2",
+          "loglik-g",
+          "aic-g",
+          "bic-g",
+          "pred-loglik-g",
+          "bge",
+          "loglik-cg",
+          "aic-cg",
+          "bic-cg",
+          "pred-loglik-cg"
+        ]
+      },
+      "verbose": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0
+      },
+      "restarts": {
+        "type": "int",
+        "minimum": 0,
+        "default": 0
+      },
+      "perturb": {
+        "type": "int",
+        "minimum": 0,
+        "default": 1
+      },
+      "maxiter": {
+        "type": "int",
+        "default": -1
+      },
+      "maxp": {
+        "type": "int",
+        "default": -1
+      },
+      "optimized": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 1
+      },
+      "discrete_limit": {
+        "type": "int",
+        "minimum": 3,
+        "default": 4
+      } 
+    },
+    "docker_parameters": {}
+  },
+  {
+    "package": "bnlearn",
+    "function": "gs",
+    "script_filename": "bnlearn_gs.r",
+    "docker_image": "mpci_execution_r",
+    "description": "Bnlearn Grow Shrink R-implementation",
+    "valid_parameters": {
+      "cores": {
+        "type": "int",
+        "minimum": 1
+      },
+      "independence_test": {
+        "type": "enum",
+        "required": true,
+        "values": [
+          "cor",
+          "zf",
+          "mi-g",
+          "mi-g-sh",
+          "x2",
+          "x2-adf",
+          "mi",
+          "mi-adf",
+          "mi-sh",
+          "mi-cg"
+        ]
+      },
+      "alpha": {
+        "type": "float",
+        "required": true,
+        "minimum": 0.0,
+        "maximum": 1.0
+      },
+      "B": {
+        "type": "int",
+        "minimum": 1
+      },
+      "subset_size": {
+        "type": "int",
+        "minimum": -1
+      },
+      "verbose": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "undirected": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1
+      }
+    },
+    "docker_parameters": {} 
+  },
+  {
+    "package": "bnlearn",
+    "function": "rsmax2",
+    "script_filename": "bnlearn_rsmax2.r",
+    "docker_image": "mpci_execution_r",
+    "description": "Bnlearn Hybrid of Constrained-Based and Score-Based R-implementation",
+    "valid_parameters": {
+      "restrict": {
+        "type": "enum",
+        "required": true,
+        "values": [
+          "pc.stable",
+          "gs",
+          "iamb",
+          "fast.iamb",
+          "inter.iamb",
+          "iamb.fdr"
+        ]
+      },
+      "maximize": {
+        "type": "enum",
+        "required": true,
+        "values": [
+          "hc",
+          "tabu"
+        ]
+      },
+      "restrict_args": {
+        "type": "str"
+      },
+      "maximize_args": {
+
+        "type": "str"
+      },
+      "verbose": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "discrete_limit": {
+        "type": "int",
+        "minimum": 3,
+        "default": 4
+      } 
+    },
+    "docker_parameters": {} 
+  },
+  {
+    "function": "cupc",
+    "package": "cuPC-S",
+    "script_filename": "cupc.r",
+    "docker_image":  "mpci_execution_cuda",
+    "description": "cupc - CUDA implementation",
+    "valid_parameters": {
+      "alpha": {
+        "type": "float",
+        "required": true,
+        "minimum": 0.0,
+        "maximum": 1.0
+      },
+      "verbose": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0
+      },
+      "subset_size": {
+        "type": "int",
+        "minimum": -1
+      }
+    },
+    "needs_gpu": true,
+    "docker_parameters": {"runtime": "nvidia"}
   }
 ]

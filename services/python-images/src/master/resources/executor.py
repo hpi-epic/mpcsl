@@ -47,14 +47,16 @@ class ExecutorResource(Resource):
         node_hostname = None
         parallel = True
         runs = 1
+        gpus = None
         body = request.json
         if body:
             node_hostname = body.get("node")
-            runs = request.json.get('runs')
-            parallel = request.json.get('parallel')
+            runs = body.get('runs')
+            parallel = body.get('parallel')
+            gpus = body.get('gpus')
         for i in range(runs):
             new_job = Job(experiment=experiment, start_time=datetime.now(),
-                          status=JobStatus.waiting, node_hostname=node_hostname, parallel=parallel)
+                          status=JobStatus.waiting, node_hostname=node_hostname, parallel=parallel, gpus=gpus)
             db.session.add(new_job)
         db.session.commit()
 

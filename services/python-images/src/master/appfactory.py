@@ -30,16 +30,19 @@ class AppFactory(object):
         self.socketio = SocketIO(self.app)
 
         @event.listens_for(Job, 'after_update')
-        def emitJobUpdate(mapper, connection, target):
-            self.socketio.emit('job', {'id': target.id})
+        def emitJobUpdate(mapper, connection, target: Job):
+            self.socketio.emit('job', {'id': target.id, 'errorCode': target.error_code})
+            self.socketio.emit('experiment', {'id': target.experiment_id})
 
         @event.listens_for(Job, 'after_insert')
         def emitJobInsert(mapper, connection, target):
             self.socketio.emit('job', {'id': target.id})
+            self.socketio.emit('experiment', {'id': target.experiment_id})
 
         @event.listens_for(Job, 'after_delete')
         def emitJobDelete(mapper, connection, target):
             self.socketio.emit('job', {'id': target.id})
+            self.socketio.emit('experiment', {'id': target.experiment_id})
 
         @event.listens_for(Experiment, 'after_update')
         def emitExperimentUpdate(mapper, connection, target):

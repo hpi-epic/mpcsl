@@ -2,7 +2,7 @@ from .base import BaseModel, BaseSchema
 from .algorithm import Algorithm, AlgorithmSchema
 from .dataset import Dataset, DatasetSchema
 from .experiment import Experiment, ExperimentSchema
-from .job import Job, JobSchema, JobStatus
+from .job import Job, JobSchema, JobStatus, JobErrorCode
 from .result import Result, ResultSchema
 from .node import Node, NodeSchema
 from .edge import Edge, EdgeSchema
@@ -29,6 +29,7 @@ __all__ = [
     'Job',
     'JobSchema',
     'JobStatus',
+    'JobErrorCode',
     'EdgeAnnotation',
     'EdgeInformation',
     'EdgeInformationSchema'

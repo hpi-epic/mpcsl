@@ -33,7 +33,8 @@ class AlgorithmFactory(BaseFactory):
         model = Algorithm
         sqlalchemy_session = db.session
 
-    name = factory.Faker('word')
+    package = factory.Faker('word')
+    function = factory.Faker('word')
     script_filename = 'pcalg.r'
     description = ''
     docker_image = 'mpci_execution_r'

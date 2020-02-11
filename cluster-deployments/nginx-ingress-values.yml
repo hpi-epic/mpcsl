@@ -1,0 +1,7 @@
+# stable/nginx-ingress
+controller:
+  service:
+    externalIPs:
+      - 192.168.30.20
+      - 192.168.31.32
+      - 192.168.30.27

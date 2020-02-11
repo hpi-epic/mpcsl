@@ -1,0 +1,6 @@
+# stable/nfs-client-provisioner
+nfs:
+  server: 192.168.30.7
+  path: /data/mpws2019
+storageClass:
+  defaultClass: true

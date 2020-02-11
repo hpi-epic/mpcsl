@@ -1,13 +1,8 @@
-FROM nvidia/cuda:10.2-devel-ubuntu16.04
+FROM nvidia/cuda:10.1-devel-ubuntu18.04
 ENV DEBIAN_FRONTEND noninteractive
 # Install rbase
 RUN apt-get update
-RUN apt-get install -y software-properties-common apt-transport-https ca-certificates
-RUN apt-get update
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-RUN add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
-RUN apt-get update
-RUN apt-get install -y r-base
+RUN apt-get install -y r-base r-base-dev
 
 # Install r depedencies
 RUN apt-get install -y libv8-dev libcurl4-openssl-dev libssl-dev

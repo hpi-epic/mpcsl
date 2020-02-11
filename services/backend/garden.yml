@@ -12,7 +12,6 @@ values:
   image:
     repository: ${modules.backend-image.outputs.deployment-image-name}
     tag: ${modules.backend-image.version}
-  postgresqlPassword: ${var.postgres-password}
   postgresqlUsername: ${var.postgres-user}
   ingress:
     hosts: ${var.node-hosts}

@@ -10,12 +10,11 @@ environments:
       postgres-user: admin
       postgres-password: admin
       node-hosts: ""
-      postgres-storage-class: ""
       node-name: minikube
-  - name: delos
+  - name: mpci
     providers:
       - name: kubernetes
-        context: delos
+        context: mpci
         deploymentRegistry:
           hostname: docker.io
           namespace: milanpro
@@ -24,12 +23,11 @@ environments:
       postgres-user: admin
       postgres-password: admin
       node-hosts: vm-mpws2019.eaalab.hpi.uni-potsdam.de
-      postgres-storage-class: nfs-client
       node-name: vm-mpws2019
-  - name: porsche
+  - name: porsche-mpci
     providers:
       - name: kubernetes
-        context: delos
+        context: mpci
         namespace: porsche-mpci
         deploymentRegistry:
           hostname: docker.io
@@ -39,5 +37,4 @@ environments:
       postgres-user: admin
       postgres-password: admin
       node-hosts: vm-mpws2018-proj.eaalab.hpi.uni-potsdam.de, mpci.epic-hpi.de
-      postgres-storage-class: nfs-client
       node-name: vm-mpws2018-proj

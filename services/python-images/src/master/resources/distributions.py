@@ -1,5 +1,6 @@
 import numpy as np
-from flask_restful import Resource, abort
+import pandas as pd
+from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 from marshmallow import fields, validates, Schema, ValidationError
 
@@ -8,6 +9,8 @@ from src.master.helpers.io import marshal, load_data, InvalidInputData
 from src.master.helpers.swagger import get_default_response, oneOf
 from src.models import Node, BaseSchema
 from src.models.swagger import SwaggerMixin
+
+DISCRETE_LIMIT = 10
 
 
 class DistributionSchema(BaseSchema, SwaggerMixin):
@@ -54,7 +57,7 @@ class MarginalDistributionResource(Resource):
         result = session.execute(f"SELECT \"{node.name}\" FROM ({dataset.load_query}) _subquery_").fetchall()
         values = [line[0] for line in result]
 
-        if len(np.unique(values)) <= 10:  # Categorical
+        if len(np.unique(values)) <= DISCRETE_LIMIT:  # Categorical
             bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(values, return_counts=True))])
             return marshal(DiscreteDistributionSchema, {
                 'node': node,
@@ -172,6 +175,10 @@ class ConditionalDistributionResource(Resource):
 
         conditions = load_data(ConditionalParameterSchema)['conditions']
         base_query = f"SELECT \"{node.name}\" FROM ({dataset.load_query}) _subquery_"
+
+        base_result = session.execute(base_query).fetchall()
+        _, node_bins = np.histogram([line[0] for line in base_result], bins='auto')
+
         predicates = []
         for condition_node_id, condition in conditions.items():
             node_name = Node.query.get_or_404(condition_node_id).name
@@ -181,7 +188,7 @@ class ConditionalDistributionResource(Resource):
                 node_res = session.execute(f"SELECT \"{node_name}\" "
                                            f"FROM ({dataset.load_query}) _subquery_").fetchall()
                 node_data = [line[0] for line in node_res]
-                if len(np.unique(node_data)) <= 10:
+                if len(np.unique(node_data)) <= DISCRETE_LIMIT:
                     values, counts = np.unique(node_data, return_counts=True)
                     condition['values'] = [values[np.argmax(counts)]]
                     condition['categorical'] = True
@@ -198,7 +205,7 @@ class ConditionalDistributionResource(Resource):
                 predicates.append(f"\"{node_name}\" >= {repr(condition['from_value'])}")
                 predicates.append(f"\"{node_name}\" <= {repr(condition['to_value'])}")
         categorical_check = session.execute(f"SELECT 1 FROM ({dataset.load_query}) _subquery_ "
-                                            f"HAVING COUNT(DISTINCT \"{node_name}\") <= 10").fetchall()
+                                            f"HAVING COUNT(DISTINCT \"{node_name}\") <= {DISCRETE_LIMIT}").fetchall()
         is_categorical = len(categorical_check) > 0
 
         query = base_query if len(predicates) == 0 else base_query + " WHERE " + ' AND '.join(predicates)
@@ -214,7 +221,7 @@ class ConditionalDistributionResource(Resource):
                 'conditions': conditions
             })
         else:
-            hist, bin_edges = np.histogram(data, bins='auto', density=False)
+            hist, bin_edges = np.histogram(data, bins=node_bins, density=False)
             return marshal(ConditionalContinuousDistributionSchema, {
                 'node': node,
                 'dataset': dataset,
@@ -227,8 +234,13 @@ class ConditionalDistributionResource(Resource):
 class InterventionalParameterSchema(Schema, SwaggerMixin):
     cause_node_id = fields.Int(required=True)
     effect_node_id = fields.Int(required=True)
-    factor_node_ids = fields.String(default=[])
-    cause_condition = fields.String(required=True)
+    factor_node_ids = fields.List(fields.Int(), default=[])
+    cause_condition = fields.Dict()
+
+    @validates('cause_condition')
+    def validate_params(self, cond):
+        if DiscreteConditionSchema().validate(cond) and ContinuousConditionSchema().validate(cond):  # errors on both
+            raise ValidationError(f'Condition must conform to DiscreteConditionSchema or ContinuousConditionSchema')
 
 
 class InterventionalDistributionResource(Resource):
@@ -239,63 +251,82 @@ class InterventionalDistributionResource(Resource):
             {
                 'name': 'cause_node_id',
                 'description': 'Node identifier of cause',
-                'in': 'query',
-                'type': 'integer',
+                'in': 'body',
+                'schema': {
+                    'type': 'integer',
+                },
                 'required': True
             },
             {
                 'name': 'effect_node_id',
                 'description': 'Node identifier of effect',
-                'in': 'query',
-                'type': 'integer',
+                'in': 'body',
+                'schema': {
+                    'type': 'integer',
+                },
                 'required': True
             },
             {
                 'name': 'factor_node_ids',
                 'description': 'Node identifiers of external factors',
-                'in': 'query',
-                'type': 'array',
-                'items': {'type': 'integer'},
+                'in': 'body',
+                'schema': {
+                    'type': 'array',
+                    'items': {'type': 'integer'},
+                },
                 'default': []
             },
             {
                 'name': 'cause_condition',
-                'description': 'Interventional value of cause',
-                'in': 'query',
-                'type': 'string',
-                'required': True
+                'description': 'Interventional value(s) of cause',
+                'required': True,
+                'in': 'body',
+                'schema': oneOf([DiscreteConditionSchema, ContinuousConditionSchema]).get_swagger(True)
             }
         ],
-        'responses': get_default_response(DiscreteDistributionSchema.get_swagger()),
+        'responses': get_default_response(oneOf([DiscreteDistributionSchema,
+                                                 ContinuousDistributionSchema]).get_swagger()),
         'tags': ['Node', 'Distribution']
     })
-    def get(self):
-        data = load_data(InterventionalParameterSchema, 'args')
+    def post(self):
+        data = load_data(InterventionalParameterSchema)
+        cause_condition = data['cause_condition']
 
         cause_node = Node.query.get_or_404(data['cause_node_id'])
         effect_node = Node.query.get_or_404(data['effect_node_id'])
         try:
-            factor_node_ids = [int(e) for e in data['factor_node_ids'].split(',')] \
-                if data.get('factor_node_ids', []) else []
+            factor_node_ids = data.get('factor_node_ids', [])
             factor_nodes = [Node.query.get_or_404(factor_node_id) for factor_node_id in factor_node_ids]
         except ValueError:
             raise InvalidInputData('factor_node_ids must be array of ints')
 
         dataset = effect_node.dataset
-        assert all([n.dataset == dataset for n in [cause_node] + factor_nodes])
+        if not all([n.dataset == dataset for n in [cause_node] + factor_nodes]):
+            raise InvalidInputData('Nodes are not all from same dataset')
         session = get_db_session(dataset)
 
-        categorical_check = session.execute(f"SELECT 1 FROM ({dataset.load_query}) _subquery_ "
-                                            f"HAVING COUNT(DISTINCT \"{effect_node.name}\") <= 10").fetchall()
-        is_categorical = len(categorical_check) > 0
+        categorical_query = (f"SELECT 1 FROM ({dataset.load_query}) _subquery_ HAVING "
+                             f"COUNT(DISTINCT \"{effect_node.name}\") <= {DISCRETE_LIMIT} AND "
+                             f"COUNT(DISTINCT \"{cause_node.name}\") <= {DISCRETE_LIMIT}")
+        for factor_node in factor_nodes:
+            categorical_query += f" AND COUNT(DISTINCT \"{factor_node.name}\") <= {DISCRETE_LIMIT}"
+        categorical_check = session.execute(categorical_query).fetchall()
+        is_fully_categorical = len(categorical_check) > 0
 
-        if is_categorical:  # Categorical
+        if is_fully_categorical:  # Categorical, can be done in DB
             # cause c, effect e, factors F
             # P(e|do(c)) = \Sigma_{F} P(e|c,f) P(f)
             category_query = session.execute(f"SELECT DISTINCT \"{effect_node.name}\" "
                                              f"FROM ({dataset.load_query}) _subquery_").fetchall()
             categories = [row[0] for row in category_query]
             num_of_obs = session.execute(f"SELECT COUNT(*) FROM ({dataset.load_query}) _subquery_").fetchone()[0]
+
+            if cause_condition['categorical']:
+                cause_predicate = (f"_subquery_.\"{cause_node.name}\" IN "
+                                   f"({','.join(map(repr, cause_condition['values']))})")
+            else:
+                cause_predicate = (f"_subquery_.\"{cause_node.name}\" >= {repr(cause_condition['from_value'])} AND "
+                                   f"_subquery_.\"{cause_node.name}\" < {repr(cause_condition['from_value'])}")
 
             probabilities = []
             for category in categories:
@@ -304,9 +335,8 @@ class InterventionalDistributionResource(Resource):
                 else:
                     do_sql = f"SELECT " \
                              f"COUNT(*) AS group_count, " \
-                             f"COUNT(CASE WHEN _subquery_.\"{cause_node.name}\"={repr(data['cause_condition'])} " \
-                             f"THEN 1 ELSE NULL END) AS marginal_count, " \
-                             f"COUNT(CASE WHEN _subquery_.\"{cause_node.name}\" = {repr(data['cause_condition'])} " \
+                             f"COUNT(CASE WHEN {cause_predicate} THEN 1 ELSE NULL END) AS marginal_count, " \
+                             f"COUNT(CASE WHEN {cause_predicate} " \
                              f"AND _subquery_.\"{effect_node.name}\"={repr(category)} THEN 1 ELSE NULL END) " \
                              f"AS conditional_count FROM ({dataset.load_query}) _subquery_ "
                     if len(factor_nodes) > 0:
@@ -323,10 +353,55 @@ class InterventionalDistributionResource(Resource):
                     probabilities.append(probability)
 
             bins = dict([(str(cat), round(num_of_obs * float(prob))) for cat, prob in zip(categories, probabilities)])
+
             return marshal(DiscreteDistributionSchema, {
                 'node': effect_node,
                 'dataset': dataset,
                 'bins': bins
             })
         else:
-            abort(501)
+            factor_str = (', ' + ', '.join([f'"{n.name}"' for n in factor_nodes])) if len(factor_nodes) > 0 else ''
+            result = session.execute(f"SELECT \"{cause_node.name}\", \"{effect_node.name}\"{factor_str} "
+                                     f"FROM ({dataset.load_query}) _subquery_").fetchall()
+            arr = np.array([line for line in result])
+
+            _, bin_edges = np.histogram(arr[:, 1], bins='auto')
+
+            arr[:, 1:] = np.apply_along_axis(
+                lambda c: np.digitize(c, np.histogram(c, bins='auto')[1][:-1]), 0, arr[:, 1:])
+            df = pd.DataFrame(arr, columns=([cause_node.name] + [effect_node.name] + [f.name for f in factor_nodes]))
+
+            # return df.to_json()
+
+            probabilities = []
+            for i, (effect_group, _) in enumerate(df.groupby(effect_node.name)):
+                if i >= len(bin_edges) - 2:
+                    probabilities.append(1 - sum(probabilities))
+                else:
+                    group_counts, marg_counts, cond_counts = [], [], []
+                    factor_grouping = df.groupby(df.columns[2:].tolist()) if len(df.columns) > 2 else [('', df)]
+                    for factor_group, factor_df in factor_grouping:
+                        if cause_condition['categorical']:
+                            cause_mask = factor_df[cause_node.name].isin(map(repr, cause_condition['values']))
+                        else:
+                            cause_mask = ((factor_df[cause_node.name] >= cause_condition['from_value']) &
+                                          (factor_df[cause_node.name] < cause_condition['to_value']))
+
+                        group_counts.append(len(factor_df))
+                        marg_counts.append(len(factor_df[cause_mask]))
+                        cond_counts.append(len(factor_df[cause_mask & (factor_df[effect_node.name] == effect_group)]))
+
+                    probability = sum([
+                        (cond_count / marg_count) * (group_count / sum(group_counts))
+                        for group_count, marg_count, cond_count in zip(group_counts, marg_counts, cond_counts)
+                        if marg_count > 0
+                    ])
+                    probabilities.append(probability)
+
+            bins = [round(len(df) * float(prob)) for prob in probabilities]
+            return marshal(ContinuousDistributionSchema, {
+                'node': effect_node,
+                'dataset': dataset,
+                'bins': bins,
+                'bin_edges': bin_edges,
+            })

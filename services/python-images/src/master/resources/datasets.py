@@ -197,10 +197,9 @@ class DatasetListResource(Resource):
             ds = Dataset(**data)
 
             db.session.add(ds)
+            db.session.commit()
 
             add_dataset_nodes(ds)
-
-            db.session.commit()
         except DatabaseError:
             raise BadRequest(f'Could not execute query "{ds.load_query}" on database "{ds.data_source}"')
 

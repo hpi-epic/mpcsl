@@ -112,7 +112,8 @@ class ResultCompareResource(Resource):
         jaccard_coefficients = Result.get_jaccard_coefficients(g1, ground_truth)
         error_types = Result.get_error_types(g1, ground_truth)
         ground_truth_statistics = {
-            'graph_edit_distance': nx.graph_edit_distance(ground_truth, g1),
+            'graph_edit_distance':
+                len(error_types['false_positives']['edges']) + len(error_types['false_negatives']['edges']),
             'mean_jaccard_coefficient':
                 sum(jaccard_coefficients) / len(jaccard_coefficients) if jaccard_coefficients else 0,
             'error_types': error_types
@@ -152,7 +153,8 @@ class ResultCompareGTResource(Resource):
             jaccard_coefficients = Result.get_jaccard_coefficients(g1, ground_truth)
             error_types = Result.get_error_types(g1, ground_truth)
             return {
-                'graph_edit_distance': nx.graph_edit_distance(ground_truth, g1),
+                'graph_edit_distance':
+                    len(error_types['false_positives']['edges']) + len(error_types['false_negatives']['edges']),
                 'mean_jaccard_coefficient':
                     sum(jaccard_coefficients) / len(jaccard_coefficients) if jaccard_coefficients else 0,
                 'error_types': error_types

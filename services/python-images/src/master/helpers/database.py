@@ -49,7 +49,7 @@ def add_dataset_nodes(dataset):
     for key in result.keys():
         node = Node(name=key, dataset=dataset)
         db.session.add(node)
-        db.session.commit()
+    db.session.commit()
 
 
 def get_db_session(dataset):

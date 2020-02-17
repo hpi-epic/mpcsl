@@ -108,11 +108,12 @@ class JobResource(Resource):
         'tags': ['Job', 'Executor']
     })
     def post(self, job_id):
+        job: Job = Job.query.get_or_404(job_id)
         content = request.json
         error_code = content['error_code']
         if error_code is not None:
             error_code = int(error_code)
-        job_status_change(job_id, error_code)
+        job_status_change(job, error_code)
         return "ok"
 
 

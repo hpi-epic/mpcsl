@@ -65,12 +65,7 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, independenc
         for (edge in edges[[node]]){
             edge_list[['from_node']][[i]] <- as.numeric(colnames(df)[strtoi(node)])
             edge_list[['to_node']][[i]] <- as.numeric(colnames(df)[strtoi(edge)])
-
-            weight <- estimate_weight(
-                node, edge, graph, df,
-                continuous=(independence_test != 'binCI' && independence_test != 'disCI')
-            )
-            edge_list[['weight']][[i]] <- weight
+            edge_list[['weight']][[i]] <- 0
 
             i <- i + 1
         }

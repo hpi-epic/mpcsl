@@ -7,6 +7,7 @@ from werkzeug.exceptions import BadRequest
 from src.db import db
 from src.master.db import data_source_connections
 from src.models import Node, EdgeInformation
+from src.master.helpers.socketio_events import dataset_node_change
 
 
 def load_networkx_graph(result):
@@ -49,7 +50,8 @@ def add_dataset_nodes(dataset):
     for key in result.keys():
         node = Node(name=key, dataset=dataset)
         db.session.add(node)
-        db.session.commit()
+    db.session.commit()
+    dataset_node_change(dataset.id)
 
 
 def get_db_session(dataset):

@@ -300,7 +300,7 @@
     "function": "cupc",
     "package": "cuPC-S",
     "script_filename": "cupc.r",
-    "docker_image":  "mpci_execution_cuda",
+    "docker_image":  "mpci_execution_cupc",
     "description": "cupc - CUDA implementation",
     "valid_parameters": {
       "alpha": {

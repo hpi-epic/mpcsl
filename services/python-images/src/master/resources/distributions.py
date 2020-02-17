@@ -372,29 +372,27 @@ class InterventionalDistributionResource(Resource):
             df = pd.DataFrame(arr, columns=([cause_node.name] + [effect_node.name] + [f.name for f in factor_nodes]))
 
             probabilities = []
-            for i, (effect_group, _) in enumerate(df.groupby(effect_node.name)):
-                if i >= len(bin_edges) - 2:
-                    probabilities.append(1 - sum(probabilities))
-                else:
-                    group_counts, marg_counts, cond_counts = [], [], []
-                    factor_grouping = df.groupby(df.columns[2:].tolist()) if len(df.columns) > 2 else [('', df)]
-                    for factor_group, factor_df in factor_grouping:
-                        if cause_condition['categorical']:
-                            cause_mask = factor_df[cause_node.name].isin(map(repr, cause_condition['values']))
-                        else:
-                            cause_mask = ((factor_df[cause_node.name] >= cause_condition['from_value']) &
-                                          (factor_df[cause_node.name] < cause_condition['to_value']))
+            for effect_bin in range(1, len(bin_edges) - 1):
+                group_counts, marg_counts, cond_counts = [], [], []
+                factor_grouping = df.groupby(df.columns[2:].tolist()) if len(df.columns) > 2 else [('', df)]
+                for factor_group, factor_df in factor_grouping:
+                    if cause_condition['categorical']:
+                        cause_mask = factor_df[cause_node.name].isin(map(repr, cause_condition['values']))
+                    else:
+                        cause_mask = ((factor_df[cause_node.name] >= cause_condition['from_value']) &
+                                      (factor_df[cause_node.name] < cause_condition['to_value']))
 
-                        group_counts.append(len(factor_df))
-                        marg_counts.append(len(factor_df[cause_mask]))
-                        cond_counts.append(len(factor_df[cause_mask & (factor_df[effect_node.name] == effect_group)]))
+                    group_counts.append(len(factor_df))
+                    marg_counts.append(len(factor_df[cause_mask]))
+                    cond_counts.append(len(factor_df[cause_mask & (factor_df[effect_node.name] == effect_bin)]))
 
-                    probability = sum([
-                        (cond_count / marg_count) * (group_count / sum(group_counts))
-                        for group_count, marg_count, cond_count in zip(group_counts, marg_counts, cond_counts)
-                        if marg_count > 0
-                    ])
-                    probabilities.append(probability)
+                probability = sum([
+                    (cond_count / marg_count) * (group_count / sum(group_counts))
+                    for group_count, marg_count, cond_count in zip(group_counts, marg_counts, cond_counts)
+                    if marg_count > 0
+                ])
+                probabilities.append(probability)
+            probabilities.append(1 - sum(probabilities))
 
             bins = [round(len(df) * float(prob)) for prob in probabilities]
             return marshal(ContinuousDistributionSchema, {

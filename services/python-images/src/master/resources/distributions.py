@@ -371,8 +371,6 @@ class InterventionalDistributionResource(Resource):
                 lambda c: np.digitize(c, np.histogram(c, bins='auto')[1][:-1]), 0, arr[:, 1:])
             df = pd.DataFrame(arr, columns=([cause_node.name] + [effect_node.name] + [f.name for f in factor_nodes]))
 
-            # return df.to_json()
-
             probabilities = []
             for i, (effect_group, _) in enumerate(df.groupby(effect_node.name)):
                 if i >= len(bin_edges) - 2:

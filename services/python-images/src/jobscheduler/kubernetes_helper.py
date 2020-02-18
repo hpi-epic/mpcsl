@@ -85,14 +85,19 @@ async def create_job(job: Job, experiment: Experiment):
                 "kubernetes.io/hostname": job.node_hostname
             }
             default_job["spec"]["template"]["spec"]["nodeSelector"] = nodeSelector
-        if job.gpus is not None:
-            container["resources"] = {
-                "limits": {
-                    "nvidia.com/gpu": str(job.gpus)
-                }
+        container["resources"] = {
+                'limits': {},
+                'requests': {}
             }
+        if job.enforce_cpus and ('cores' in experiment.parameters):
+            container["resources"]['limits']['cpu'] = experiment.parameters['cores']
+            container["resources"]['requests']['cpu'] = experiment.parameters['cores']
+        if job.gpus is not None:
+            container["resources"]['limits']['nvidia.com/gpu'] = str(job.gpus)
+            container["resources"]['requests']['nvidia.com/gpu'] = str(job.gpus)
         try:
             logging.info(f'Starting Job with ID {job.id}')
+            print(container)
             result = api_instance.create_namespaced_job(namespace=K8S_NAMESPACE, body=default_job, pretty=True)
             return result.metadata.name
         except ApiException as e:

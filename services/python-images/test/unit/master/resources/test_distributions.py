@@ -151,14 +151,18 @@ class InterventionalDistributionTest(BaseResourceTest):
         effect_node = NodeFactory(dataset=ds, name='V4')
         factor_nodes = [NodeFactory(dataset=ds, name='V2')]
         treatment = '7'
+        data = {
+            'cause_node_id': cause_node.id,
+            'effect_node_id': effect_node.id,
+            'factor_node_ids': [n.id for n in factor_nodes],
+            'cause_condition': {
+                'categorical': True,
+                'values': [treatment]
+            }
+        }
 
         # When
-        factor_nodes_str = ','.join([str(n.id) for n in factor_nodes])
-        distribution = self.get(
-            self.url_for(InterventionalDistributionResource) +
-            f'?cause_node_id={cause_node.id}&effect_node_id={effect_node.id}' +
-            f'&factor_node_ids={factor_nodes_str}&cause_condition={treatment}'
-        )
+        distribution = self.post(self.url_for(InterventionalDistributionResource), json=data)
 
         # Then
         assert 'node' in distribution
@@ -180,7 +184,7 @@ class InterventionalDistributionTest(BaseResourceTest):
             '1': 125
         }
 
-    def test_noncategorical_raises(self):
+    def test_noncategorical(self):
         # Given
         df = pd.read_csv('test/fixtures/coolinghouse_1k.csv', index_col=0)  # More than 10 categories
         df.to_sql('test_data2', con=db.engine, index=False)
@@ -190,21 +194,35 @@ class InterventionalDistributionTest(BaseResourceTest):
         )
         db.session.commit()
 
-        cause_node = NodeFactory(dataset=ds, name='V3')
-        effect_node = NodeFactory(dataset=ds, name='V4')
-        factor_nodes = [NodeFactory(dataset=ds, name='V2')]
-        treatment = '19'
+        cause_node = NodeFactory(dataset=ds, name='V4')
+        effect_node = NodeFactory(dataset=ds, name='V2')
+        factor_nodes = [NodeFactory(dataset=ds, name='V6')]
+        data = {
+            'cause_node_id': cause_node.id,
+            'effect_node_id': effect_node.id,
+            'factor_node_ids': [n.id for n in factor_nodes],
+            'cause_condition': {
+                'categorical': False,
+                'from_value': 0.0,
+                'to_value': 5.0
+            }
+        }
 
         # When
-        factor_nodes_str = ','.join([str(n.id) for n in factor_nodes])
-        distribution = self.get(
-            self.url_for(InterventionalDistributionResource) +
-            f'?cause_node_id={cause_node.id}&effect_node_id={effect_node.id}' +
-            f'&factor_node_ids={factor_nodes_str}&cause_condition={treatment}',
-            parse_result=False
-        )
+        distribution = self.post(self.url_for(InterventionalDistributionResource), json=data)
 
-        assert distribution.status_code == 501
+        # Then
+        assert distribution['bins'] == [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 34, 62, 76, 107, 51, 35, 21, 1, 3, 0, 0, 0, 0, 0, 0, 0, 601
+        ]
+        assert distribution['bin_edges'] == [
+            -3.75535790044119, -3.4878381827126006, -3.2203184649840106, -2.952798747255421, -2.685279029526831,
+            -2.4177593117982417, -2.150239594069652, -1.8827198763410624, -1.6152001586124727, -1.3476804408838832,
+            -1.0801607231552932, -0.8126410054267037, -0.5451212876981142, -0.27760156996952423, -0.010081852240934719,
+            0.25743786548765524, 0.5249575832162447, 0.7924773009448343, 1.0599970186734238, 1.3275167364020142,
+            1.5950364541306037, 1.8625561718591932, 2.1300758895877827, 2.3975956073163722, 2.6651153250449617,
+            2.932635042773552, 3.2001547605021416, 3.467674478230731, 3.7351941959593207, 4.00271391368791
+        ]
 
     def test_empty_factors(self):
         # Given
@@ -221,16 +239,19 @@ class InterventionalDistributionTest(BaseResourceTest):
         effect_node = NodeFactory(dataset=ds, name='V4')
         factor_nodes = []
         treatment = '19'
+        data = {
+            'cause_node_id': cause_node.id,
+            'effect_node_id': effect_node.id,
+            'factor_node_ids': [n.id for n in factor_nodes],
+            'cause_condition': {
+                'categorical': True,
+                'values': [treatment]
+            }
+        }
 
         # When
-        factor_nodes_str = ','.join([str(n.id) for n in factor_nodes])
-        distribution = self.get(
-            self.url_for(InterventionalDistributionResource) +
-            f'?cause_node_id={cause_node.id}&effect_node_id={effect_node.id}' +
-            f'&factor_node_ids={factor_nodes_str}&cause_condition={treatment}'
-        )
+        distribution = self.post(self.url_for(InterventionalDistributionResource), json=data)
 
-        print(distribution)
         # Then
         assert 'node' in distribution
         assert distribution['node']['id'] == effect_node.id

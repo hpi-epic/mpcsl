@@ -35,6 +35,7 @@ class Job(BaseModel):
     status = db.Column(db.Enum(JobStatus), nullable=False)
     log = db.Column(db.String)
     parallel = db.Column(db.Boolean)
+    enforce_cpus = db.Column(db.Boolean, default=True)
     gpus = db.Column(db.Integer)
     error_code = db.Column(db.Enum(JobErrorCode))
 

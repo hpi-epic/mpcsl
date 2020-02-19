@@ -16,6 +16,8 @@ values:
   ingress:
     hosts: ${var.node-hosts}
   nodeName: ${var.node-name}
+valueFiles:
+  - values-${environment.name}.yaml
 tasks:
   - name: migrate-db
     args: [flask, db, upgrade]

@@ -56,7 +56,9 @@ if (opt$independence_test == "gaussCI") {
         sufficient_stats <- list(dm=matrix_df, adaptDF=FALSE, nlev=nlev)
     }
     # avoid segfaults in C++ extension, limit numCores to 1
-    opt$cores <- 1
+    if (opt$independence_test == "binCI"){
+        opt$cores <- 1
+    }
 } else{
     stop("No valid independence test specified")
 }

@@ -146,6 +146,10 @@ class DatasetGroundTruthUpload(Resource):
                     from_node_index = node.id
                 if to_node_label == node.name:
                     to_node_index = node.id
+            if from_node_index is None:
+                raise BadRequest(f'No node with Label: "{from_node_label}" in {ds.name}')
+            if to_node_index is None:
+                raise BadRequest(f'No node with Label: "{to_node_label}" in {ds.name}')
             edge = Edge(result_id=None, from_node_id=from_node_index,
                         to_node_id=to_node_index, weight=None, is_ground_truth=True)
             db.session.add(edge)

@@ -8,11 +8,13 @@ class Edge(BaseModel):
 
     from_node_id = db.Column(db.Integer, db.ForeignKey('node.id'), nullable=False)
     from_node = db.relationship('Node', foreign_keys=[from_node_id],
-                                backref=db.backref('edge_froms'))
+                                backref=db.backref('edge_froms',
+                                cascade="all, delete-orphan"))
 
     to_node_id = db.Column(db.Integer, db.ForeignKey('node.id'), nullable=False)
     to_node = db.relationship('Node', foreign_keys=[to_node_id],
-                              backref=db.backref('edge_tos'))
+                              backref=db.backref('edge_tos',
+                              cascade="all, delete-orphan"))
 
     weight = db.Column(db.Float)
 

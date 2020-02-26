@@ -133,9 +133,15 @@ class DatasetTest(BaseResourceTest):
     def test_change_dataset_description(self):
         ds = DatasetFactory()
         ds.description = '1'
-        result = self.put(self.url_for(DatasetResource, dataset_id=ds.id, json={'description': '2'}))
+        result = self.put(self.url_for(DatasetResource,
+                                       dataset_id=ds.id,
+                                       json={'description': '2'},
+                                       content_type='application/json'))
         assert ds.description == '2'
-        result = self.put(self.url_for(DatasetResource, dataset_id=ds.id, json={'asfasf': '3'}))
+        result = self.put(self.url_for(DatasetResource,
+                                       dataset_id=ds.id,
+                                       json={'asfasf': '3'},
+                                       content_type='application/json'))
         assert ds.description == '2'
         assert result.statuscode == 400
 

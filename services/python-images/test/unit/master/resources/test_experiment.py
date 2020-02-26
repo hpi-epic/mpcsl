@@ -35,12 +35,18 @@ class ExperimentTest(BaseResourceTest):
         assert result['parameters']['alpha'] == ex.parameters['alpha']
         assert result['last_job']['id'] == job.id
 
-    def test_change_expeirment_description(self):
+    def test_change_experiment_description(self):
         ex = ExperimentFactory()
         ex.description = '1'
-        result = self.put(self.url_for(ExperimentResource, experiment_id=ex.id, json={'description': '2'}))
+        result = self.put(self.url_for(ExperimentResource,
+                                       experiment_id=ex.id,
+                                       json={'description': '2'},
+                                       content_type='application/json'))
         assert ex.description == '2'
-        result = self.put(self.url_for(ExperimentResource, dataset_id=ex.id, json={'asfasf': '3'}))
+        result = self.put(self.url_for(ExperimentResource,
+                                       experiment_id=ex.id,
+                                       json={'description': '2'},
+                                       content_type='application/json'))
         assert ex.description == '2'
         assert result.statuscode == 400
 

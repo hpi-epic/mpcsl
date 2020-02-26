@@ -64,6 +64,38 @@ class DatasetResource(Resource):
         db.session.commit()
         return data
 
+    @swagger.doc({
+        'description': 'Updates a dataset',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'Dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },
+            {
+                'name': 'dataset',
+                'description': 'Dataset parameters. Only description is editable',
+                'in': 'body',
+                'schema': DatasetSchema.get_swagger(True)
+            }
+        ],
+        'responses': get_default_response(DatasetSchema.get_swagger()),
+        'tags': ['Dataset']
+    })
+    def put(self, dataset_id):
+        description = request.json.get('description')
+        dataset = Dataset.query.get_or_404(dataset_id)
+        if description:
+            dataset.description = description
+        else:
+            raise BadRequest('Body must contain description')
+
+        db.session.commit()
+
+        return marshal(DatasetSchema, dataset)
+
 
 class DatasetMetadataSchema(Schema, SwaggerMixin):
     variables = fields.Integer()
@@ -123,18 +155,11 @@ class DatasetGroundTruthUpload(Resource):
         except Exception:
             raise BadRequest(f'Could not parse file: "{file.filename}"')
         ds = Dataset.query.get_or_404(dataset_id)
-        already_has_ground_truth = False
         for node in ds.nodes:
             for edge in node.edge_froms:
                 if edge.is_ground_truth:
-                    already_has_ground_truth = True
-                    break
-            if already_has_ground_truth:
-                break
-
-        if already_has_ground_truth:
-            raise BadRequest(f'Ground-Truth Graph for Dataset {dataset_id} already exists!')
-
+                    db.session.delete(edge)
+        db.session.flush()
         for edge in graph.edges:
             from_node_label = edge[0]
             to_node_label = edge[1]

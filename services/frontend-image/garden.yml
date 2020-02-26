@@ -7,6 +7,7 @@ type: container
 include:
   - frontend.Dockerfile
   - nginx.conf
+  - h5bp/**/*
   - swagger/**/*
   - src/src/**/*
 build:

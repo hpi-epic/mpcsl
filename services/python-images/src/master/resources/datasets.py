@@ -91,7 +91,7 @@ class DatasetResource(Resource):
             dataset.description = description
         else:
             raise BadRequest('Body must contain description')
- 
+
         db.session.commit()
 
         return marshal(DatasetSchema, dataset)

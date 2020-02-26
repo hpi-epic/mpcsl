@@ -118,9 +118,9 @@ class NodeListContextResource(Resource):
         'tags': ['Node']
     })
     def get(self, result_id):
-        nodes = Node.query.all()
+        result: Result = Result.query.get_or_404(result_id)
         node_contexts = []
-        for node in nodes:
+        for node in result.job.experiment.dataset.nodes:
             main_node: Node = node
             edges = Edge.query.filter(
                 Edge.result_id == result_id,

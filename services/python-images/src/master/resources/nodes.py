@@ -98,6 +98,45 @@ class NodeContextResource(Resource):
         })
 
 
+class NodeListContextSchema(BaseSchema, SwaggerMixin):
+    node_contexts = fields.Nested(NodeContextSchema, many=True)
+
+
+class NodeListContextResource(Resource):
+    @swagger.doc({
+        'description': 'Returns neighborhoods of a all nodes for one result',
+        'parameters': [
+            {
+                'name': 'result_id',
+                'description': 'Result identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': get_default_response(NodeListContextSchema.get_swagger()),
+        'tags': ['Node']
+    })
+    def get(self, result_id):
+        nodes = Node.query.all()
+        node_contexts = []
+        for node in nodes:
+            main_node: Node = node
+            edges = Edge.query.filter(
+                Edge.result_id == result_id,
+                or_(Edge.from_node_id == main_node.id, Edge.to_node_id == main_node.id)
+            )
+            context_nodes = {n for edge in edges
+                             for n in [edge.from_node, edge.to_node]
+                             if n != main_node}
+            node_contexts.append({
+                'main_node': main_node,
+                'context_nodes': list(context_nodes),
+                'edges': edges
+            })
+        return marshal(NodeListContextSchema, {'node_contexts': node_contexts})
+
+
 class NodeConfounderSchema(BaseSchema, SwaggerMixin):
     confounders = fields.List(fields.List(fields.Int))
 

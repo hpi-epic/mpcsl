@@ -11,7 +11,8 @@ from .executor import ExecutorResource
 from .experiments import ExperimentListResource, ExperimentResource
 from .jobs import JobListResource, JobResource, JobLogsResource, JobResultResource, \
     ExperimentJobListResource
-from .nodes import NodeResource, ResultNodeListResource, NodeContextResource, NodeConfounderResource
+from .nodes import NodeResource, ResultNodeListResource, NodeContextResource, NodeConfounderResource, \
+    NodeListContextResource
 from .results import ResultListResource, ResultResource, GraphExportResource, ResultCompareResource, \
     ResultCompareGTResource
 from .sepsets import SepsetResource, ResultSepsetListResource
@@ -40,6 +41,7 @@ __all__ = [
     'NodeResource',
     'ResultNodeListResource',
     'NodeContextResource',
+    'NodeListContextResource',
     'NodeConfounderResource',
     'EdgeResource',
     'ResultEdgeListResource',

@@ -64,6 +64,38 @@ class DatasetResource(Resource):
         db.session.commit()
         return data
 
+    @swagger.doc({
+        'description': 'Updates a dataset',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'Dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },
+            {
+                'name': 'dataset',
+                'description': 'Dataset parameters. Only description is editable',
+                'in': 'body',
+                'schema': DatasetSchema.get_swagger(True)
+            }
+        ],
+        'responses': get_default_response(DatasetSchema.get_swagger()),
+        'tags': ['Dataset']
+    })
+    def put(self, dataset_id):
+        description = request.json.get('description')
+        dataset = Dataset.query.get_or_404(dataset_id)
+        if description:
+            dataset.description = description
+        else:
+            raise BadRequest('Body must contain description')
+ 
+        db.session.commit()
+
+        return marshal(DatasetSchema, dataset)
+
 
 class DatasetMetadataSchema(Schema, SwaggerMixin):
     variables = fields.Integer()

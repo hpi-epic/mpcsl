@@ -1,8 +1,10 @@
 import requests
+from flask import request
 from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 from marshmallow import Schema, fields
 from marshmallow.validate import Length, Range, OneOf
+from werkzeug.exceptions import BadRequest
 
 from src.db import db
 from src.master.config import SCHEDULER_HOST
@@ -58,6 +60,38 @@ class ExperimentResource(Resource):
         db.session.delete(experiment)
         db.session.commit()
         return data
+
+    @swagger.doc({
+        'description': 'Updates an experiment',
+        'parameters': [
+            {
+                'name': 'experiment_id',
+                'description': 'Experiment identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },
+            {
+                'name': 'experiment',
+                'description': 'Experiment parameters. Only description is editable',
+                'in': 'body',
+                'schema': ExperimentSchema.get_swagger(True)
+            }
+        ],
+        'responses': get_default_response(ExperimentSchema.get_swagger()),
+        'tags': ['Experiment']
+    })
+    def put(self, experiment_id):
+        description = request.json.get('description')
+        experiment = Experiment.query.get_or_404(experiment_id)
+        if description:
+            experiment.description = description
+        else:
+            raise BadRequest('Body must contain description')
+   
+        db.session.commit()
+
+        return marshal(ExperimentSchema, experiment)
 
 
 TYPE_MAP = {

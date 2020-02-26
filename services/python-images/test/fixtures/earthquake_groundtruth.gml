@@ -1,10 +1,10 @@
 graph
 [
-	node
-	[
+  node
+  [
     id 1
     label "Burglary"
-	]
+  ]
   node
   [
     id 2

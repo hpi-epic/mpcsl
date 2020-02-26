@@ -155,18 +155,11 @@ class DatasetGroundTruthUpload(Resource):
         except Exception:
             raise BadRequest(f'Could not parse file: "{file.filename}"')
         ds = Dataset.query.get_or_404(dataset_id)
-        already_has_ground_truth = False
         for node in ds.nodes:
             for edge in node.edge_froms:
                 if edge.is_ground_truth:
-                    already_has_ground_truth = True
-                    break
-            if already_has_ground_truth:
-                break
-
-        if already_has_ground_truth:
-            raise BadRequest(f'Ground-Truth Graph for Dataset {dataset_id} already exists!')
-
+                    db.session.delete(edge)
+        db.session.flush()
         for edge in graph.edges:
             from_node_label = edge[0]
             to_node_label = edge[1]

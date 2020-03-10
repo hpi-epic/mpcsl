@@ -42,10 +42,15 @@ dataset_loading_time <- tmp_result[[2]]
 
 
 matrix_df <- data.matrix(df)
-sufficient_stats <- list(C=cor(matrix_df), n=nrow(matrix_df))
+### warm up GPU
+tmp <- list(C=cor(cbind(c(1,0.5,0.5),c(0.3,1,0.3),c(0.5,0.3,1))), n=3)
+cu_pc(suffStat=tmp, p=3, m.max=1, alpha=0.01, verbose=verbose)
+### warm up end
 
+sufficient_stats <- list(C=cor(matrix_df), n=nrow(matrix_df))
 subset_size <- if(opt$subset_size < 0) Inf else opt$subset_size
 verbose <- opt$verbose > 0
+
 start <- Sys.time()
 result = cu_pc(suffStat=sufficient_stats, p=ncol(matrix_df), m.max=subset_size, alpha=opt$alpha, verbose=verbose)
 end <- Sys.time()

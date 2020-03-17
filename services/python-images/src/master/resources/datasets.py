@@ -272,7 +272,7 @@ class DatasetLoadResource(Resource):
             session = db.session
 
         result = session.execute(ds.load_query)
-        keys = [next(filter(lambda n:n.name == name, ds.nodes)).id for name in result.keys()]  # Enforce column order
+        keys = [next(filter(lambda n:n.name == name, ds.nodes)).name for name in result.keys()]  # Enforce column order
         result = result.fetchall()
 
         f = io.StringIO()

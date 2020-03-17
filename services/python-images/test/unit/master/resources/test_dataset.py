@@ -97,7 +97,7 @@ class DatasetTest(BaseResourceTest):
         result = result.data.decode('utf-8')
         result = io.StringIO(result)
         result = pd.read_csv(result)
-        result.rename(columns=int, inplace=True)
+        result.rename(columns={'a': 1, 'b': 2, 'c': 3}, inplace=True)
 
         # Then
         pd.testing.assert_frame_equal(source, result)

@@ -1,7 +1,7 @@
 import csv
 import io
 import networkx as nx
-
+import logging
 
 from flask_restful_swagger_2 import swagger
 from flask import Response, request
@@ -106,7 +106,12 @@ class DatasetMetadataSchema(Schema, SwaggerMixin):
     has_ground_truth = fields.Boolean()
 
 
+# Memory caching of metadata responses. Should be optimized in case of many datasets
+metadata_cache = {}
+
+
 class DatasetMetadataResource(Resource):
+
     @swagger.doc({
         'description': 'Returns metadata of a single dataset',
         'parameters': [
@@ -122,9 +127,15 @@ class DatasetMetadataResource(Resource):
         'tags': ['Dataset']
     })
     def get(self, dataset_id):
-        ds = Dataset.query.get_or_404(dataset_id)
-        data = ds.ds_metadata()
-        return data
+        try:
+            data = metadata_cache[str(dataset_id)]
+            logging.info(f'Using cached metadata for {dataset_id}')
+            return data
+        except KeyError:
+            ds: Dataset = Dataset.query.get_or_404(dataset_id)
+            data = ds.ds_metadata()
+            metadata_cache[str(dataset_id)] = data
+            return data
 
 
 class DatasetGroundTruthUpload(Resource):
@@ -180,7 +191,10 @@ class DatasetGroundTruthUpload(Resource):
             db.session.add(edge)
 
         db.session.commit()
-
+        try:
+            del metadata_cache[str(dataset_id)]
+        except KeyError:
+            pass
         # What to return?
         return marshal(DatasetSchema, ds)
 

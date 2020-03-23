@@ -21,6 +21,7 @@ valueFiles:
 tasks:
   - name: migrate-db
     args: [flask, db, upgrade]
+    timeout: 600
     dependencies:
       - postgres
   - name: db-setup-algorithms

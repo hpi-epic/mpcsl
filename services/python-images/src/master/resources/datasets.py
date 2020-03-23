@@ -105,8 +105,10 @@ class DatasetMetadataSchema(Schema, SwaggerMixin):
     query = fields.String()
     has_ground_truth = fields.Boolean()
 
+
 # Memory caching of metadata responses. Should be optimized in case of many datasets
 metadata_cache = {}
+
 
 class DatasetMetadataResource(Resource):
 
@@ -129,7 +131,7 @@ class DatasetMetadataResource(Resource):
             data = metadata_cache[str(dataset_id)]
             logging.info(f'Using cached metadata for {dataset_id}')
             return data
-        except:
+        except KeyError:
             ds: Dataset = Dataset.query.get_or_404(dataset_id)
             data = ds.ds_metadata()
             metadata_cache[str(dataset_id)] = data
@@ -191,7 +193,7 @@ class DatasetGroundTruthUpload(Resource):
         db.session.commit()
         try:
             del metadata_cache[str(dataset_id)]
-        except:
+        except KeyError:
             pass
         # What to return?
         return marshal(DatasetSchema, ds)

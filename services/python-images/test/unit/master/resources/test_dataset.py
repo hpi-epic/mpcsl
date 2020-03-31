@@ -99,7 +99,6 @@ class DatasetTest(BaseResourceTest):
         result = pd.read_csv(result)
         result.rename(columns={'a': 1, 'b': 2, 'c': 3}, inplace=True)
 
-
         # Then
         pd.testing.assert_frame_equal(source, result)
 

@@ -251,7 +251,8 @@ class DatasetListResource(Resource):
 
 class DatasetLoadResource(Resource):
     @swagger.doc({
-        'description': 'Returns a CSV formatted dataframe that contains the result of the query execution with names of the columns.',
+        'description': 'Returns a CSV formatted dataframe that contains the result of the query execution \
+                        with names of the columns.',
         'parameters': [
             {
                 'name': 'dataset_id',
@@ -298,9 +299,11 @@ class DatasetLoadResource(Resource):
         resp.headers.add("X-Content-Length", f.tell())
         return resp
 
+
 class DatasetLoadResourceWithIds(Resource):
     @swagger.doc({
-        'description': 'Returns a CSV formatted dataframe that contains the result of the query execution with ids of the columns.',
+        'description': 'Returns a CSV formatted dataframe that contains the result of the query execution \
+                        with ids of the columns.',
         'parameters': [
             {
                 'name': 'dataset_id',
@@ -346,6 +349,7 @@ class DatasetLoadResourceWithIds(Resource):
         resp = Response(f.getvalue(), mimetype='text/csv')
         resp.headers.add("X-Content-Length", f.tell())
         return resp
+
 
 class DatasetExperimentResource(Resource):
     @swagger.doc({

@@ -30,7 +30,7 @@ check_request <- function(api_host, request, job_id) {
 }
 
 get_dataset <- function(api_host, dataset_id, job_id) {
-    url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/load')
+    url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/loadwithids')
     colorize_log(ANSI_GREEN, paste0('Load dataset from ', url))
     start_time <- Sys.time()
     df_request <- RETRY("GET", url, times = 5, quiet=FALSE)

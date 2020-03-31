@@ -251,7 +251,7 @@ class DatasetListResource(Resource):
 
 class DatasetLoadResource(Resource):
     @swagger.doc({
-        'description': 'Returns a CSV formatted dataframe that contains the result of the query execution.',
+        'description': 'Returns a CSV formatted dataframe that contains the result of the query execution with names of the columns.',
         'parameters': [
             {
                 'name': 'dataset_id',
@@ -275,7 +275,7 @@ class DatasetLoadResource(Resource):
         'produces': ['application/csv'],
         'tags': ['Executor']
     })
-    def get(self, dataset_id):
+    def get(self, dataset_id, by_id=0):
         ds = Dataset.query.get_or_404(dataset_id)
 
         if ds.data_source != 'postgres':
@@ -298,6 +298,54 @@ class DatasetLoadResource(Resource):
         resp.headers.add("X-Content-Length", f.tell())
         return resp
 
+class DatasetLoadResourceWithIds(Resource):
+    @swagger.doc({
+        'description': 'Returns a CSV formatted dataframe that contains the result of the query execution with ids of the columns.',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'Dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            }
+        ],
+        'responses': {
+            '200': {
+                'description': 'Success',
+            },
+            '404': {
+                'description': 'Dataset not found'
+            },
+            '500': {
+                'description': 'Internal server error (likely due to broken query)'
+            }
+        },
+        'produces': ['application/csv'],
+        'tags': ['Executor']
+    })
+    def get(self, dataset_id, by_id=0):
+        ds = Dataset.query.get_or_404(dataset_id)
+
+        if ds.data_source != 'postgres':
+            session = data_source_connections.get(ds.data_source, None)
+            if session is None:
+                abort(400)
+        else:
+            session = db.session
+
+        result = session.execute(ds.load_query)
+        keys = [next(filter(lambda n:n.name == name, ds.nodes)).id for name in result.keys()]  # Enforce column order
+        result = result.fetchall()
+
+        f = io.StringIO()
+        wr = csv.writer(f)
+        wr.writerow(keys)
+        for line in result:
+            wr.writerow(line)
+        resp = Response(f.getvalue(), mimetype='text/csv')
+        resp.headers.add("X-Content-Length", f.tell())
+        return resp
 
 class DatasetExperimentResource(Resource):
     @swagger.doc({

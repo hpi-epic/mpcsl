@@ -1,4 +1,4 @@
-from .resources import DatasetLoadResource, DatasetListResource, DatasetMetadataResource, \
+from .resources import DatasetLoadResource, DatasetLoadResourceWithIds, DatasetListResource, DatasetMetadataResource, \
     DatasetResource, DatasetGroundTruthUpload, JobResource, JobListResource, \
     ExperimentResource, ExperimentListResource, ResultListResource, \
     JobLogsResource, JobResultResource, ExperimentJobListResource, ResultResource, \
@@ -19,6 +19,7 @@ def set_up_routes(api):
     api.add_resource(AlgorithmListResource, base_url('/algorithms'))
     api.add_resource(AlgorithmResource, base_url('/algorithm/<int:algorithm_id>'))
     api.add_resource(DatasetLoadResource, base_url('/dataset/<int:dataset_id>/load'))
+    api.add_resource(DatasetLoadResourceWithIds, base_url('/dataset/<int:dataset_id>/loadwithids'))
     api.add_resource(DatasetResource, base_url('/dataset/<int:dataset_id>'))
     api.add_resource(DatasetMetadataResource, base_url('/dataset/<int:dataset_id>/metadata'))
     api.add_resource(DatasetGroundTruthUpload, base_url('/dataset/<int:dataset_id>/upload'))

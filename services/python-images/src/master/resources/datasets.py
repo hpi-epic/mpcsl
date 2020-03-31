@@ -300,7 +300,7 @@ class DatasetLoadResource(Resource):
         return resp
 
 
-class DatasetLoadResourceWithIds(Resource):
+class DatasetLoadWithIdsResource(Resource):
     @swagger.doc({
         'description': 'Returns a CSV formatted dataframe that contains the result of the query execution \
                         with ids of the columns.',

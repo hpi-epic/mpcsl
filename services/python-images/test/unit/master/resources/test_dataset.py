@@ -11,7 +11,7 @@ from src.db import db
 from src.master.helpers.database import add_dataset_nodes
 from src.models import Dataset, Node
 from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource, \
-    DatasetLoadResourceWithIds, DatasetAvailableSourcesResource, DatasetExperimentResource
+    DatasetLoadWithIdsResource, DatasetAvailableSourcesResource, DatasetExperimentResource
 from test.factories import DatasetFactory, ExperimentFactory
 from .base import BaseResourceTest
 
@@ -110,7 +110,7 @@ class DatasetTest(BaseResourceTest):
         nodes = ds.nodes
 
         # When
-        result = self.test_client.get(self.url_for(DatasetLoadResourceWithIds, dataset_id=ds.id))
+        result = self.test_client.get(self.url_for(DatasetLoadWithIdsResource, dataset_id=ds.id))
 
         source = pd.DataFrame(source)
         source.columns = [n.id for n in nodes]

@@ -1,6 +1,6 @@
 
 from .algorithms import AlgorithmResource, AlgorithmListResource
-from .datasets import DatasetLoadResource, DatasetLoadResourceWithIds, DatasetListResource, DatasetResource, \
+from .datasets import DatasetLoadResource, DatasetLoadWithIdsResource, DatasetListResource, DatasetResource, \
     DatasetAvailableSourcesResource, DatasetExperimentResource, DatasetGroundTruthUpload, \
     DatasetMetadataResource
 from .distributions import MarginalDistributionResource, ConditionalDistributionResource, \
@@ -23,7 +23,7 @@ __all__ = [
     'AlgorithmResource',
     'DatasetExperimentResource',
     'DatasetLoadResource',
-    'DatasetLoadResourceWithIds',
+    'DatasetLoadWithIdsResource',
     'DatasetListResource',
     'DatasetResource',
     'DatasetMetadataResource',

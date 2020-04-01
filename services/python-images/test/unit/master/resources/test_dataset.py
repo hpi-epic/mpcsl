@@ -11,7 +11,7 @@ from src.db import db
 from src.master.helpers.database import add_dataset_nodes
 from src.models import Dataset, Node
 from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource, \
-    DatasetAvailableSourcesResource, DatasetExperimentResource
+    DatasetLoadWithIdsResource, DatasetAvailableSourcesResource, DatasetExperimentResource
 from test.factories import DatasetFactory, ExperimentFactory
 from .base import BaseResourceTest
 
@@ -98,6 +98,26 @@ class DatasetTest(BaseResourceTest):
         result = io.StringIO(result)
         result = pd.read_csv(result)
         result.rename(columns={'a': 1, 'b': 2, 'c': 3}, inplace=True)
+
+        # Then
+        pd.testing.assert_frame_equal(source, result)
+
+    def test_returns_the_correct_dataset_with_ids(self):
+        # Given
+        source = create_database_table()
+        ds = DatasetFactory(load_query="SELECT * FROM test_data")
+        add_dataset_nodes(ds)
+        nodes = ds.nodes
+
+        # When
+        result = self.test_client.get(self.url_for(DatasetLoadWithIdsResource, dataset_id=ds.id))
+
+        source = pd.DataFrame(source)
+        source.columns = [n.id for n in nodes]
+        result = result.data.decode('utf-8')
+        result = io.StringIO(result)
+        result = pd.read_csv(result)
+        result.rename(columns=int, inplace=True)
 
         # Then
         pd.testing.assert_frame_equal(source, result)

@@ -33,4 +33,4 @@ To seed example data in the db run:
 `garden run task seed-db --env=<ENV>`
 
 ### Add new external ip to ingress
-If another external IP has to be accessible, update the following file `deployment-resources/nginx-ingress-values.yml` and execute `helm nginx-ingress -f deployment-resources/nginx-ingress-values.yml -n default stable/nginx-ingress`
+If another external IP has to be accessible, update the following file `deployment-resources/nginx-ingress-values.yml` and execute `helm upgrade nginx-ingress -f deployment-resources/nginx-ingress-values.yml -n default stable/nginx-ingress`

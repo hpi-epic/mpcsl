@@ -10,7 +10,7 @@ environments:
       postgres-user: admin
       postgres-password: admin
       node-hosts: ""
-      node-name: minikube
+      node-name: m01
   - name: mpci
     providers:
       - name: kubernetes

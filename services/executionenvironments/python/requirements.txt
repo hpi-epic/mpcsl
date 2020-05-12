@@ -1,5 +1,6 @@
 numpy~=1.17.4
 pandas~=0.25.3
+cython>=0.26
 tigramite~=3.0b0
 networkx~=2.2
 scipy~=1.4.1

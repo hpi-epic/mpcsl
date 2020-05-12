@@ -33,7 +33,7 @@ def _test_worker(i, j, lvl):
     if lvl < 1:
         p_val = test.compute_pval(data_arr[:, [i]], data_arr[:, [j]], z=None)
         if (p_val > alpha):
-            return (i, j, [])
+            return (i, j, p_val, [])
     # conditional
     else:
         candidates = np.arange(var_dict['vertices'])[(graph[i] == 1) & (graph[j] == 1)]
@@ -46,7 +46,7 @@ def _test_worker(i, j, lvl):
                 continue
             p_val = test.compute_pval(data_arr[:, [i]], data_arr[:, [j]], z=data_arr[:, S])
             if (p_val > alpha):
-                return (i, j, S)
+                return (i, j, p_val, S)
     return None
 
 
@@ -79,7 +79,7 @@ def parallel_stable_pc(data, estimator, alpha=0.05, processes=32, return_sepsets
                 graph[r[0]][r[1]] = 0
                 graph[r[1]][r[0]] = 0
                 if return_sepsets:
-                    sepsets[(r[0], r[1])] = r[2]
+                    sepsets[(r[0], r[1])] = {'p_val': r[3], 'sepset': r[3]}
 
         if outfile is not None:
             nx_graph = nx.from_numpy_matrix(graph)

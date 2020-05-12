@@ -322,5 +322,44 @@
     },
     "needs_gpu": true,
     "docker_parameters": {"runtime": "nvidia"}
-  }
+  },
+  {
+    "package": "PyparallelPC",
+    "function": "parallel_stable_pc",
+    "script_filename": "pcalg.py",
+    "docker_image": "mpci_execution_python",
+    "description": "Python implementation of PCAlg",
+    "valid_parameters": {
+      "alpha": {
+        "type": "float",
+        "required": true,
+        "minimum": 0.0,
+        "maximum": 1.0
+      },
+      "independence_test": {
+        "type": "enum",
+        "required": true,
+        "values": ["RPerm_GKOV", "RPerm_CCMI"]
+      },
+      "processes": {
+        "type": "int",
+        "minimum": 1
+      },
+      "subset_size": {
+        "type": "int",
+        "minimum": -1
+      },
+      "send_sepsets": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0
+      },
+      "permutations": {
+        "type": "int",
+        "minimum": 1
+      }
+    },
+    "docker_parameters": {}
+  },
 ]

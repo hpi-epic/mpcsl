@@ -25,7 +25,7 @@ parser.add_argument(['--permutations'], type=int, default=None,
 parser.add_argument('--send_sepsets', type=int, default=0, help='If 1, send sepsets with the results')
 
 
-def run_pcalg(job_id, api_host, dataset_id, indep_test, alpha, processes, max_level, send_sepsets=False):
+def run_pcalg(job_id, api_host, dataset_id, indep_test, alpha, processes, max_level, args, send_sepsets=False):
     df, ds_load_time = get_dataset(api_host, dataset_id, job_id)
 
     start = time.time()
@@ -33,10 +33,7 @@ def run_pcalg(job_id, api_host, dataset_id, indep_test, alpha, processes, max_le
                                         return_sepsets=send_sepsets, max_level=max_level)
     exec_time = start - time.time()
 
-    if send_sepsets:
-        pass
-
-    store_graph_result(api_host, job_id, graph, exec_time, ds_load_time, sepsets=sepsets)
+    store_graph_result(api_host, job_id, graph, exec_time, ds_load_time, args, sepsets=sepsets)
 
 
 if __name__ == '__main__':
@@ -51,6 +48,7 @@ if __name__ == '__main__':
     }
     indep_test = indep_tests[args.independence_test]()
     send_sepsets = args.send_sepsets == 1
+    max_level = args.subset_size if args.subset_size >= 0 else None
 
     run_pcalg(args.api_host, args.job_id, args.dataset_id, indep_test, alpha=args.alpha,
-              processes=args.processes, max_level=args.subset_size, send_sepsets=send_sepsets)
+              processes=args.processes, max_level=max_level, args=vars(args), send_sepsets=send_sepsets)

@@ -18,8 +18,6 @@ parser.add_argument(['-p', '--processes'], type=int, default=1,
                     help='The number of separate processes for parallelization')
 parser.add_argument(['-s', '--subset_size'], type=int,
                     help='The maximal size of the conditioning sets that are considered')
-parser.add_argument(['-p', '--processes'], type=int, default=1,
-                    help='The number of separate processes for parallelization')
 parser.add_argument(['--permutations'], type=int, default=None,
                     help='The number of iterations for the permutation test')
 parser.add_argument('--send_sepsets', type=int, default=0, help='If 1, send sepsets with the results')

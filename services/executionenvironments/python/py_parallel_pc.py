@@ -54,12 +54,17 @@ def _unid(g, i, j):
     return g.has_edge(i, j) and not g.has_edge(j, i)
 
 
+def _bid(g, i, j):
+    return g.has_edge(i, j) and g.has_edge(j, i)
+
+
 def _adj(g, i, j):
     return g.has_edge(i, j) or g.has_edge(j, i)
 
 
 def rule1(g, j, k):
     for i in g.predecessors(j):
+        # i -> j s.t. i not adjacent to k
         if _unid(g, i, j) and not _adj(g, i, k):
             g.remove_edge(k, j)
             return True
@@ -68,6 +73,7 @@ def rule1(g, j, k):
 
 def rule2(g, i, j):
     for k in g.successors(i):
+        # i -> k -> j
         if _unid(g, k, j) and _unid(g, i, k):
             g.remove_edge(j, i)
             return True
@@ -76,7 +82,8 @@ def rule2(g, i, j):
 
 def rule3(g, i, j):
     for k, l in combinations(g.predecessors(j), 2):
-        if (not _adj(g, k, l) and g.has_edge(i, k) and g.has_edge(i, l) and _unid(g, l, j) and _unid(g, k, j)):
+        # i <-> k -> j and i <-> l -> j s.t. k not adjacent to l
+        if (not _adj(g, k, l) and _bid(g, i, k) and _bid(g, i, l) and _unid(g, l, j) and _unid(g, k, j)):
             g.remove_edge(j, i)
             return True
     return False
@@ -85,7 +92,8 @@ def rule3(g, i, j):
 def rule4(g, i, j):
     for l in g.predecessors(j):
         for k in g.predecessors(l):
-            if (not _adj(g, k, j) and _adj(g, i, l) and _unid(g, k, l) and _unid(g, l, j) and g.has_edge(i, k)):
+            # i <-> k -> l -> j s.t. k not adjacent to j and i adjacent to l
+            if (not _adj(g, k, j) and _adj(g, i, l) and _unid(g, k, l) and _unid(g, l, j) and _bid(g, i, k)):
                 g.remove_edge(j, i)
                 return True
     return False
@@ -105,7 +113,7 @@ def _direct_edges(graph, sepsets):
 
     bidirectional_edges = [(i, j) for i, j in digraph.edges if digraph.has_edge(j, i)]
     for i, j in bidirectional_edges:
-        if digraph.has_edge(i, j) and digraph.has_edge(j, i):
+        if _bid(digraph, i, j):
             continue
         if (rule1(digraph, i, j) or rule2(digraph, i, j) or rule3(digraph, i, j) or rule4(digraph, i, j)):
             continue

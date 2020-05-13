@@ -2,5 +2,6 @@ kind: Module
 description: The Python executor container image
 name: py-executor-image
 dockerfile: py-executor.Dockerfile
-image: mpci_execution_py
+image: ${var.execution-image-namespace}/mpci_execution_python
+extraFlags: ['--tag', '${var.execution-image-namespace}/mpci_execution_python:latest']
 type: container

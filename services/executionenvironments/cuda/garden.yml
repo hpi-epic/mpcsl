@@ -2,5 +2,6 @@ kind: Module
 description: The cupc executor container image
 name: cupc-executor-image
 dockerfile: Dockerfile
-image: mpci_execution_cupc
+image: ${var.execution-image-namespace}/mpci_execution_cupc
+extraFlags: ['--tag', '${var.execution-image-namespace}/mpci_execution_cupc:latest']
 type: container

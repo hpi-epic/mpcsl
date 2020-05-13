@@ -99,6 +99,7 @@ class RPermTest(PermutationTest):
                      else tree_z.query(z, self.k+1, p=np.inf)[1][:, 1:]).astype('int32')
 
         null_dist = np.zeros(self.iterations)
+        duplicate_percentage = 0
         for i in range(self.iterations):
             # Generate random order in which to go through indices loop in next step
             order = np.random.permutation(len(x)).astype('int32')
@@ -111,11 +112,11 @@ class RPermTest(PermutationTest):
             )
 
             x_shuffled = x[restricted_permutation]
-            duplicate_percentage = 1 - len(set(restricted_permutation)) / len(x)
-            if duplicate_percentage > 0.1:
-                logging.warn(f'{round(100*duplicate_percentage, 2)}% of permutations are duplicate, '
-                             f'consider increasing k.')
+            duplicate_percentage = max(duplicate_percentage, 1 - len(set(restricted_permutation)) / len(x))
             null_dist[i] = self.estimator.compute_cmi(x_shuffled, y, z)
+        if duplicate_percentage > 0.2:
+                logging.warn(f'Up to {round(100*duplicate_percentage, 2)}% of permutations were duplicate, '
+                             f'consider increasing k.')
 
         self.null_distribution = null_dist
         pval = (null_dist >= self.cmi_val).mean()

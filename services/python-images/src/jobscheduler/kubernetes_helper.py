@@ -68,8 +68,7 @@ async def create_job(job: Job, experiment: Experiment):
         params.append('--' + k)
         params.append(str(v))
     algorithm: Algorithm = experiment.algorithm
-    command = ["/bin/sh",
-               "-c", "Rscript " + algorithm.script_filename + " " + " ".join(params)]
+    subcommand = [algorithm.script_filename] + params
     with open(os.path.join(os.path.dirname(__file__), "executor-job.yaml")) as f:
         default_job = yaml.safe_load(f)
         job_name = f'{JOB_PREFIX}{job.id}'
@@ -77,9 +76,9 @@ async def create_job(job: Job, experiment: Experiment):
         default_job["metadata"]["name"] = job_name
         default_job["spec"]["template"]["metadata"]["labels"]["job-name"] = job_name
         container = default_job["spec"]["template"]["spec"]["containers"][0]
-        container["command"] = command
-        container["image"] = \
-            f'{EXECUTION_IMAGE_NAMESPACE}/{algorithm.docker_image}'
+        container["args"] = subcommand
+        container["image"] = EXECUTION_IMAGE_NAMESPACE + "/" + algorithm.docker_image
+        logging.info(container["image"])
         if job.node_hostname is not None:
             nodeSelector = {
                 "kubernetes.io/hostname": job.node_hostname
@@ -97,7 +96,7 @@ async def create_job(job: Job, experiment: Experiment):
             container["resources"]['requests']['nvidia.com/gpu'] = str(job.gpus)
         try:
             logging.info(f'Starting Job with ID {job.id}')
-            print(container)
+            logging.info(default_job)
             result = api_instance.create_namespaced_job(namespace=K8S_NAMESPACE, body=default_job, pretty=True)
             return result.metadata.name
         except ApiException as e:

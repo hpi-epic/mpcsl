@@ -357,9 +357,10 @@
       },
       "permutations": {
         "type": "int",
-        "minimum": 1
+        "minimum": 1,
+        "default": 100
       }
     },
     "docker_parameters": {}
-  },
+  }
 ]

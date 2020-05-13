@@ -1,5 +1,5 @@
 # Created by Marcus Pappik
-import pickle
+import logging
 from itertools import combinations, product
 from multiprocessing import Pool, RawArray
 
@@ -50,7 +50,21 @@ def _test_worker(i, j, lvl):
     return None
 
 
-def parallel_stable_pc(data, estimator, alpha=0.05, processes=32, return_sepsets=False, max_level=None, outfile=None):
+def direct_edges(graph, sepsets):
+    digraph = nx.DiGraph(graph)
+    for i in graph.nodes():
+        for j in nx.non_neighbors(graph, i):
+            for k in nx.common_neighbors(graph, i, j):
+                sepset = sepsets[(i, j)] if (i, j) in sepsets else []
+                if k not in sepset:
+                    if (k, i) in digraph.edges() and (i, k) in digraph.edges():
+                        digraph.remove_edge(k, i)
+                    if (k, j) in digraph.edges() and (j, k) in digraph.edges():
+                        digraph.remove_edge(k, j)
+    return digraph
+
+
+def parallel_stable_pc(data, estimator, alpha=0.05, processes=32, max_level=None):
     cols = data.columns
     cols_map = np.arange(len(cols))
 
@@ -64,12 +78,13 @@ def parallel_stable_pc(data, estimator, alpha=0.05, processes=32, return_sepsets
     vertices = len(cols)
     graph_raw = RawArray('i', np.ones(vertices*vertices).astype(int))
     graph = np.frombuffer(graph_raw, dtype="int32").reshape((vertices, vertices))
-    sepsets = {} if return_sepsets else None
+    sepsets = {}
 
     lvls = range((len(cols) - 1) if max_level is None else min(len(cols)-1, max_level+1))
     for lvl in lvls:
         configs = [(i, j, lvl) for i, j in product(cols_map, cols_map) if i < j and graph[i][j] == 1]
 
+        logging.info(f'Starting level {lvl} pool')
         with Pool(processes=processes, initializer=_init_worker,
                   initargs=(data_raw, data.shape, graph_raw, vertices, estimator, alpha)) as pool:
             result = pool.starmap(_test_worker, configs)
@@ -78,19 +93,13 @@ def parallel_stable_pc(data, estimator, alpha=0.05, processes=32, return_sepsets
             if r is not None:
                 graph[r[0]][r[1]] = 0
                 graph[r[1]][r[0]] = 0
-                if return_sepsets:
-                    sepsets[(r[0], r[1])] = {'p_val': r[3], 'sepset': r[3]}
-
-        if outfile is not None:
-            nx_graph = nx.from_numpy_matrix(graph)
-            nx.relabel_nodes(nx_graph, lambda i: cols[i], copy=False)
-            with open(outfile, 'wb') as file:
-                pickle.dump(nx_graph, file)
+                sepsets[(r[0], r[1])] = {'p_val': r[2], 'sepset': r[3]}
 
     nx_graph = nx.from_numpy_matrix(graph)
-    nx.relabel_nodes(nx_graph, lambda i: cols[i], copy=False)
-    if outfile is not None:
-        with open(outfile, 'wb') as file:
-            pickle.dump({'graph': nx_graph, 'sepsets': sepsets}, file)
+    nx_graph.remove_edges_from(nx.selfloop_edges(nx_graph))
+    nx_digraph = direct_edges(nx_graph, sepsets)
+    nx.relabel_nodes(nx_digraph, lambda i: cols[i], copy=False)
+    sepsets = {(cols[k[0]], cols[k[1]]): {'p_val': v['p_val'], 'sepset': [cols[e] for e in v['sepset']]}
+               for k, v in sepsets.items()}
 
-    return nx_graph, sepsets
+    return nx_digraph, sepsets

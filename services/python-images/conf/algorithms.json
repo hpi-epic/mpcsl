@@ -349,12 +349,6 @@
         "type": "int",
         "minimum": -1
       },
-      "send_sepsets": {
-        "type": "int",
-        "minimum": 0,
-        "maximum": 1,
-        "default": 0
-      },
       "permutations": {
         "type": "int",
         "minimum": 1,

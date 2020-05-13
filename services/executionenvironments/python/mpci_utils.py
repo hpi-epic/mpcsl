@@ -63,5 +63,5 @@ def store_graph_result(api_host, job_id, graph, exec_time, ds_load_time, args, s
     logging.info(f'Storing graph result:\n {payload}')
     r = handle_request(lambda s: s.post(f'http://{api_host}/api/job/{job_id}/result', data=json.dumps(payload)),
                        api_host, job_id)
-    logging.info(f'Storing returned {r.json()}')
+    logging.info(f'Stored graph successfully')
     return r

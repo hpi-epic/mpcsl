@@ -50,7 +50,48 @@ def _test_worker(i, j, lvl):
     return None
 
 
-def direct_edges(graph, sepsets):
+def _unid(g, i, j):
+    return g.has_edge(i, j) and not g.has_edge(j, i)
+
+
+def _adj(g, i, j):
+    return g.has_edge(i, j) or g.has_edge(j, i)
+
+
+def rule1(g, j, k):
+    for i in g.predecessors(j):
+        if _unid(g, i, j) and not _adj(g, i, k):
+            g.remove_edge(k, j)
+            return True
+    return False
+
+
+def rule2(g, i, j):
+    for k in g.successors(i):
+        if _unid(g, k, j) and _unid(g, i, k):
+            g.remove_edge(j, i)
+            return True
+    return False
+
+
+def rule3(g, i, j):
+    for k, l in combinations(g.predecessors(j), 2):
+        if (not _adj(g, k, l) and g.has_edge(i, k) and g.has_edge(i, l) and _unid(g, l, j) and _unid(g, k, j)):
+            g.remove_edge(j, i)
+            return True
+    return False
+
+
+def rule4(g, i, j):
+    for l in g.predecessors(j):
+        for k in g.predecessors(l):
+            if (not _adj(g, k, j) and _adj(g, i, l) and _unid(g, k, l) and _unid(g, l, j) and g.has_edge(i, k)):
+                g.remove_edge(j, i)
+                return True
+    return False
+
+
+def _direct_edges(graph, sepsets):
     digraph = nx.DiGraph(graph)
     for i in graph.nodes():
         for j in nx.non_neighbors(graph, i):
@@ -61,6 +102,14 @@ def direct_edges(graph, sepsets):
                         digraph.remove_edge(k, i)
                     if (k, j) in digraph.edges() and (j, k) in digraph.edges():
                         digraph.remove_edge(k, j)
+
+    bidirectional_edges = [(i, j) for i, j in digraph.edges if digraph.has_edge(j, i)]
+    for i, j in bidirectional_edges:
+        if digraph.has_edge(i, j) and digraph.has_edge(j, i):
+            continue
+        if (rule1(digraph, i, j) or rule2(digraph, i, j) or rule3(digraph, i, j) or rule4(digraph, i, j)):
+            continue
+
     return digraph
 
 
@@ -97,7 +146,7 @@ def parallel_stable_pc(data, estimator, alpha=0.05, processes=32, max_level=None
 
     nx_graph = nx.from_numpy_matrix(graph)
     nx_graph.remove_edges_from(nx.selfloop_edges(nx_graph))
-    nx_digraph = direct_edges(nx_graph, sepsets)
+    nx_digraph = _direct_edges(nx_graph, sepsets)
     nx.relabel_nodes(nx_digraph, lambda i: cols[i], copy=False)
     sepsets = {(cols[k[0]], cols[k[1]]): {'p_val': v['p_val'], 'sepset': [cols[e] for e in v['sepset']]}
                for k, v in sepsets.items()}

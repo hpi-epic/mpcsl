@@ -343,7 +343,8 @@
       },
       "processes": {
         "type": "int",
-        "minimum": 1
+        "minimum": 1,
+        "default": 32
       },
       "subset_size": {
         "type": "int",

@@ -57,7 +57,7 @@ A Swagger documentation of our REST endpoints is available using `/swagger/index
 
 - [Marius Danner](https://github.com/MariusDanner)
 - [Christopher Hagedorn](https://github.com/ChristopherSchmidt89)
-- [Johannes Huegle](https://github.com/jh-hpi)
+- [Johannes Huegle](https://github.com/JohannesHuegle)
 - [Alexander Kastius](https://github.com/Raandom)
 - [Victor Kuenstler](https://github.com/VictorKuenstler)
 - [Constantin Lange](https://github.com/constantin-lange)

@@ -55,12 +55,14 @@ A Swagger documentation of our REST endpoints is available using `/swagger/index
 
 ## Contributors
 
+- [Marius Danner](https://github.com/MariusDanner)
+- [Christopher Hagedorn](https://github.com/ChristopherSchmidt89)
+- [Johannes Huegle](https://github.com/jh-hpi)
 - [Alexander Kastius](https://github.com/Raandom)
 - [Victor Kuenstler](https://github.com/VictorKuenstler)
+- [Constantin Lange](https://github.com/constantin-lange)
 - [Tobias Nack](https://github.com/Dencrash)
+- [Milan Proell](https://github.com/milanpro)
 - [Jonathan Schneider](https://github.com/jonaschn)
 - [Daniel Thevessen](https://github.com/danthe96)
 - [Theresa Zobel](https://github.com/threxx)
-- [Constantin Lange](https://github.com/constantin-lange)
-- [Marius Danner](https://github.com/MariusDanner)
-- [Milan Proell](https://github.com/milanpro)

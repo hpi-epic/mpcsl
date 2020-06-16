@@ -4,6 +4,7 @@ import pandas as pd
 from src.db import db
 from src.master.resources import MarginalDistributionResource, ConditionalDistributionResource, \
     InterventionalDistributionResource
+from src.master.resources.distributions import _custom_histogram
 from test.factories import ResultFactory, NodeFactory, DatasetFactory, ExperimentFactory, JobFactory
 from .base import BaseResourceTest
 
@@ -42,7 +43,7 @@ class MarginalDistributionTest(BaseResourceTest):
         assert distribution['categorical'] is False
         assert distribution['node']['id'] == node.id
         assert distribution['dataset']['id'] == ds.id
-        bins, bin_edges = np.histogram(source[:, 0], bins='auto', density=False)
+        bins, bin_edges = _custom_histogram(source[:, 0], density=False)
         assert (distribution['bins'] == bins).all()
         assert np.allclose(distribution['bin_edges'], bin_edges)
 
@@ -213,7 +214,7 @@ class InterventionalDistributionTest(BaseResourceTest):
 
         # Then
         assert distribution['bins'] == [
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 34, 62, 76, 107, 51, 35, 21, 1, 3, 0, 0, 0, 0, 0, 0, 0, 601
+            0, 0, 0, 0, 0, 0, 0, 4, 39, 153, 182, 78, 36, 5, 0, 0, 0, 0, 0, 503
         ]
         assert distribution['bin_edges'] == [
             -3.75535790044119, -3.4878381827126006, -3.2203184649840106, -2.952798747255421, -2.685279029526831,

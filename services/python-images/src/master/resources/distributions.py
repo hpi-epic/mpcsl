@@ -18,7 +18,7 @@ def _custom_histogram(arr, max_bins=20, **kwargs):
     arr = np.asarray(arr)
     first_edge, last_edge = arr.min(), arr.max()
     width = np.lib.histograms._hist_bin_auto(arr, (first_edge, last_edge))
-    bin_count = min(max_bins, int(np.ceil(last_edge - first_edge) / width)) if width else 1
+    bin_count = min(max_bins, int(np.ceil((last_edge - first_edge) / width))) if width else 1
     return np.histogram(arr, bins=bin_count, **kwargs)
 
 

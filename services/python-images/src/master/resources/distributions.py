@@ -377,7 +377,7 @@ class InterventionalDistributionResource(Resource):
                 factor_grouping = df.groupby(df.columns[2:].tolist()) if len(df.columns) > 2 else [('', df)]
                 for factor_group, factor_df in factor_grouping:
                     if cause_condition['categorical']:
-                        cause_mask = factor_df[cause_node.name].isin(map(repr, cause_condition['values']))
+                        cause_mask = factor_df[cause_node.name].isin(cause_condition['values'])
                     else:
                         cause_mask = ((factor_df[cause_node.name] >= cause_condition['from_value']) &
                                       (factor_df[cause_node.name] < cause_condition['to_value']))

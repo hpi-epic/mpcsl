@@ -13,6 +13,14 @@ from src.models.swagger import SwaggerMixin
 DISCRETE_LIMIT = 10
 
 
+def _custom_histogram(arr, max_bins=20, **kwargs):
+    # Use 'auto' binning, but only up to 20 bins
+    first_edge, last_edge = arr.min(), arr.max()
+    width = np.lib.histograms._hist_bin_auto(arr, (first_edge, last_edge))
+    bin_count = min(max_bins, int(np.ceil(last_edge - first_edge) / width)) if width else 1
+    return np.histogram(arr, bins=bin_count, **kwargs)
+
+
 class DistributionSchema(BaseSchema, SwaggerMixin):
     node = fields.Nested('NodeSchema')
     dataset = fields.Nested('DatasetSchema')
@@ -65,7 +73,7 @@ class MarginalDistributionResource(Resource):
                 'bins': bins
             })
         else:
-            hist, bin_edges = np.histogram(values, bins='auto', density=False)
+            hist, bin_edges = _custom_histogram(values, density=False)
             return marshal(ContinuousDistributionSchema, {
                 'node': node,
                 'dataset': dataset,
@@ -177,7 +185,7 @@ class ConditionalDistributionResource(Resource):
         base_query = f"SELECT \"{node.name}\" FROM ({dataset.load_query}) _subquery_"
 
         base_result = session.execute(base_query).fetchall()
-        _, node_bins = np.histogram([line[0] for line in base_result], bins='auto')
+        _, node_bins = _custom_histogram([line[0] for line in base_result])
 
         predicates = []
         for condition_node_id, condition in conditions.items():
@@ -193,7 +201,7 @@ class ConditionalDistributionResource(Resource):
                     condition['values'] = [values[np.argmax(counts)]]
                     condition['categorical'] = True
                 else:
-                    hist, bin_edges = np.histogram(node_data, bins='auto', density=False)
+                    hist, bin_edges = _custom_histogram(node_data, density=False)
                     most_common = np.argmax(hist)
                     condition['from_value'] = bin_edges[most_common]
                     condition['to_value'] = bin_edges[most_common+1]
@@ -365,10 +373,10 @@ class InterventionalDistributionResource(Resource):
                                      f"FROM ({dataset.load_query}) _subquery_").fetchall()
             arr = np.array([line for line in result])
 
-            _, bin_edges = np.histogram(arr[:, 1], bins='auto')
+            _, bin_edges = _custom_histogram(arr[:, 1])
 
             arr[:, 1:] = np.apply_along_axis(
-                lambda c: np.digitize(c, np.histogram(c, bins='auto')[1][:-1]), 0, arr[:, 1:])
+                lambda c: np.digitize(c, _custom_histogram(c)[1][:-1]), 0, arr[:, 1:])
             df = pd.DataFrame(arr, columns=([cause_node.name] + [effect_node.name] + [f.name for f in factor_nodes]))
 
             probabilities = []

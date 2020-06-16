@@ -15,6 +15,7 @@ DISCRETE_LIMIT = 10
 
 def _custom_histogram(arr, max_bins=20, **kwargs):
     # Use 'auto' binning, but only up to 20 bins
+    arr = np.asarray(arr)
     first_edge, last_edge = arr.min(), arr.max()
     width = np.lib.histograms._hist_bin_auto(arr, (first_edge, last_edge))
     bin_count = min(max_bins, int(np.ceil(last_edge - first_edge) / width)) if width else 1

@@ -123,7 +123,6 @@ class ConditionalDistributionTest(BaseResourceTest):
         # When
         distribution = self.post(self.url_for(ConditionalDistributionResource, node_id=node.id), json=data)
 
-        print(distribution)
         # Then
         assert distribution['categorical'] is True
         assert distribution['node']['id'] == node.id
@@ -132,6 +131,62 @@ class ConditionalDistributionTest(BaseResourceTest):
         conditioned_source = source[np.where(source[:, 2] == 1), 0]
         bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(conditioned_source, return_counts=True))])
         assert distribution['bins'] == bins
+        assert 'bin_edges' not in distribution
+
+    def test_auto_condition(self):
+        # Given
+        ds = DatasetFactory(
+            load_query="SELECT * FROM cond_test_data2"
+        )
+        db.session.execute("""
+            CREATE TABLE IF NOT EXISTS cond_test_data2 (
+                "haha_.col" int,
+                b int,
+                "haha_.floatcol" float
+            );
+        """)
+        source = np.concatenate((np.random.randint(2, size=(50, 2)), np.random.normal(size=(50, 1))), axis=1)
+        for l in source:
+            db.session.execute("INSERT INTO cond_test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+        db.session.commit()
+
+        values, counts = np.unique(source[:, 1], return_counts=True)
+        cat_filter = values[np.argmax(counts)]
+        hist, bin_edges = _custom_histogram(source[:, 2], density=False)
+        most_common = np.argmax(hist)
+        exp_distribution = source[:, 0][
+            (source[:, 1] == cat_filter) &
+            (source[:, 2] >= bin_edges[most_common]) &
+            (source[:, 2] <= bin_edges[most_common+1])]
+        exp_bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(exp_distribution, return_counts=True))])
+
+        exp = ExperimentFactory(dataset=ds)
+        job = JobFactory(experiment=exp)
+        ResultFactory(job=job)
+        node = NodeFactory(dataset=job.experiment.dataset,
+                           name='haha_.col')
+        node2 = NodeFactory(dataset=job.experiment.dataset,
+                            name='b')
+        node3 = NodeFactory(dataset=job.experiment.dataset,
+                            name='haha_.floatcol')
+        data = {
+            'conditions': {
+                node2.id: {
+                    'auto': True,
+                },
+                node3.id: {
+                    'auto': True,
+                }
+            }
+        }
+
+        # When
+        distribution = self.post(self.url_for(ConditionalDistributionResource, node_id=node.id), json=data)
+
+        assert distribution['categorical'] is True
+        assert distribution['node']['id'] == node.id
+        assert distribution['dataset']['id'] == ds.id
+        assert distribution['bins'] == exp_bins
         assert 'bin_edges' not in distribution
 
 

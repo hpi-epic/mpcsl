@@ -199,7 +199,7 @@ class ConditionalDistributionResource(Resource):
                 node_data = [line[0] for line in node_res]
                 if len(np.unique(node_data)) <= DISCRETE_LIMIT:
                     values, counts = np.unique(node_data, return_counts=True)
-                    condition['values'] = [values[np.argmax(counts)]]
+                    condition['values'] = [int(values[np.argmax(counts)])]
                     condition['categorical'] = True
                 else:
                     hist, bin_edges = _custom_histogram(node_data, density=False)
@@ -214,7 +214,7 @@ class ConditionalDistributionResource(Resource):
                 predicates.append(f"\"{node_name}\" >= {repr(condition['from_value'])}")
                 predicates.append(f"\"{node_name}\" <= {repr(condition['to_value'])}")
         categorical_check = session.execute(f"SELECT 1 FROM ({dataset.load_query}) _subquery_ "
-                                            f"HAVING COUNT(DISTINCT \"{node_name}\") <= {DISCRETE_LIMIT}").fetchall()
+                                            f"HAVING COUNT(DISTINCT \"{node.name}\") <= {DISCRETE_LIMIT}").fetchall()
         is_categorical = len(categorical_check) > 0
 
         query = base_query if len(predicates) == 0 else base_query + " WHERE " + ' AND '.join(predicates)

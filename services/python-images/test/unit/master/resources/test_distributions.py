@@ -129,7 +129,7 @@ class ConditionalDistributionTest(BaseResourceTest):
         assert distribution['dataset']['id'] == ds.id
 
         conditioned_source = source[np.where(source[:, 2] == 1), 0]
-        bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(conditioned_source, return_counts=True))])
+        bins = dict([(str(int(k)), int(v)) for k, v in zip(*np.unique(conditioned_source, return_counts=True))])
         assert distribution['bins'] == bins
         assert 'bin_edges' not in distribution
 
@@ -158,7 +158,7 @@ class ConditionalDistributionTest(BaseResourceTest):
             (source[:, 1] == cat_filter) &
             (source[:, 2] >= bin_edges[most_common]) &
             (source[:, 2] <= bin_edges[most_common+1])]
-        exp_bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(exp_distribution, return_counts=True))])
+        exp_bins = dict([(str(int(k)), int(v)) for k, v in zip(*np.unique(exp_distribution, return_counts=True))])
 
         exp = ExperimentFactory(dataset=ds)
         job = JobFactory(experiment=exp)

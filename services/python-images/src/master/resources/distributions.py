@@ -309,6 +309,8 @@ class InterventionalDistributionResource(Resource):
         except ValueError:
             raise InvalidInputData('factor_node_ids must be array of ints')
 
+        if effect_node in factor_nodes:
+            raise InvalidInputData('The effect cannot be a predecessor of the cause')
         dataset = effect_node.dataset
         if not all([n.dataset == dataset for n in [cause_node] + factor_nodes]):
             raise InvalidInputData('Nodes are not all from same dataset')

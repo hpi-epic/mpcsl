@@ -147,7 +147,7 @@ class ConditionalDistributionTest(BaseResourceTest):
         """)
         source = np.concatenate((np.random.randint(2, size=(50, 2)), np.random.normal(size=(50, 1))), axis=1)
         for l in source:
-            db.session.execute("INSERT INTO cond_test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+            db.session.execute("INSERT INTO cond_test_data2 VALUES ({0})".format(",".join([str(e) for e in l])))
         db.session.commit()
 
         values, counts = np.unique(source[:, 1], return_counts=True)

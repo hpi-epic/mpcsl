@@ -4,6 +4,7 @@ import pandas as pd
 from src.db import db
 from src.master.resources import MarginalDistributionResource, ConditionalDistributionResource, \
     InterventionalDistributionResource
+from src.master.resources.distributions import _custom_histogram
 from test.factories import ResultFactory, NodeFactory, DatasetFactory, ExperimentFactory, JobFactory
 from .base import BaseResourceTest
 
@@ -42,7 +43,7 @@ class MarginalDistributionTest(BaseResourceTest):
         assert distribution['categorical'] is False
         assert distribution['node']['id'] == node.id
         assert distribution['dataset']['id'] == ds.id
-        bins, bin_edges = np.histogram(source[:, 0], bins='auto', density=False)
+        bins, bin_edges = _custom_histogram(source[:, 0], density=False)
         assert (distribution['bins'] == bins).all()
         assert np.allclose(distribution['bin_edges'], bin_edges)
 
@@ -122,15 +123,70 @@ class ConditionalDistributionTest(BaseResourceTest):
         # When
         distribution = self.post(self.url_for(ConditionalDistributionResource, node_id=node.id), json=data)
 
-        print(distribution)
         # Then
         assert distribution['categorical'] is True
         assert distribution['node']['id'] == node.id
         assert distribution['dataset']['id'] == ds.id
 
         conditioned_source = source[np.where(source[:, 2] == 1), 0]
-        bins = dict([(str(k), int(v)) for k, v in zip(*np.unique(conditioned_source, return_counts=True))])
+        bins = dict([(str(int(k)), int(v)) for k, v in zip(*np.unique(conditioned_source, return_counts=True))])
         assert distribution['bins'] == bins
+        assert 'bin_edges' not in distribution
+
+    def test_auto_condition(self):
+        # Given
+        ds = DatasetFactory(
+            load_query="SELECT * FROM cond_test_data2"
+        )
+        db.session.execute("""
+            CREATE TABLE IF NOT EXISTS cond_test_data2 (
+                "haha_.col" int,
+                b int,
+                "haha_.floatcol" float
+            );
+        """)
+        source = np.concatenate((np.random.randint(2, size=(50, 2)), np.random.normal(size=(50, 1))), axis=1)
+        for l in source:
+            db.session.execute("INSERT INTO cond_test_data2 VALUES ({0})".format(",".join([str(e) for e in l])))
+        db.session.commit()
+
+        values, counts = np.unique(source[:, 1], return_counts=True)
+        cat_filter = values[np.argmax(counts)]
+        hist, bin_edges = _custom_histogram(source[:, 2], density=False)
+        most_common = np.argmax(hist)
+        exp_distribution = source[:, 0][
+            (source[:, 1] == cat_filter) &
+            (source[:, 2] >= bin_edges[most_common]) &
+            (source[:, 2] <= bin_edges[most_common+1])]
+        exp_bins = dict([(str(int(k)), int(v)) for k, v in zip(*np.unique(exp_distribution, return_counts=True))])
+
+        exp = ExperimentFactory(dataset=ds)
+        job = JobFactory(experiment=exp)
+        ResultFactory(job=job)
+        node = NodeFactory(dataset=job.experiment.dataset,
+                           name='haha_.col')
+        node2 = NodeFactory(dataset=job.experiment.dataset,
+                            name='b')
+        node3 = NodeFactory(dataset=job.experiment.dataset,
+                            name='haha_.floatcol')
+        data = {
+            'conditions': {
+                node2.id: {
+                    'auto': True,
+                },
+                node3.id: {
+                    'auto': True,
+                }
+            }
+        }
+
+        # When
+        distribution = self.post(self.url_for(ConditionalDistributionResource, node_id=node.id), json=data)
+
+        assert distribution['categorical'] is True
+        assert distribution['node']['id'] == node.id
+        assert distribution['dataset']['id'] == ds.id
+        assert distribution['bins'] == exp_bins
         assert 'bin_edges' not in distribution
 
 
@@ -213,15 +269,14 @@ class InterventionalDistributionTest(BaseResourceTest):
 
         # Then
         assert distribution['bins'] == [
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 34, 62, 76, 107, 51, 35, 21, 1, 3, 0, 0, 0, 0, 0, 0, 0, 601
+            0, 0, 0, 0, 0, 0, 0, 4, 39, 153, 182, 78, 36, 5, 0, 0, 0, 0, 0, 503
         ]
         assert distribution['bin_edges'] == [
-            -3.75535790044119, -3.4878381827126006, -3.2203184649840106, -2.952798747255421, -2.685279029526831,
-            -2.4177593117982417, -2.150239594069652, -1.8827198763410624, -1.6152001586124727, -1.3476804408838832,
-            -1.0801607231552932, -0.8126410054267037, -0.5451212876981142, -0.27760156996952423, -0.010081852240934719,
-            0.25743786548765524, 0.5249575832162447, 0.7924773009448343, 1.0599970186734238, 1.3275167364020142,
-            1.5950364541306037, 1.8625561718591932, 2.1300758895877827, 2.3975956073163722, 2.6651153250449617,
-            2.932635042773552, 3.2001547605021416, 3.467674478230731, 3.7351941959593207, 4.00271391368791
+            -3.75535790044119, -3.367454309734735, -2.97955071902828, -2.591647128321825, -2.2037435376153702,
+            -1.815839946908915, -1.4279363562024598, -1.0400327654960049, -0.6521291747895499, -0.26422558408309493,
+            0.12367800662336004, 0.5115815973298155, 0.8994851880362704, 1.2873887787427254, 1.6752923694491804,
+            2.0631959601556353, 2.4510995508620903, 2.8390031415685453, 3.2269067322750002, 3.614810322981455,
+            4.00271391368791
         ]
 
     def test_empty_factors(self):

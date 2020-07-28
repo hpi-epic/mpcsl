@@ -4,10 +4,11 @@ from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 from marshmallow import fields, validates, Schema, ValidationError
 
-from src.master.helpers.database import get_db_session
+from src.master.helpers.database import get_db_session, load_networkx_graph
+from src.master.helpers.graph import get_potential_confounders
 from src.master.helpers.io import marshal, load_data, InvalidInputData
 from src.master.helpers.swagger import get_default_response, oneOf
-from src.models import Node, BaseSchema
+from src.models import Node, Result, BaseSchema
 from src.models.swagger import SwaggerMixin
 
 DISCRETE_LIMIT = 10
@@ -276,6 +277,13 @@ class InterventionalDistributionResource(Resource):
                 'required': True
             },
             {
+                'name': 'result_id',
+                'description': 'Result identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },
+            {
                 'name': 'factor_node_ids',
                 'description': 'Node identifiers of external factors',
                 'in': 'body',
@@ -310,7 +318,7 @@ class InterventionalDistributionResource(Resource):
             raise InvalidInputData('factor_node_ids must be array of ints')
 
         if effect_node in factor_nodes:
-            raise InvalidInputData('The effect cannot be a predecessor of the cause')
+            raise InvalidInputData('The effect cannot be an external factor')
         dataset = effect_node.dataset
         if not all([n.dataset == dataset for n in [cause_node] + factor_nodes]):
             raise InvalidInputData('Nodes are not all from same dataset')
@@ -319,14 +327,25 @@ class InterventionalDistributionResource(Resource):
         categorical_query = (f"SELECT 1 FROM ({dataset.load_query}) _subquery_ HAVING "
                              f"COUNT(DISTINCT \"{effect_node.name}\") <= {DISCRETE_LIMIT} AND "
                              f"COUNT(DISTINCT \"{cause_node.name}\") <= {DISCRETE_LIMIT}")
-        for factor_node in factor_nodes:
-            categorical_query += f" AND COUNT(DISTINCT \"{factor_node.name}\") <= {DISCRETE_LIMIT}"
+
+        result = Result.query.get_or_404(data['result_id'])
+        graph = load_networkx_graph(result)
+        confounder_nodes = get_potential_confounders(graph, cause_node.id)
+        ### TODO fix confounder
+        if effect_node in confounder_nodes:
+            raise InvalidInputData('The effect cannot be a confounder')
+        for confounder_node in confounder_nodes:
+            categorical_query += f" AND COUNT(DISTINCT \"{confounder_node.name}\") <= {DISCRETE_LIMIT}"
+        #for factor_node in factor_nodes:
+        #    categorical_query += f" AND COUNT(DISTINCT \"{factor_node.name}\") <= {DISCRETE_LIMIT}"
         categorical_check = session.execute(categorical_query).fetchall()
         is_fully_categorical = len(categorical_check) > 0
 
         if is_fully_categorical:  # Categorical, can be done in DB
-            # cause c, effect e, factors F
+            # cause c, effect e, confounders F
             # P(e|do(c)) = \Sigma_{F} P(e|c,f) P(f)
+            # P(e|do(c)) = \Sigma_{F} P(e,c,f)/P(c,f) * P(f)
+            # only works for the assumption that c -> e and all f in F are independent
             category_query = session.execute(f"SELECT DISTINCT \"{effect_node.name}\" "
                                              f"FROM ({dataset.load_query}) _subquery_").fetchall()
             categories = [row[0] for row in category_query]
@@ -344,15 +363,16 @@ class InterventionalDistributionResource(Resource):
                 if len(probabilities) == len(categories) - 1:  # Probabilities will sum to 1
                     probabilities.append(1 - sum(probabilities))
                 else:
+                    # SELECT count(e,c,f), count(cf), count(f) FROM load_query Group By F
                     do_sql = f"SELECT " \
                              f"COUNT(*) AS group_count, " \
                              f"COUNT(CASE WHEN {cause_predicate} THEN 1 ELSE NULL END) AS marginal_count, " \
                              f"COUNT(CASE WHEN {cause_predicate} " \
                              f"AND _subquery_.\"{effect_node.name}\"={repr(category)} THEN 1 ELSE NULL END) " \
                              f"AS conditional_count FROM ({dataset.load_query}) _subquery_ "
-                    if len(factor_nodes) > 0:
-                        factor_str = ','.join(['_subquery_.\"' + n.name + '\"' for n in factor_nodes])
-                        do_sql += f"GROUP BY {factor_str}"
+                    if len(confounder_nodes) > 0:
+                        confounder_str = ','.join(['_subquery_.\"' + n.name + '\"' for n in confounder_nodes])
+                        do_sql += f"GROUP BY {confounder_str}"
                     do_query = session.execute(do_sql).fetchall()
                     group_counts, marg_counts, cond_counts = zip(*[(line[-3], line[-2], line[-1]) for line in do_query])
 
@@ -371,8 +391,8 @@ class InterventionalDistributionResource(Resource):
                 'bins': bins
             })
         else:
-            factor_str = (', ' + ', '.join([f'"{n.name}"' for n in factor_nodes])) if len(factor_nodes) > 0 else ''
-            result = session.execute(f"SELECT \"{cause_node.name}\", \"{effect_node.name}\"{factor_str} "
+            confounder_str = (', ' + ', '.join([f'"{n.name}"' for n in confounder_nodes])) if len(confounder_nodes) > 0 else ''
+            result = session.execute(f"SELECT \"{cause_node.name}\", \"{effect_node.name}\"{confounder_str} "
                                      f"FROM ({dataset.load_query}) _subquery_").fetchall()
             arr = np.array([line for line in result])
 
@@ -380,22 +400,22 @@ class InterventionalDistributionResource(Resource):
 
             arr[:, 1:] = np.apply_along_axis(
                 lambda c: np.digitize(c, _custom_histogram(c)[1][:-1]), 0, arr[:, 1:])
-            df = pd.DataFrame(arr, columns=([cause_node.name] + [effect_node.name] + [f.name for f in factor_nodes]))
+            df = pd.DataFrame(arr, columns=([cause_node.name] + [effect_node.name] + [f.name for f in confounder_nodes]))
 
             probabilities = []
             for effect_bin in range(1, len(bin_edges) - 1):
                 group_counts, marg_counts, cond_counts = [], [], []
-                factor_grouping = df.groupby(df.columns[2:].tolist()) if len(df.columns) > 2 else [('', df)]
-                for factor_group, factor_df in factor_grouping:
+                confounder_grouping = df.groupby(df.columns[2:].tolist()) if len(df.columns) > 2 else [('', df)]
+                for confounder_group, confounder_df in confounder_grouping:
                     if cause_condition['categorical']:
-                        cause_mask = factor_df[cause_node.name].isin(cause_condition['values'])
+                        cause_mask = confounder_df[cause_node.name].isin(cause_condition['values'])
                     else:
-                        cause_mask = ((factor_df[cause_node.name] >= cause_condition['from_value']) &
-                                      (factor_df[cause_node.name] < cause_condition['to_value']))
+                        cause_mask = ((confounder_df[cause_node.name] >= cause_condition['from_value']) &
+                                      (confounder_df[cause_node.name] < cause_condition['to_value']))
 
-                    group_counts.append(len(factor_df))
-                    marg_counts.append(len(factor_df[cause_mask]))
-                    cond_counts.append(len(factor_df[cause_mask & (factor_df[effect_node.name] == effect_bin)]))
+                    group_counts.append(len(confounder_df))
+                    marg_counts.append(len(confounder_df[cause_mask]))
+                    cond_counts.append(len(confounder_df[cause_mask & (confounder_df[effect_node.name] == effect_bin)]))
 
                 probability = sum([
                     (cond_count / marg_count) * (group_count / sum(group_counts))

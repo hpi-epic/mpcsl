@@ -331,7 +331,8 @@ class InterventionalDistributionResource(Resource):
 
         result = Result.query.get_or_404(data['result_id'])
         graph = load_networkx_graph(result)
-        confounder_nodes = get_potential_confounders(graph, cause_node.id)
+        confounder_node_list = get_potential_confounders(graph, cause_node.id)[0]
+        confounder_nodes = [Node.query.get_or_404(confounder_node_id) for confounder_node_id in confounder_node_list]
         ### TODO fix confounder
         if effect_node in confounder_nodes:
             raise InvalidInputData('The effect cannot be a confounder')

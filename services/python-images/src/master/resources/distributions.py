@@ -338,8 +338,6 @@ class InterventionalDistributionResource(Resource):
             raise InvalidInputData('The effect cannot be a confounder')
         for confounder_node in confounder_nodes:
             categorical_query += f" AND COUNT(DISTINCT \"{confounder_node.name}\") <= {DISCRETE_LIMIT}"
-        #for factor_node in factor_nodes:
-        #    categorical_query += f" AND COUNT(DISTINCT \"{factor_node.name}\") <= {DISCRETE_LIMIT}"
         categorical_check = session.execute(categorical_query).fetchall()
         is_fully_categorical = len(categorical_check) > 0
 

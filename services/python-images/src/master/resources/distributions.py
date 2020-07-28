@@ -244,6 +244,7 @@ class ConditionalDistributionResource(Resource):
 class InterventionalParameterSchema(Schema, SwaggerMixin):
     cause_node_id = fields.Int(required=True)
     effect_node_id = fields.Int(required=True)
+    result_id = fields.Int(required=True)
     factor_node_ids = fields.List(fields.Int(), default=[])
     cause_condition = fields.Dict()
 

@@ -34,6 +34,6 @@ SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get(
 DAEMON_CYCLE_TIME = 5
 
 
-RESULT_READ_BUFF_SIZE = int(os.environ.get('RESULT_READ_BUFF_SIZE', 16 * 1024))
+RESULT_READ_BUFF_SIZE = int(os.environ.get('RESULT_READ_BUFF_SIZE', 32 * 1024))
 RESULT_WRITE_BUFF_SIZE = int(os.environ.get('RESULT_WRITE_BUFF_SIZE', 1024))
 LOAD_SEPARATION_SET = os.environ.get('LOAD_SEPARATION_SET', 'false').lower() == 'true'

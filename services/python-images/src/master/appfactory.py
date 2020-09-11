@@ -27,7 +27,7 @@ class AppFactory(object):
     def set_up_socketio(self):
         if self.app is None:
             raise Exception("Flask app not set")
-        self.socketio = SocketIO(self.app)
+        self.socketio = SocketIO(self.app, ping_timeout=1200)
 
         @event.listens_for(Job, 'after_update')
         def emitJobUpdate(mapper, connection, target: Job):

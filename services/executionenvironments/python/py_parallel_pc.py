@@ -2,6 +2,7 @@
 import logging
 from itertools import combinations, product
 from multiprocessing import Pool, RawArray
+from datetime import datetime
 
 import networkx as nx
 import numpy as np
@@ -141,7 +142,7 @@ def parallel_stable_pc(data, estimator, alpha=0.05, processes=32, max_level=None
     for lvl in lvls:
         configs = [(i, j, lvl) for i, j in product(cols_map, cols_map) if i < j and graph[i][j] == 1]
 
-        logging.info(f'Starting level {lvl} pool')
+        logging.info(f'Starting level {lvl} pool with {len(configs)} remaining edges at {datetime.now()}')
         with Pool(processes=processes, initializer=_init_worker,
                   initargs=(data_raw, data.shape, graph_raw, vertices, estimator, alpha)) as pool:
             result = pool.starmap(_test_worker, configs)

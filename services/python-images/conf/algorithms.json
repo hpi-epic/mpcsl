@@ -34,6 +34,12 @@
       "skeleton_method": {
         "type": "enum",
         "values": ["stable.fast", "stable", "original"]
+      },
+      "sampling_factor": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "default": 1.0
       }
     },
     "docker_parameters": {}

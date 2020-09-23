@@ -23,7 +23,9 @@ option_list_v <- list(
                     make_option(c("--send_sepsets"), type="integer", default=0,
                                 help="If 1, sepsets will be sent with the results", metavar=""),
                     make_option(c("-v", "--verbose"), type="integer", default=0,
-                                help="More detailed output is provided (with impact on performance)", metavar="")
+                                help="More detailed output is provided (with impact on performance)", metavar=""),
+                    make_option(c("--sampling_factor"), type="double", default=1.0,
+                                help="Data sampling factor to select a random subset, between 0 and 1", metavar="")
                     #make_option(c("--skeleton_method"), type="character", default="stable.fast",
                     #            help="Method used within skeleton, C++ or R", metavar="")
                     #make_option(c("--fixed_gaps"), type="character", default=NULL,
@@ -36,7 +38,7 @@ option_list_v <- list(
 option_parser <- OptionParser(option_list=option_list_v)
 opt <- parse_args(option_parser)
 
-tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
+tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id, opt$sampling_factor)
 df <- tmp_result[[1]]
 dataset_loading_time <- tmp_result[[2]]
 

@@ -26,7 +26,7 @@ def handle_request(request_func, api_host, job_id):
     return r
 
 
-def get_dataset(api_host, dataset_id, job_id):
+def get_dataset(api_host, dataset_id, job_id, sampling_factor=1.0):
     url = f'http://{api_host}/api/dataset/{dataset_id}/loadwithids'
     logging.info(f'Load dataset from {url}')
     start = time.time()
@@ -34,6 +34,7 @@ def get_dataset(api_host, dataset_id, job_id):
     dataset_loading_time = time.time() - start
     logging.info(f"Successfully loaded dataset (size {r.headers['x-content-length']} bytes) in {dataset_loading_time}")
     df = pd.read_csv(StringIO(r.text))
+    df = df.sample(frac=sampling_factor)
     return df, dataset_loading_time
 
 

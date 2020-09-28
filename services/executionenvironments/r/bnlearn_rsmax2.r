@@ -25,7 +25,9 @@ option_list_v <- list(
                     make_option(c("--maximize_args"), type="character",
                                 help="A list of arguments to be passed to the algorithm specified by maximize", metavar=""),
                     make_option(c("--discrete_limit"), type="integer", default=4,
-                                help="Maximum unique values per variable considered as discrete", metavar="")
+                                help="Maximum unique values per variable considered as discrete", metavar=""),
+                    make_option(c("--sampling_factor"), type="double", default=1.0,
+                                help="Data sampling factor to select a random subset, between 0 and 1", metavar="")
 ); 
 
 option_parser <- OptionParser(option_list=option_list_v)
@@ -76,7 +78,7 @@ if(opt$maximize != "hc"){
     if (!is.null(maximize_hash[["optimized"]])) optimized <- maximize_hash[["optimized"]]; 
 }
 
-tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id)
+tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id, opt$sampling_factor)
 df <- tmp_result[[1]]
 dataset_loading_time <- tmp_result[[2]]
 

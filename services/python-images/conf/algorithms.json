@@ -34,6 +34,12 @@
       "skeleton_method": {
         "type": "enum",
         "values": ["stable.fast", "stable", "original"]
+      },
+      "sampling_factor": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "default": 1.0
       }
     },
     "docker_parameters": {}
@@ -70,6 +76,12 @@
       "subset_size": {
         "type": "int",
         "minimum": -1
+      },
+      "sampling_factor": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "default": 1.0
       }
     },
     "docker_parameters": {}
@@ -122,6 +134,12 @@
         "type": "int",
         "required": true,
         "minimum": 1
+      },
+      "sampling_factor": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "default": 1.0
       }
     },
     "docker_parameters": {}
@@ -191,6 +209,12 @@
         "type": "int",
         "minimum": 3,
         "default": 4
+      },
+      "sampling_factor": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "default": 1.0
       } 
     },
     "docker_parameters": {}
@@ -245,6 +269,12 @@
         "type": "int",
         "minimum": 0,
         "maximum": 1
+      },
+      "sampling_factor": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "default": 1.0
       }
     },
     "docker_parameters": {} 
@@ -292,7 +322,13 @@
         "type": "int",
         "minimum": 3,
         "default": 4
-      } 
+      },
+      "sampling_factor": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "default": 1.0
+      }
     },
     "docker_parameters": {} 
   },
@@ -318,6 +354,12 @@
       "subset_size": {
         "type": "int",
         "minimum": -1
+      },
+      "sampling_factor": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "default": 1.0
       }
     },
     "needs_gpu": true,
@@ -354,6 +396,12 @@
         "type": "int",
         "minimum": 1,
         "default": 100
+      },
+      "sampling_factor": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "default": 1.0
       }
     },
     "docker_parameters": {}

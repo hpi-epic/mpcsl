@@ -21,10 +21,11 @@ parser.add_argument('-s', '--subset_size', type=int,
 parser.add_argument('--permutations', type=int, default=None,
                     help='The number of iterations for the permutation test')
 parser.add_argument('--send_sepsets', type=int, default=0, help='If 1, send sepsets with the results')
+parser.add_argument('--sampling_factor', type=float, default=1.0, help='Data sampling factor to select a random subset, between 0 and 1')
 
 
-def run_pcalg(api_host, job_id, dataset_id, indep_test, alpha, processes, max_level, args, send_sepsets=False):
-    df, ds_load_time = get_dataset(api_host, dataset_id, job_id)
+def run_pcalg(api_host, job_id, dataset_id, indep_test, alpha, processes, max_level, args, sampling_factor, send_sepsets=False):
+    df, ds_load_time = get_dataset(api_host, dataset_id, job_id, sampling_factor)
 
     start = time.time()
     graph, sepsets = parallel_stable_pc(df, indep_test, alpha=alpha, processes=processes, max_level=max_level)
@@ -49,4 +50,5 @@ if __name__ == '__main__':
     max_level = args.subset_size if args.subset_size >= 0 else None
 
     run_pcalg(args.api_host, args.job_id, args.dataset_id, indep_test, alpha=args.alpha,
-              processes=args.processes, max_level=max_level, args=vars(args), send_sepsets=send_sepsets)
+              processes=args.processes, max_level=max_level, args=vars(args), sampling_factor=args.sampling_factor,
+              send_sepsets=send_sepsets)

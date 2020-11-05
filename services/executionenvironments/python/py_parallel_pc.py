@@ -29,6 +29,7 @@ def _test_worker(i, j, lvl):
     data_arr = np.frombuffer(var_dict['data']).reshape(var_dict['data_shape'])
     graph = np.frombuffer(var_dict['graph'], dtype="int32").reshape((var_dict['vertices'],
                                                                      var_dict['vertices']))
+    
     # unconditional
     if lvl < 1:
         p_val = test.compute_pval(data_arr[:, [i]], data_arr[:, [j]], z=None)
@@ -36,17 +37,24 @@ def _test_worker(i, j, lvl):
             return (i, j, p_val, [])
     # conditional
     else:
-        candidates = np.arange(var_dict['vertices'])[(graph[i] == 1) & (graph[j] == 1)]
-        if len(candidates) < lvl:
-            return None
+        candidates_1 = np.arange(var_dict['vertices'])[(graph[i] == 1)]
+        candidates_1 = np.delete(candidates_1, np.argwhere((candidates_1==i) | (candidates_1==j)))
+        candidates_2 = np.arange(var_dict['vertices'])[(graph[j] == 1)]
+        candidates_2 = np.delete(candidates_2, np.argwhere((candidates_2==i) | (candidates_2==j)))
 
-        sets = [list(S) for S in combinations(candidates, lvl)]
+        if (len(candidates_1) < lvl) and (len(candidates_2) < lvl):
+            return None
+        sets = set()
+        for comb in combinations(candidates_1, lvl):
+            sets.add(comb)
+
+        for comb in combinations(candidates_2, lvl):
+            sets.add(comb)
+
         for S in sets:
-            if (i in S) or (j in S):
-                continue
-            p_val = test.compute_pval(data_arr[:, [i]], data_arr[:, [j]], z=data_arr[:, S])
+            p_val = test.compute_pval(data_arr[:, [i]], data_arr[:, [j]], z=data_arr[:, list(S)])
             if (p_val > alpha):
-                return (i, j, p_val, S)
+                return (i, j, p_val, list(S))
     return None
 
 

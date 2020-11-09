@@ -46,7 +46,6 @@ def _test_worker(i, j, lvl):
             return None
         
         for S in [list(c) for c in {comb for comb in chain(combinations(candidates_2, lvl),combinations(candidates_1, lvl))}]:
-            print(S)
             p_val = test.compute_pval(data_arr[:, [i]], data_arr[:, [j]], z=data_arr[:, list(S)])
             if (p_val > alpha):
                 return (i, j, p_val, list(S))

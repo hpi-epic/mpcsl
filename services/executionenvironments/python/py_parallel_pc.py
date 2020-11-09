@@ -1,6 +1,6 @@
 # Created by Marcus Pappik
 import logging
-from itertools import combinations, product
+from itertools import combinations, product, chain
 from multiprocessing import Pool, RawArray
 
 import networkx as nx
@@ -44,17 +44,13 @@ def _test_worker(i, j, lvl):
 
         if (len(candidates_1) < lvl) and (len(candidates_2) < lvl):
             return None
-        sets = set()
-        for comb in combinations(candidates_1, lvl):
-            sets.add(comb)
-
-        for comb in combinations(candidates_2, lvl):
-            sets.add(comb)
-
-        for S in sets:
+        
+        for S in [list(c) for c in {comb for comb in chain(combinations(candidates_2, lvl),combinations(candidates_1, lvl))}]:
+            print(S)
             p_val = test.compute_pval(data_arr[:, [i]], data_arr[:, [j]], z=data_arr[:, list(S)])
             if (p_val > alpha):
                 return (i, j, p_val, list(S))
+            
     return None
 
 

@@ -1,0 +1,255 @@
+Sepset: 1, Observations: 5000, Permutation:  10
+Fri Aug  7 16:21:11 2020    test_stats
+
+         63911 function calls in 30.871 seconds
+
+   Ordered by: internal time
+   List reduced from 146 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      184   20.191    0.110   20.243    0.110 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      176    7.163    0.041   29.319    0.167 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+      528    2.799    0.005    2.883    0.005 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+       80    0.364    0.005    0.365    0.005 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+        8    0.151    0.019   30.870    3.859 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 1, Observations: 5000, Permutation:  25
+Fri Aug  7 16:22:24 2020    test_stats
+
+         149435 function calls in 72.640 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      424   47.592    0.112   47.712    0.113 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      416   16.823    0.040   70.377    0.169 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+     1248    6.549    0.005    6.749    0.005 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      200    0.971    0.005    0.972    0.005 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+        8    0.229    0.029   72.639    9.080 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 1, Observations: 5000, Permutation:  50
+Fri Aug  7 16:24:44 2020    test_stats
+
+         292035 function calls in 140.309 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      824   91.686    0.111   91.915    0.112 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      816   32.863    0.040  136.960    0.168 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+     2448   12.624    0.005   13.006    0.005 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      400    1.875    0.005    1.879    0.005 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+        8    0.352    0.044  140.307   17.538 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 1, Observations: 5000, Permutation:  75
+Fri Aug  7 16:28:18 2020    test_stats
+
+         434635 function calls in 214.240 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1224  140.579    0.115  140.925    0.115 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+     1216   49.854    0.041  209.695    0.172 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+     3648   19.081    0.005   19.665    0.005 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      600    2.863    0.005    2.869    0.005 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+        8    0.485    0.061  214.238   26.780 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 1, Observations: 5000, Permutation:  100
+Fri Aug  7 16:33:06 2020    test_stats
+
+         577235 function calls in 287.992 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1624  188.710    0.116  189.174    0.116 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+     1616   67.077    0.042  282.217    0.175 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+     4848   25.872    0.005   26.659    0.005 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      800    3.858    0.005    3.864    0.005 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+        8    0.621    0.078  287.990   35.999 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 1, Observations: 1000, Permutation: 10
+Fri Aug  7 16:33:07 2020    test_stats
+
+         7994 function calls in 0.378 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       23    0.261    0.011    0.264    0.011 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+       22    0.075    0.003    0.360    0.016 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+       66    0.024    0.000    0.030    0.000 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+        1    0.003    0.003    0.378    0.378 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+       10    0.002    0.000    0.002    0.000 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+
+
+------------------------------------------------
+Sepset: 1, Observations: 5000, Permutation: 10
+Fri Aug  7 16:33:37 2020    test_stats
+
+         63875 function calls in 30.673 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      184   20.057    0.109   20.109    0.109 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      176    7.019    0.040   28.815    0.164 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+      528    2.826    0.005    2.912    0.006 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+       80    0.400    0.005    0.401    0.005 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+        8    0.164    0.021   30.671    3.834 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 1, Observations: 10000, Permutation: 10
+Fri Aug  7 16:34:25 2020    test_stats
+
+         31943 function calls in 47.576 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       92   32.799    0.357   32.840    0.357 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+       88   10.605    0.121   44.875    0.510 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+      264    3.295    0.012    3.345    0.013 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+       40    0.532    0.013    0.533    0.013 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+        4    0.210    0.052   47.575   11.894 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 1, Observations: 25000, Permutation: 10
+Fri Aug  7 16:43:27 2020    test_stats
+
+         63875 function calls in 541.818 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      184  384.815    2.091  385.305    2.094 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      176  126.839    0.721  515.973    2.932 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+      528   23.546    0.045   23.689    0.045 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+       80    3.599    0.045    3.601    0.045 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+        8    2.057    0.257  541.811   67.726 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 1, Observations: 44999, Permutation: 10
+Fri Aug  7 17:09:07 2020    test_stats
+
+         63875 function calls in 1540.437 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      184 1096.604    5.960 1097.503    5.965 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      176  384.655    2.186 1473.416    8.372 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+      528   45.532    0.086   45.693    0.087 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+       80    6.683    0.084    6.685    0.084 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+        8    5.430    0.679 1540.420  192.552 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 1, Observations: 5000, Permutation: 10
+Fri Aug  7 17:09:33 2020    test_stats
+
+         63875 function calls in 25.940 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      184   16.922    0.092   16.964    0.092 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      176    5.995    0.034   24.571    0.140 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+      528    2.400    0.005    2.469    0.005 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+       80    0.325    0.004    0.325    0.004 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+        8    0.131    0.016   25.938    3.242 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 2, Observations: 5000, Permutation: 10
+Fri Aug  7 17:10:19 2020    test_stats
+
+         159671 function calls in 45.353 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      460   24.289    0.053   24.401    0.053 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      440    9.612    0.022   41.823    0.095 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+     1320    8.728    0.007    8.901    0.007 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      200    2.025    0.010    2.027    0.010 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+       20    0.244    0.012   45.350    2.267 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 3, Observations: 5000, Permutation: 10
+Fri Aug  7 17:10:44 2020    test_stats
+
+         103790 function calls in 25.511 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      299   11.572    0.039   11.648    0.039 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      858    6.846    0.008    6.963    0.008 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      286    4.967    0.017   23.119    0.081 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+      130    1.675    0.013    1.675    0.013 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+       13    0.141    0.011   25.509    1.962 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 4, Observations: 5000, Permutation: 10
+Fri Aug  7 17:10:56 2020    test_stats
+
+         55892 function calls in 12.154 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      161    4.362    0.027    4.403    0.027 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      462    4.246    0.009    4.309    0.009 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      154    1.974    0.013   10.546    0.068 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+       70    1.337    0.019    1.337    0.019 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+        7    0.066    0.009   12.153    1.736 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------
+Sepset: 5, Observations: 5000, Permutation: 10
+Fri Aug  7 17:11:15 2020    test_stats
+
+         87824 function calls in 18.503 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 5 due to restriction <5>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      726    6.131    0.008    6.243    0.009 {method 'query_radius' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      253    6.019    0.024    6.094    0.024 {method 'query' of 'sklearn.neighbors.kd_tree.BinaryTree' objects}
+      110    3.021    0.027    3.022    0.027 {tigramite.tigramite_cython_code._get_restricted_permutation_cython}
+      242    2.923    0.012   15.095    0.062 /home/Constantin.Lange/mpci/services/executionenvironments/python/cmi_estimators.py:41(_mixed_KSG)
+       11    0.103    0.009   18.502    1.682 /home/Constantin.Lange/mpci/services/executionenvironments/python/rperm.py:86(compute_pval)
+
+
+------------------------------------------------

@@ -23,20 +23,11 @@ class JobErrorCode(int, enum.Enum):
 
 
 class Job(BaseModel):
-    experiment_id = db.Column(
-        db.Integer,
-        db.ForeignKey('experiment.id'),
-        nullable=False
-    )
-    experiment = db.relationship('Experiment', backref=db.backref('jobs', cascade="all, delete-orphan"))
     start_time = db.Column(db.DateTime, nullable=False)
     container_id = db.Column(db.String)
     node_hostname = db.Column(db.String)
     status = db.Column(db.Enum(JobStatus), nullable=False)
     log = db.Column(db.String)
-    parallel = db.Column(db.Boolean)
-    enforce_cpus = db.Column(db.Boolean, default=True)
-    gpus = db.Column(db.Integer)
     error_code = db.Column(db.Enum(JobErrorCode))
 
     @property

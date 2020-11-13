@@ -1,13 +1,15 @@
 
 from src.db import db
-from src.models.base import BaseModel
+from src.models.base import BaseModel, BaseSchema
+from src.models.job import Job
 
 class ExperimentJob(BaseModel):
     job_id = db.Column(
         db.Integer,
         db.ForeignKey('job.id')
     )
-    job = db.relationship('Job', backref=db.backref('experiment_job', cascade="all, delete-orphan"))
+    job = db.relationship('Job', uselist=False, backref=db.backref('experiment_job'))
+
     experiment_id = db.Column(
         db.Integer,
         db.ForeignKey('experiment.id'),

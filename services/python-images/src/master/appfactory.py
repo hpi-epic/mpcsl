@@ -32,17 +32,17 @@ class AppFactory(object):
         @event.listens_for(Job, 'after_update')
         def emitJobUpdate(mapper, connection, target: Job):
             self.socketio.emit('job', {'id': target.id, 'errorCode': target.error_code})
-            self.socketio.emit('experiment', {'id': target.experiment_id})
+            self.socketio.emit('experiment', {'id': target.experiment_job.experiment_id})
 
         @event.listens_for(Job, 'after_insert')
         def emitJobInsert(mapper, connection, target):
             self.socketio.emit('job', {'id': target.id})
-            self.socketio.emit('experiment', {'id': target.experiment_id})
+            self.socketio.emit('experiment', {'id': target.experiment_job.experiment_id})
 
         @event.listens_for(Job, 'after_delete')
         def emitJobDelete(mapper, connection, target):
             self.socketio.emit('job', {'id': target.id})
-            self.socketio.emit('experiment', {'id': target.experiment_id})
+            self.socketio.emit('experiment', {'id': target.experiment_job.experiment_id})
 
         @event.listens_for(Experiment, 'after_update')
         def emitExperimentUpdate(mapper, connection, target):

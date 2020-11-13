@@ -15,9 +15,10 @@ from src.master.config import RESULT_READ_BUFF_SIZE, LOAD_SEPARATION_SET, RESULT
 from src.master.helpers.io import marshal, InvalidInputData
 from src.master.helpers.socketio_events import job_status_change
 from src.master.helpers.swagger import get_default_response
-from src.models import Job, JobSchema, ResultSchema, Edge, Result, Sepset, Experiment
+from src.models import Edge, Experiment, ExperimentJob, Job, JobSchema, Result, ResultSchema, Sepset
 from src.models.base import SwaggerMixin
 from src.models.job import JobStatus
+from sqlalchemy.orm import joinedload
 
 
 def kill_container(container):
@@ -161,8 +162,11 @@ class ExperimentJobListResource(Resource):
     def get(self, experiment_id):
         Experiment.query.get_or_404(experiment_id)
         jobs = Job.query\
-            .filter(Job.experiment_id == experiment_id)\
+            .options(joinedload('experiment_job'))\
             .order_by(Job.start_time.desc())
+            # .filter(ExperimentJob.experiment_id == experiment_id)
+
+        print(jobs)
 
         return marshal(JobSchema, jobs, many=True)
 

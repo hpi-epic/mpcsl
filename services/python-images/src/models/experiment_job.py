@@ -1,7 +1,7 @@
 
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
-from src.models.job import Job
+from src.models.job import Job, JobSchema
 from src.models.experiment import Experiment
 
 class ExperimentJob(Job):
@@ -13,7 +13,7 @@ class ExperimentJob(Job):
         db.ForeignKey('experiment.id'),
         nullable=False
     )
-    experiment = db.relationship('Experiment', backref=db.backref('experiment_jobs', cascade="all, delete-orphan"))
+    experiment = db.relationship('Experiment', backref=db.backref('jobs', cascade="all, delete-orphan"))
     
     parallel = db.Column(db.Boolean)
     enforce_cpus = db.Column(db.Boolean, default=True)
@@ -24,6 +24,6 @@ class ExperimentJob(Job):
     }
 
 
-class ExperimentJobSchema(BaseSchema):
+class ExperimentJobSchema(JobSchema):
     class Meta(BaseSchema.Meta):
         model = ExperimentJob

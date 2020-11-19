@@ -157,7 +157,7 @@ class ExperimentJobListResource(Resource):
                 'required': True
             }
         ],
-        'responses': get_default_response(JobSchema.get_swagger().array()),
+        'responses': get_default_response(ExperimentJobSchema.get_swagger().array()),
         'tags': ['Job', 'Experiment']
     })
     def get(self, experiment_id):

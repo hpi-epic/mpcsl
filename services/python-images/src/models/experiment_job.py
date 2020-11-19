@@ -2,9 +2,11 @@
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
 from src.models.job import Job
+from src.models.experiment import Experiment
 
 class ExperimentJob(Job):
-    id = Column(db.Integer, db.ForeignKey('job.id'), primary_key=True)
+    __tablename__ = 'experiment_job'
+    id = db.Column(db.Integer, db.ForeignKey('job.id'), primary_key=True)
 
     experiment_id = db.Column(
         db.Integer,

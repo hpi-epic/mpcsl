@@ -6,7 +6,6 @@ from sqlalchemy.ext.mutable import MutableDict
 
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
-from src.models.experiment_job import ExperimentJob
 
 INDEPENDENCE_TESTS = ["gaussCI", "disCI", "binCI"]
 
@@ -21,8 +20,6 @@ class Experiment(BaseModel):
 
     description = db.Column(db.String)
     parameters = db.Column(MutableDict.as_mutable(db.JSON))
-
-    experiment_jobs = db.relationship("ExperimentJob", back_populates="company")
 
     @property
     def last_job(self):
@@ -58,7 +55,7 @@ class ExperimentSchema(BaseSchema):
     description = field_for(Experiment, 'description', required=False, allow_none=True, default='')
     algorithm = fields.Nested('AlgorithmSchema', dump_only=True)
     parameters = fields.Dict()
-    last_job = fields.Nested('JobSchema', dump_only=True)
+    last_job = fields.Nested('ExperimentJobSchema', dump_only=True)
     execution_time_statistics = fields.Dict()
 
     class Meta(BaseSchema.Meta):

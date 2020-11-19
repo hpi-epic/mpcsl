@@ -19,6 +19,7 @@ from src.models import Edge, Experiment, ExperimentJob, Job, JobSchema, Result, 
 from src.models.base import SwaggerMixin
 from src.models.job import JobStatus
 from sqlalchemy.orm import joinedload
+from src.models.experiment_job import ExperimentJobSchema
 
 
 def kill_container(container):
@@ -161,13 +162,11 @@ class ExperimentJobListResource(Resource):
     })
     def get(self, experiment_id):
         Experiment.query.get_or_404(experiment_id)
-        jobs = ExperimentJob.query\
+        jobs = ExperimentJob.query \
+            .filter(ExperimentJob.experiment_id == experiment_id) \
             .order_by(Job.start_time.desc())
-            # .filter(ExperimentJob.experiment_id == experiment_id)
 
-        print(jobs)
-
-        return marshal(JobSchema, jobs, many=True)
+        return marshal(ExperimentJobSchema, jobs, many=True)
 
 
 class EdgeResultEndpointSchema(Schema, SwaggerMixin):

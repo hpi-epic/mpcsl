@@ -22,8 +22,6 @@ class JobErrorCode(int, enum.Enum):
 
 
 class Job(BaseModel):
-    __abstract__ = True
-
     start_time = db.Column(db.DateTime, nullable=False)
     container_id = db.Column(db.String)
     node_hostname = db.Column(db.String)
@@ -31,7 +29,7 @@ class Job(BaseModel):
     log = db.Column(db.String)
     error_code = db.Column(db.Enum(JobErrorCode))
 
-    # experiment_job = db.relationship('ExperimentJob', uselist=False, backref=db.backref('job'))
+    type = db.Column(db.String)
 
     @property
     def result(self):
@@ -49,5 +47,4 @@ class JobSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = Job
 
-    experiment_job = fields.Nested('ExperimentJobSchema')
     result = fields.Nested('ResultSchema')

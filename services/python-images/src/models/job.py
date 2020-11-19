@@ -22,6 +22,8 @@ class JobErrorCode(int, enum.Enum):
 
 
 class Job(BaseModel):
+    __abstract__ = True
+
     start_time = db.Column(db.DateTime, nullable=False)
     container_id = db.Column(db.String)
     node_hostname = db.Column(db.String)
@@ -36,6 +38,11 @@ class Job(BaseModel):
         if len(self.results) == 0:
             return None
         return sorted(self.results, key=lambda x: x.start_time)[-1]
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'job',
+        'polymorphic_on': type
+    }
 
 
 class JobSchema(BaseSchema):

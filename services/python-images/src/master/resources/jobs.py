@@ -161,8 +161,7 @@ class ExperimentJobListResource(Resource):
     })
     def get(self, experiment_id):
         Experiment.query.get_or_404(experiment_id)
-        jobs = Job.query\
-            .options(joinedload('experiment_job'))\
+        jobs = ExperimentJob.query\
             .order_by(Job.start_time.desc())
             # .filter(ExperimentJob.experiment_id == experiment_id)
 

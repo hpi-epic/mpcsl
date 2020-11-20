@@ -11,7 +11,7 @@ from src.master.helpers.socketio_events import job_status_change
 from src.master.helpers.swagger import get_default_response, oneOf
 from src.models import Job, JobSchema, Result, ResultSchema
 from src.models.job import JobStatus
-import datetime
+from datetime import datetime
 from src.master.resources.experiment_jobs import ExperimentResultEndpointSchema, process_experiment_job_result
 
 

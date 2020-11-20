@@ -87,7 +87,6 @@ class DatasetGenerationJobListResource(Resource):
 
         jobs = DatasetGenerationJob.query.all() \
             if show_hidden \
-            else DatasetGenerationJob.query \
-                .filter(DatasetGenerationJob.status != DatasetGenerationJob.hidden)
+            else DatasetGenerationJob.query.filter(DatasetGenerationJob.status != DatasetGenerationJob.hidden)
 
         return marshal(DatasetGenerationJobSchema, jobs, many=True)

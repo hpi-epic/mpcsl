@@ -17,7 +17,7 @@ class DatasetGenerationJob(Job):
         'Dataset',
         backref=db.backref('job', cascade="all, delete-orphan", uselist=False)
     )
-    
+
     nodes = db.Column(db.Integer)
     samples = db.Column(db.Integer)
     edgeProbability = db.Column(db.Float)
@@ -25,11 +25,11 @@ class DatasetGenerationJob(Job):
     edgeValueUpperBound = db.Column(db.Float)
 
     __mapper_args__ = {
-        'polymorphic_identity':'dataset_generation_job',
+        'polymorphic_identity': 'dataset_generation_job',
     }
 
 
 class DatasetGenerationJobSchema(JobSchema):
     class Meta(BaseSchema.Meta):
         model = DatasetGenerationJob
-
+gi

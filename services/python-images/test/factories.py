@@ -145,4 +145,3 @@ class SepsetFactory(BaseFactory):
 
     level = random.randint(1, 5)
     statistic = random.random()
-

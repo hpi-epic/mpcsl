@@ -32,4 +32,3 @@ class DatasetGenerationJob(Job):
 class DatasetGenerationJobSchema(JobSchema):
     class Meta(BaseSchema.Meta):
         model = DatasetGenerationJob
-gi

@@ -21,7 +21,7 @@ spec:
             - --edgeValueLowerBound
             - "-0.5"
           image: umland/mpci_generator
-          imagePullPolicy: IfNotPresent  # Change to 'IfNotPresent' to test local executor images
+          imagePullPolicy: Always # Change to 'IfNotPresent' to test local executor images
           name: execution-container
           resources: {}
       restartPolicy: Never

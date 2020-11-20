@@ -27,7 +27,7 @@ write.csv(dataset, tmpDataFile)
 
 
 post_dataset <- function(apiHost) {
-    url <- paste0('http://', apiHost, '/api/dataset_csv_upload/')
+    url <- paste0('http://', apiHost, '/api/dataset_csv_upload')
     df_request <- RETRY("POST", url, body = list(file = upload_file(tmpDataFile)), encode = "multipart", times = 1, quiet=FALSE)
     return(df_request)
 }

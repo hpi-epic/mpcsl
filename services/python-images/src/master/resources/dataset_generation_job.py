@@ -25,28 +25,6 @@ class DatasetGenerationJobResource(Resource):
   def get(self, job_id):
     dataset_generation_job = DatasetGenerationJob.get_or_404(job_id)
     return marshal(DatasetGenerationJob, dataset_generation_job)
-
-  @swagger.doc({
-    'description': 'Deletes a dataset generation job. Stops and deletes a running job.',
-    'parameters': [
-        {
-            'name': 'job_id',
-            'description': 'Dataset job generation identifier.',
-            'in': 'path',
-            'type': 'integer',
-            'required': True
-        }
-    ],
-    'responses': get_default_response(DatasetGenerationJobSchema.get_swagger()),
-    'tags': ['DatasetGenerationJob', 'Job']
-  })
-  def delete(self, job_id):
-    dataset_generation_job = DatasetGenerationJob.query.get_or_404(job_id)
-    data = marshal(DatasetGenerationJob, dataset_generation_job)
-
-    db.session.delete(dataset_generation_job)
-    db.session.commit()
-    return data
   
   @swagger.doc({
     'description': 'Creates a dataset generation job',

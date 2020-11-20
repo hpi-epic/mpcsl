@@ -58,4 +58,3 @@ class DatasetCsvUploadResource(Resource):
         db.session.add(dataset)
 
         add_dataset_nodes(dataset)
-

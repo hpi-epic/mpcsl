@@ -7,6 +7,7 @@ from src.db import db
 from pandas.io.parsers import ParserError
 
 from src.master.config import DB_DATABASE
+from src.master.helpers.database import add_dataset_nodes
 from src.models import Dataset
 
 
@@ -48,12 +49,13 @@ class DatasetCsvUploadResource(Resource):
         except ParserError as e:
             abort(400, message=f'Invalid format: {e}')
 
-        ds = Dataset(
+        dataset = Dataset(
             description="generated",
             load_query=f"SELECT * FROM {table_name}",
             data_source=DB_DATABASE,
             name=table_name
         )
-        db.session.add(ds)
-        db.session.commit()
+        db.session.add(dataset)
+
+        add_dataset_nodes(dataset)
 

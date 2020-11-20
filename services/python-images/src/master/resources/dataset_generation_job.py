@@ -4,10 +4,12 @@ from marshmallow import Schema, fields
 from src.models.swagger import SwaggerMixin
 from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import BadRequest
+from src.master.helpers.swagger import get_default_response
+from flask_restful_swagger_2 import swagger
 
 class DatasetGenerationJobResource:
   @swagger.doc({
-    'description': 'Get a data generation job with all parameters used for data set generation.'
+    'description': 'Get a data generation job with all parameters used for data set generation.',
     'parameters': [
       {
         'name': 'job_id',

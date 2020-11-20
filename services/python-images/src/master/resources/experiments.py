@@ -10,7 +10,7 @@ from src.db import db
 from src.master.config import SCHEDULER_HOST
 from src.master.helpers.io import load_data, marshal, InvalidInputData
 from src.master.helpers.swagger import get_default_response
-from src.models import Experiment, ExperimentSchema, Algorithm, Job
+from src.models import Experiment, ExperimentSchema, Algorithm
 from src.models.experiment_job import ExperimentJob
 
 

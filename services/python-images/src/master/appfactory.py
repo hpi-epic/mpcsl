@@ -35,13 +35,13 @@ class AppFactory(object):
             self.socketio.emit('job', {'id': target.id, 'errorCode': target.error_code})
             self.socketio.emit('experiment', {'id': target.experiment_id})
 
-        #TODO(change name of socket emit to experiment job)
+        # TODO(change name of socket emit to experiment job)
         @event.listens_for(ExperimentJob, 'after_insert')
         def emitJobInsert(mapper, connection, target: ExperimentJob):
             self.socketio.emit('job', {'id': target.id})
             self.socketio.emit('experiment', {'id': target.experiment_id})
 
-        #TODO(change name of socket emit to experiment job)
+        # TODO(change name of socket emit to experiment job)
         @event.listens_for(ExperimentJob, 'after_delete')
         def emitJobDelete(mapper, connection, target: ExperimentJob):
             self.socketio.emit('job', {'id': target.id})

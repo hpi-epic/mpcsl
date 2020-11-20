@@ -18,7 +18,6 @@ from src.master.helpers.swagger import get_default_response
 from src.models import Edge, Experiment, ExperimentJob, Job, JobSchema, Result, ResultSchema, Sepset
 from src.models.base import SwaggerMixin
 from src.models.job import JobStatus
-from sqlalchemy.orm import joinedload
 from src.models.experiment_job import ExperimentJobSchema
 
 

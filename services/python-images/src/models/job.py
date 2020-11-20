@@ -6,6 +6,7 @@ from marshmallow import fields
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
 
+
 class JobStatus(str, enum.Enum):
     waiting = "waiting"
     running = "running"

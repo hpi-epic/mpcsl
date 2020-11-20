@@ -83,12 +83,14 @@ class ExperimentJobFactory(JobFactory):
 
     experiment = factory.SubFactory(ExperimentFactory)
 
+
 class DatasetGenerationJobFactory(JobFactory):
     class Meta:
         model = DatasetGenerationJob
         sqlalchemy_session = db.session
 
-    #TODO does this require a sub factory?
+    # TODO does this require a sub factory?
+
 
 class ResultFactory(BaseFactory):
     class Meta:

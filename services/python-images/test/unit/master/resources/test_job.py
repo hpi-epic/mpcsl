@@ -2,7 +2,8 @@ from datetime import datetime
 from unittest.mock import patch, MagicMock
 
 from src.db import db
-from src.master.resources.jobs import JobListResource, JobResource, JobResultResource, ExperimentJobListResource
+from src.master.resources.jobs import JobListResource, JobResource, JobResultResource
+from src.master.resources.experiment_jobs import ExperimentJobListResource
 from src.models import Result, Edge, JobStatus
 from test.factories import DatasetFactory, ExperimentFactory, ExperimentJobFactory, JobFactory, NodeFactory
 from .base import BaseResourceTest

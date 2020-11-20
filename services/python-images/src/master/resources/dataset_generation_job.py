@@ -76,7 +76,7 @@ class DatasetGenerationJobListResource(Resource):
               'default': 0
           }
       ],
-      'responses': get_default_response(DatasetGenerationJob.get_swagger().array()),
+      'responses': get_default_response(DatasetGenerationJobSchema.get_swagger().array()),
       'tags': ['DatasetGenerationJob', 'Job']
   })
   def get(self):

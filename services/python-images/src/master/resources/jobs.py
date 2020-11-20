@@ -229,7 +229,7 @@ class JobResultResource(Resource):
         db.session.flush()
 
         current_app.logger.info('Result {} is in creation for job {}'.format(result.id, job.id))
-        process_experiment_job_result()
+        process_experiment_job_result(job, result)
 
         job.status = JobStatus.done
         job.result_id = result.id

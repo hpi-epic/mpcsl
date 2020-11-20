@@ -16,10 +16,18 @@ spec:
       containers:
         - args:
             - generator.r
-            - --apiHost
-            - mpci-default-backend
+            - --uploadEndpoint
+            - http://mpci-default-backend/api/dataset_csv_upload
+            - --nSamples
+            - "100"
+            - --nNodes
+            - "5"
+            - --edgeProbability
+            - "0.5"
             - --edgeValueLowerBound
-            - "-0.5"
+            - "-1"
+            - --edgeValueUpperBound
+            - "1"
           image: umland/mpci_generator
           imagePullPolicy: Always # Change to 'IfNotPresent' to test local executor images
           name: execution-container

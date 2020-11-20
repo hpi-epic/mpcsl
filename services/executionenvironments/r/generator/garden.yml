@@ -1,0 +1,7 @@
+kind: Module
+description: Generate a dataset using R
+name: r-generator-image
+dockerfile: Dockerfile
+image: ${var.execution-image-namespace}/mpci_generator_r
+extraFlags: ['--tag', '${var.execution-image-namespace}/mpci_generator_r:latest']
+type: container

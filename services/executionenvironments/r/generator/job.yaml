@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    job-name: generator
+  name: generator
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        job-name: generator
+    spec:
+      containers:
+        - args:
+            - generator.r
+            - --apiHost
+            - mpci-default-backend
+            - --edgeValueLowerBound
+            - "-0.5"
+          image: umland/mpci_generator
+          imagePullPolicy: IfNotPresent  # Change to 'IfNotPresent' to test local executor images
+          name: execution-container
+          resources: {}
+      restartPolicy: Never

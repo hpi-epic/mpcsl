@@ -8,7 +8,7 @@ from .resources import DatasetLoadResource, DatasetLoadWithIdsResource, DatasetL
     DatasetAvailableSourcesResource, NodeConfounderResource, ConditionalDistributionResource, \
     ExecutorResource, InterventionalDistributionResource, EdgeInformationResource, EdgeInformationListResource, \
     ResultImportantEdgeListResource, K8SNodeListResource, DatasetExperimentResource, ResultCompareResource, \
-    ResultCompareGTResource, NodeListContextResource
+    ResultCompareGTResource, NodeListContextResource, DatasetGenerationJobResource
 
 
 def base_url(url):
@@ -33,6 +33,7 @@ def set_up_routes(api):
     api.add_resource(JobResource, base_url('/job/<int:job_id>'))
     api.add_resource(JobLogsResource, base_url('/job/<int:job_id>/logs'))
     api.add_resource(JobResultResource, base_url('/job/<int:job_id>/result'))
+    api.add_resource(DatasetGenerationJobResource, base_url('/job/<int:job_id>/dataset_generation'))
     api.add_resource(JobListResource, base_url('/jobs'))
     api.add_resource(ResultListResource, base_url('/results'))
     api.add_resource(ResultResource, base_url('/result/<int:result_id>'))

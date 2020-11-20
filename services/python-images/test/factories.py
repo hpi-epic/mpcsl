@@ -2,7 +2,8 @@ import factory
 import random
 from factory.alchemy import SQLAlchemyModelFactory
 
-from src.models import Algorithm, BaseModel, Dataset, Edge, EdgeAnnotation, EdgeInformation, Experiment, ExperimentJob, Job, JobStatus, Node, Result, Sepset
+from src.models import Algorithm, BaseModel, Dataset, Edge, EdgeAnnotation, EdgeInformation, \
+    Experiment, ExperimentJob, Job, JobStatus, Node, Result, Sepset
 from src.db import db
 
 
@@ -73,6 +74,7 @@ class JobFactory(BaseFactory):
     start_time = factory.Faker('date_time')
     container_id = factory.Faker('md5')
     status = JobStatus.running
+
 
 class ExperimentJobFactory(JobFactory):
     class Meta:

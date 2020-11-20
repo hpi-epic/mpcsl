@@ -2,8 +2,7 @@ import factory
 import random
 from factory.alchemy import SQLAlchemyModelFactory
 
-from src.models import BaseModel, Dataset, Experiment, Job, Result, Node, Edge, Sepset, JobStatus, \
-                        Algorithm, EdgeInformation, EdgeAnnotation
+from src.models import Algorithm, BaseModel, Dataset, Edge, EdgeAnnotation, EdgeInformation, Experiment, ExperimentJob, Job, JobStatus, Node, Result, Sepset
 from src.db import db
 
 
@@ -71,10 +70,16 @@ class JobFactory(BaseFactory):
         model = Job
         sqlalchemy_session = db.session
 
-    experiment = factory.SubFactory(ExperimentFactory)
     start_time = factory.Faker('date_time')
     container_id = factory.Faker('md5')
     status = JobStatus.running
+
+class ExperimentJobFactory(JobFactory):
+    class Meta:
+        model = ExperimentJob
+        sqlalchemy_session = db.session
+
+    experiment = factory.SubFactory(ExperimentFactory)
 
 
 class ResultFactory(BaseFactory):
@@ -82,7 +87,7 @@ class ResultFactory(BaseFactory):
         model = Result
         sqlalchemy_session = db.session
 
-    job = factory.SubFactory(JobFactory)
+    job = factory.SubFactory(ExperimentJobFactory)
     start_time = factory.Faker('date_time')
     end_time = factory.Faker('date_time')
 

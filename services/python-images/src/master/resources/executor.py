@@ -57,8 +57,8 @@ class ExecutorResource(Resource):
             gpus = body.get('gpus')
             enforce_cpus = body.get('enforce_cpus')
         for i in range(runs):
-            new_experiment_job = ExperimentJob(start_time=datetime.now(), status=JobStatus.waiting, 
-                                               node_hostname=node_hostname, experiment=experiment, 
+            new_experiment_job = ExperimentJob(start_time=datetime.now(), status=JobStatus.waiting,
+                                               node_hostname=node_hostname, experiment=experiment,
                                                parallel=parallel, gpus=gpus, enforce_cpus=enforce_cpus)
 
             db.session.add(new_experiment_job)

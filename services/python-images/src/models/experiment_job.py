@@ -2,7 +2,8 @@
 from src.db import db
 from src.models.base import BaseSchema
 from src.models.job import Job, JobSchema
-from src.models.experiment import Experiment
+from src.models.experiment import Experiment # NOQA
+
 
 class ExperimentJob(Job):
     __tablename__ = 'experiment_job'

@@ -4,7 +4,8 @@ from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import BadRequest
 from src.master.helpers.swagger import get_default_response
 from flask_restful_swagger_2 import swagger
-from flask_restful import Resource, abort, reqparse
+from flask_restful import Resource, reqparse
+from src.db import db
 
 
 class DatasetGenerationJobResource(Resource):
@@ -25,7 +26,7 @@ class DatasetGenerationJobResource(Resource):
     def get(self, job_id):
         dataset_generation_job = DatasetGenerationJob.get_or_404(job_id)
         return marshal(DatasetGenerationJob, dataset_generation_job)
-  
+
     @swagger.doc({
         'description': 'Creates a dataset generation job',
         'parameters': [
@@ -84,7 +85,9 @@ class DatasetGenerationJobListResource(Resource):
         parser.add_argument('show_hidden', required=False, type=int, store_missing=False)
         show_hidden = parser.parse_args().get('show_hidden', 0) == 1
 
-        jobs = DatasetGenerationJob.query.all() if show_hidden else DatasetGenerationJob.query.filter(DatasetGenerationJob.status != DatasetGenerationJob.hidden)
+        jobs = DatasetGenerationJob.query.all() \
+            if show_hidden \
+            else DatasetGenerationJob.query \
+                .filter(DatasetGenerationJob.status != DatasetGenerationJob.hidden)
 
         return marshal(DatasetGenerationJobSchema, jobs, many=True)
-

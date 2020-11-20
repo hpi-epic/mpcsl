@@ -1,7 +1,7 @@
 from .base import BaseResourceTest
 from test.factories import DatasetGenerationJobFactory
 from src.master.resources.dataset_generation_job import DatasetGenerationJobResource, DatasetGenerationJobListResource
-from src.models import JobStatus
+
 
 class DatasetGenerationJobTest(BaseResourceTest):
     def __init__(self):
@@ -32,11 +32,12 @@ class DatasetGenerationJobTest(BaseResourceTest):
         # Then
         assert result['id'] == job.id
 
-        #TODO where does this come from?
+        # TODO where does this come from?
         assert result['container_id'] == job.container_id
 
         assert result['type'] == self.INHERITANCE_TYPE_NAME
 
-    #TODO test if generation is successful? --> is this test useful because the job scheduler must generate the referenced dataset
-    #def test_returns_job_for_dataset(self):
+    # TODO test if generation is successful?
+    # --> is this test useful because the job scheduler must generate the referenced dataset
+    # def test_returns_job_for_dataset(self):
     #    pass

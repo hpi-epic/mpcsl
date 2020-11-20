@@ -18,7 +18,6 @@ class DatasetGenerationJobTest(BaseResourceTest):
         for (index, job) in enumerate(result):
             assert(job == groundtruth_jobs[index])
 
-
     def test_returns_my_dataset_generation_job(self):
         # Given
         job = DatasetGenerationJobFactory()

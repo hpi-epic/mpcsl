@@ -1,6 +1,10 @@
 from .base import BaseResourceTest
 from test.factories import DatasetGenerationJobFactory
 from src.master.resources.dataset_generation_job import DatasetGenerationJobResource, DatasetGenerationJobListResource
+import os
+from src.master.resources.datasets import load_dataset_as_csv
+from src.models import Dataset, DatasetGenerationJob
+import pandas as pd
 
 
 class DatasetGenerationJobTest(BaseResourceTest):
@@ -11,7 +15,7 @@ class DatasetGenerationJobTest(BaseResourceTest):
 
         # When
         result = self.get(self.url_for(DatasetGenerationJobListResource))
-        print(result)
+
         # Then
         assert len(result) == 2
         assert result[0]['id'] == job.id
@@ -27,9 +31,33 @@ class DatasetGenerationJobTest(BaseResourceTest):
         # Then
         assert result['id'] == job.id
 
-        # TODO add test for type
+    def test_put_dataset(self):
+        # Given
+        job = DatasetGenerationJobFactory()
 
-    # TODO test if generation is successful?
-    # --> is this test useful because the job scheduler must generate the referenced dataset
-    # def test_returns_job_for_dataset(self):
-    #    pass
+        dirname = os.path.dirname(__file__)
+        fixture = os.path.join(dirname, '../../../fixtures/generated_dataset.csv')
+        data = dict(
+            file=(open(fixture, 'rb'), "generated.csv"),
+        )
+
+        # When
+        response = self.test_client.put(
+            self.url_for(DatasetGenerationJobResource, job_id=job.id),
+            content_type='multipart/form-data',
+            data=data
+        )
+
+        # Then
+        assert response.status_code == 200
+        ds = self.db.session.query(Dataset).first()
+        result_buffer = load_dataset_as_csv(self.db.session, ds)
+        result_dataframe = pd.read_csv(result_buffer)
+
+        expected_dataframe = pd.read_csv(fixture, index_col=0)
+        result_dataframe.index = expected_dataframe.index
+        pd.testing.assert_frame_equal(expected_dataframe, result_dataframe)
+
+        updated_job = DatasetGenerationJob.query.get(job.id)
+
+        assert updated_job.dataset == ds

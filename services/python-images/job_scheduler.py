@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, PORT
 from src.models import Job, JobStatus, Experiment, JobErrorCode
-from src.jobscheduler.kubernetes_helper import create_job, kube_cleanup_finished_jobs, get_node_list
+from src.jobscheduler.kubernetes_helper import create_experiment_job, kube_cleanup_finished_jobs, get_node_list
 from src.jobscheduler.kubernetes_helper import check_running_job, get_pod_log, delete_job_and_pods
 from src.jobscheduler.kubernetes_helper import EMPTY_LOGS
 from src.jobscheduler.backend_requests import post_job_change
@@ -56,7 +56,7 @@ async def start_waiting_jobs(session):
             running_jobs_parallel = all([rj.parallel for rj in running_jobs])
             if (not running_jobs.all()) or (running_jobs_parallel and job.parallel):
                     experiment = session.query(Experiment).get(job.experiment_id)
-                    k8s_job_name = await create_job(job, experiment)
+                    k8s_job_name = await create_experiment_job(job, experiment)
                     if isinstance(k8s_job_name, str):
                         job.container_id = k8s_job_name
                         job.status = JobStatus.running

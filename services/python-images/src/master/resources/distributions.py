@@ -249,7 +249,7 @@ class InterventionalParameterSchema(Schema, SwaggerMixin):
     @validates('cause_condition')
     def validate_params(self, cond):
         if DiscreteConditionSchema().validate(cond) and ContinuousConditionSchema().validate(cond):  # errors on both
-            raise ValidationError(f'Condition must conform to DiscreteConditionSchema or ContinuousConditionSchema')
+            raise ValidationError('Condition must conform to DiscreteConditionSchema or ContinuousConditionSchema')
 
 
 class InterventionalDistributionResource(Resource):

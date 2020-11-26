@@ -5,7 +5,7 @@ from src.db import db
 from src.master.resources import MarginalDistributionResource, ConditionalDistributionResource, \
     InterventionalDistributionResource
 from src.master.resources.distributions import _custom_histogram
-from test.factories import ResultFactory, NodeFactory, DatasetFactory, ExperimentFactory, JobFactory
+from test.factories import DatasetFactory, ExperimentFactory, ExperimentJobFactory, NodeFactory, ResultFactory
 from .base import BaseResourceTest
 
 
@@ -31,8 +31,8 @@ class MarginalDistributionTest(BaseResourceTest):
         db.session.commit()
 
         exp = ExperimentFactory(dataset=ds)
-        job = JobFactory(experiment=exp)
-        result = ResultFactory(job=job)
+        experiment_job = ExperimentJobFactory(experiment=exp)
+        result = ResultFactory(job=experiment_job)
         node = NodeFactory(dataset=result.job.experiment.dataset,
                            name='haha_.col')
 
@@ -65,8 +65,8 @@ class MarginalDistributionTest(BaseResourceTest):
         db.session.commit()
 
         exp = ExperimentFactory(dataset=ds)
-        job = JobFactory(experiment=exp)
-        result = ResultFactory(job=job)
+        experiment_job = ExperimentJobFactory(experiment=exp)
+        result = ResultFactory(job=experiment_job)
         node = NodeFactory(dataset=result.job.experiment.dataset,
                            name='haha_.col')
 
@@ -104,11 +104,11 @@ class ConditionalDistributionTest(BaseResourceTest):
         db.session.commit()
 
         exp = ExperimentFactory(dataset=ds)
-        job = JobFactory(experiment=exp)
-        ResultFactory(job=job)
-        node = NodeFactory(dataset=job.experiment.dataset,
+        experiment_job = ExperimentJobFactory(experiment=exp)
+        ResultFactory(job=experiment_job)
+        node = NodeFactory(dataset=experiment_job.experiment.dataset,
                            name='haha_.col')
-        node2 = NodeFactory(dataset=job.experiment.dataset,
+        node2 = NodeFactory(dataset=experiment_job.experiment.dataset,
                             name='Copy-haha_.col')
 
         data = {
@@ -161,13 +161,13 @@ class ConditionalDistributionTest(BaseResourceTest):
         exp_bins = dict([(str(int(k)), int(v)) for k, v in zip(*np.unique(exp_distribution, return_counts=True))])
 
         exp = ExperimentFactory(dataset=ds)
-        job = JobFactory(experiment=exp)
-        ResultFactory(job=job)
-        node = NodeFactory(dataset=job.experiment.dataset,
+        experiment_job = ExperimentJobFactory(experiment=exp)
+        ResultFactory(job=experiment_job)
+        node = NodeFactory(dataset=experiment_job.experiment.dataset,
                            name='haha_.col')
-        node2 = NodeFactory(dataset=job.experiment.dataset,
+        node2 = NodeFactory(dataset=experiment_job.experiment.dataset,
                             name='b')
-        node3 = NodeFactory(dataset=job.experiment.dataset,
+        node3 = NodeFactory(dataset=experiment_job.experiment.dataset,
                             name='haha_.floatcol')
         data = {
             'conditions': {

@@ -55,7 +55,7 @@ class ExperimentSchema(BaseSchema):
     description = field_for(Experiment, 'description', required=False, allow_none=True, default='')
     algorithm = fields.Nested('AlgorithmSchema', dump_only=True)
     parameters = fields.Dict()
-    last_job = fields.Nested('ExperimentJobSchema', dump_only=True)
+    last_job = fields.Nested('JobSchema', dump_only=True)
     execution_time_statistics = fields.Dict()
 
     class Meta(BaseSchema.Meta):

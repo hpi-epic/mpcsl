@@ -9,7 +9,7 @@ from sqlalchemy import event
 from src.db import db
 from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
-from src.models import Experiment, Dataset, ExperimentJob
+from src.models import Job, Experiment, Dataset
 
 
 class AppFactory(object):
@@ -29,21 +29,18 @@ class AppFactory(object):
             raise Exception("Flask app not set")
         self.socketio = SocketIO(self.app, ping_timeout=1200)
 
-        # TODO(change name of socket emit to experiment job)
-        @event.listens_for(ExperimentJob, 'after_update')
-        def emitJobUpdate(mapper, connection, target: ExperimentJob):
+        @event.listens_for(Job, 'after_update')
+        def emitJobUpdate(mapper, connection, target: Job):
             self.socketio.emit('job', {'id': target.id, 'errorCode': target.error_code})
             self.socketio.emit('experiment', {'id': target.experiment_id})
 
-        # TODO(change name of socket emit to experiment job)
-        @event.listens_for(ExperimentJob, 'after_insert')
-        def emitJobInsert(mapper, connection, target: ExperimentJob):
+        @event.listens_for(Job, 'after_insert')
+        def emitJobInsert(mapper, connection, target):
             self.socketio.emit('job', {'id': target.id})
             self.socketio.emit('experiment', {'id': target.experiment_id})
 
-        # TODO(change name of socket emit to experiment job)
-        @event.listens_for(ExperimentJob, 'after_delete')
-        def emitJobDelete(mapper, connection, target: ExperimentJob):
+        @event.listens_for(Job, 'after_delete')
+        def emitJobDelete(mapper, connection, target):
             self.socketio.emit('job', {'id': target.id})
             self.socketio.emit('experiment', {'id': target.experiment_id})
 

@@ -10,8 +10,7 @@ from src.db import db
 from src.master.config import SCHEDULER_HOST
 from src.master.helpers.io import load_data, marshal, InvalidInputData
 from src.master.helpers.swagger import get_default_response
-from src.models import Experiment, ExperimentSchema, Algorithm
-from src.models.experiment_job import ExperimentJob
+from src.models import Experiment, ExperimentSchema, Algorithm, Job
 
 
 class ExperimentResource(Resource):
@@ -52,7 +51,7 @@ class ExperimentResource(Resource):
         experiment = Experiment.query.get_or_404(experiment_id)
         data = marshal(ExperimentSchema, experiment)
 
-        for job in ExperimentJob.query.filter(ExperimentJob.experiment_id == experiment_id):
+        for job in Job.query.filter(Job.experiment_id == experiment_id):
             try:
                 requests.post(f'http://{SCHEDULER_HOST}/api/delete/{job.container_id}')
             except requests.RequestException:

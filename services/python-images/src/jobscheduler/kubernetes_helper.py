@@ -5,7 +5,7 @@ import yaml
 from kubernetes import config, client
 from kubernetes.client.rest import ApiException
 from src.master.config import API_HOST, LOAD_SEPARATION_SET, RELEASE_NAME, K8S_NAMESPACE, EXECUTION_IMAGE_NAMESPACE
-from src.models import Job, ExperimentJob, Experiment, Algorithm, JobStatus, JobErrorCode
+from src.models import Job, Experiment, Algorithm, JobStatus, JobErrorCode
 from src.jobscheduler.backend_requests import post_job_change
 
 if os.environ.get("IN_CLUSTER") == "false":
@@ -59,8 +59,8 @@ async def delete_job_and_pods(job_name):
         logging.warning(f'Could not delete pods for job {job_name}')
 
 
-async def create_experiment_job(experiment_job: ExperimentJob, experiment: Experiment):
-    params = ['-j', str(experiment_job.id),
+async def create_job(job: Job, experiment: Experiment):
+    params = ['-j', str(job.id),
               '-d', str(experiment.dataset_id),
               '--api_host', str(API_HOST),
               '--send_sepsets', str(int(LOAD_SEPARATION_SET))]
@@ -71,7 +71,7 @@ async def create_experiment_job(experiment_job: ExperimentJob, experiment: Exper
     subcommand = [algorithm.script_filename] + params
     with open(os.path.join(os.path.dirname(__file__), "executor-job.yaml")) as f:
         default_job = yaml.safe_load(f)
-        job_name = f'{JOB_PREFIX}{experiment_job.id}'
+        job_name = f'{JOB_PREFIX}{job.id}'
         default_job["metadata"]["labels"]["job-name"] = job_name
         default_job["metadata"]["name"] = job_name
         default_job["spec"]["template"]["metadata"]["labels"]["job-name"] = job_name
@@ -79,23 +79,23 @@ async def create_experiment_job(experiment_job: ExperimentJob, experiment: Exper
         container["args"] = subcommand
         container["image"] = EXECUTION_IMAGE_NAMESPACE + "/" + algorithm.docker_image
         logging.info(container["image"])
-        if experiment_job.node_hostname is not None:
+        if job.node_hostname is not None:
             nodeSelector = {
-                "kubernetes.io/hostname": experiment_job.node_hostname
+                "kubernetes.io/hostname": job.node_hostname
             }
             default_job["spec"]["template"]["spec"]["nodeSelector"] = nodeSelector
         container["resources"] = {
                 'limits': {},
                 'requests': {}
             }
-        if experiment_job.enforce_cpus and ('cores' in experiment.parameters):
+        if job.enforce_cpus and ('cores' in experiment.parameters):
             container["resources"]['limits']['cpu'] = experiment.parameters['cores']
             container["resources"]['requests']['cpu'] = experiment.parameters['cores']
-        if experiment_job.gpus is not None:
-            container["resources"]['limits']['nvidia.com/gpu'] = str(experiment_job.gpus)
-            container["resources"]['requests']['nvidia.com/gpu'] = str(experiment_job.gpus)
+        if job.gpus is not None:
+            container["resources"]['limits']['nvidia.com/gpu'] = str(job.gpus)
+            container["resources"]['requests']['nvidia.com/gpu'] = str(job.gpus)
         try:
-            logging.info(f'Starting Job with ID {experiment_job.id}')
+            logging.info(f'Starting Job with ID {job.id}')
             logging.info(default_job)
             result = api_instance.create_namespaced_job(namespace=K8S_NAMESPACE, body=default_job, pretty=True)
             return result.metadata.name

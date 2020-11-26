@@ -10,8 +10,8 @@ from .edge_information import EdgeInformationResource, EdgeInformationListResour
 from .edges import EdgeResource, ResultEdgeListResource, ResultImportantEdgeListResource
 from .executor import ExecutorResource
 from .experiments import ExperimentListResource, ExperimentResource
-from .jobs import JobListResource, JobResource, JobLogsResource, JobResultResource
-from .experiment_jobs import ExperimentJobListResource
+from .jobs import JobListResource, JobResource, JobLogsResource, JobResultResource, \
+    ExperimentJobListResource
 from .nodes import NodeResource, ResultNodeListResource, NodeContextResource, NodeConfounderResource, \
     NodeListContextResource
 from .results import ResultListResource, ResultResource, GraphExportResource, ResultCompareResource, \

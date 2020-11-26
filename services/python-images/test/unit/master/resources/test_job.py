@@ -2,10 +2,9 @@ from datetime import datetime
 from unittest.mock import patch, MagicMock
 
 from src.db import db
-from src.master.resources.jobs import JobListResource, JobResource, JobResultResource
-from src.master.resources.experiment_jobs import ExperimentJobListResource
+from src.master.resources.jobs import JobListResource, JobResource, JobResultResource, ExperimentJobListResource
 from src.models import Result, Edge, JobStatus
-from test.factories import DatasetFactory, ExperimentFactory, ExperimentJobFactory, JobFactory, NodeFactory
+from test.factories import ExperimentFactory, JobFactory, DatasetFactory, NodeFactory
 from .base import BaseResourceTest
 
 
@@ -57,14 +56,14 @@ class JobTest(BaseResourceTest):
 
     def test_returns_jobs_for_experiment(self):
         # Given
-        job = ExperimentJobFactory()
-        job2 = ExperimentJobFactory(experiment=job.experiment)
+        job = JobFactory()
+        job2 = JobFactory(experiment=job.experiment)
         if job2.start_time > job.start_time:
             j = job
             job = job2
             job2 = j
 
-        ExperimentJobFactory()
+        JobFactory()
 
         # When
         result = self.get(self.url_for(
@@ -109,7 +108,7 @@ class JobTest(BaseResourceTest):
         ds = DatasetFactory()
         mock_experiment = ExperimentFactory(dataset=ds)
         db.session.add(mock_experiment)
-        mock_job = ExperimentJobFactory(experiment=mock_experiment, start_time=datetime.now())
+        mock_job = JobFactory(experiment=mock_experiment, start_time=datetime.now())
         db.session.add(mock_job)
         nodes = [NodeFactory(name="X" + str(i + 1), dataset=ds) for i in range(3)]
         for node in nodes:
@@ -143,7 +142,7 @@ class JobTest(BaseResourceTest):
         ds = DatasetFactory()
         mock_experiment = ExperimentFactory(dataset=ds)
         db.session.add(mock_experiment)
-        mock_job = ExperimentJobFactory(experiment=mock_experiment, start_time=datetime.now())
+        mock_job = JobFactory(experiment=mock_experiment, start_time=datetime.now())
         db.session.add(mock_job)
         nodes = [NodeFactory(name="X" + str(i + 1), dataset=ds) for i in range(3)]
         for node in nodes:

@@ -11,6 +11,7 @@ class EdgeAnnotation(str, enum.Enum):
 
 
 class EdgeInformation(BaseModel):
+
     result_id = db.Column(db.Integer, db.ForeignKey('result.id'), nullable=False)
     result = db.relationship('Result', backref=db.backref('edge_informations', cascade="all, delete-orphan"))
 

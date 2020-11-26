@@ -4,7 +4,7 @@ from sqlalchemy import inspect
 from src.db import db
 from src.master.resources.experiments import ExperimentListResource, ExperimentResource
 from src.models import Experiment
-from test.factories import AlgorithmFactory, DatasetFactory, ExperimentFactory, ExperimentJobFactory, ResultFactory
+from test.factories import ExperimentFactory, DatasetFactory, JobFactory, AlgorithmFactory, ResultFactory
 from .base import BaseResourceTest
 
 
@@ -25,7 +25,7 @@ class ExperimentTest(BaseResourceTest):
     def test_returns_my_experiment(self):
         # Given
         ex = ExperimentFactory()
-        experiment_job = ExperimentJobFactory(experiment=ex)
+        job = JobFactory(experiment=ex)
 
         # When
         result = self.get(self.url_for(ExperimentResource, experiment_id=ex.id))
@@ -33,7 +33,7 @@ class ExperimentTest(BaseResourceTest):
         # Then
         assert result['id'] == ex.id
         assert result['parameters']['alpha'] == ex.parameters['alpha']
-        assert result['last_job']['id'] == experiment_job.id
+        assert result['last_job']['id'] == job.id
 
     def test_change_experiment_description(self):
         ex = ExperimentFactory()
@@ -83,10 +83,10 @@ class ExperimentTest(BaseResourceTest):
         ex_wo_jobs = ExperimentFactory()
         ex_wo_results = ExperimentFactory()
         ex_w_results = ExperimentFactory()
-        ExperimentJobFactory(experiment=ex_wo_results)
-        experiment_job2 = ExperimentJobFactory(experiment=ex_w_results)
-        result = ResultFactory(job=experiment_job2)
-        result2 = ResultFactory(job=experiment_job2)
+        JobFactory(experiment=ex_wo_results)
+        job2 = JobFactory(experiment=ex_w_results)
+        result = ResultFactory(job=job2)
+        result2 = ResultFactory(job=job2)
         result.execution_time = 2.0
         result2.execution_time = 3.0
 

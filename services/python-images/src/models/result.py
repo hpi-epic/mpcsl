@@ -12,7 +12,6 @@ class Result(BaseModel):
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     execution_time = db.Column(db.Float)
-    # TODO: possibly requires refactoring when adding dataset creation jobs
     dataset_loading_time = db.Column(db.Float)
     meta_results = db.Column(db.JSON)
 

@@ -7,6 +7,7 @@ from src.models import Dataset, DatasetGenerationJob
 import pandas as pd
 from src.db import db
 
+
 class DatasetGenerationJobTest(BaseResourceTest):
     def test_returns_all_dataset_generation_jobs(self):
         # Given
@@ -87,11 +88,12 @@ class DatasetGenerationJobTest(BaseResourceTest):
             content_type='multipart/form-data',
             data=secondData
         )
+
         # Then
         assert response.status_code == 400
-        
+
     def test_create_dataset_generation_job(self):
-         # Given
+        # Given
         data = dict()
         data['nodes'] = 30
         data['samples'] = 20
@@ -100,12 +102,12 @@ class DatasetGenerationJobTest(BaseResourceTest):
         data['edgeValueUpperBound'] = 0.8
 
         # When
-        result = self.post(self.url_for(DatasetGenerationJobListResource), json=data)
+        self.post(self.url_for(DatasetGenerationJobListResource), json=data)
         job = db.session.query(DatasetGenerationJob).first()
 
         # Then
-        assert job.dataset_id == None 
-        assert job.nodes ==  data['nodes']
+        assert job.dataset_id is None
+        assert job.nodes == data['nodes']
         assert job.samples == data['samples']
         assert job.edgeProbability == data['edgeProbability']
         assert job.edgeValueLowerBound == data['edgeValueLowerBound']

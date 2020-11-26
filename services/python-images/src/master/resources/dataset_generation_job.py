@@ -91,12 +91,3 @@ class DatasetGenerationJobListResource(Resource):
             else DatasetGenerationJob.query.filter(DatasetGenerationJob.status != JobStatus.hidden)
 
         return marshal(DatasetGenerationJobSchema, jobs, many=True)
-
-
-
-
-
-
-
-
-

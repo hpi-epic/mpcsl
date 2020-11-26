@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    job-name: generator
+  name: generator
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        job-name: generator
+    spec:
+      containers:
+        - args:
+            - generator.r
+            - --uploadEndpoint
+            - http://mpci-default-backend/api/dataset_csv_upload
+            - --nSamples
+            - "100"
+            - --nNodes
+            - "5"
+            - --edgeProbability
+            - "0.5"
+            - --edgeValueLowerBound
+            - "-1"
+            - --edgeValueUpperBound
+            - "1"
+          image: umland/mpci_generator
+          imagePullPolicy: Always # Change to 'IfNotPresent' to test local executor images
+          name: execution-container
+          resources: {}
+      restartPolicy: Never

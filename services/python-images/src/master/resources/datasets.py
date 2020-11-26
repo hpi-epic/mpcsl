@@ -1,5 +1,7 @@
 import csv
 import io
+from io import StringIO
+
 import networkx as nx
 import logging
 
@@ -8,8 +10,8 @@ from flask import Response, request
 from flask_restful import Resource, abort
 from marshmallow import Schema, fields
 from sqlalchemy.exc import DatabaseError
+from sqlalchemy.orm import Session
 from werkzeug.exceptions import BadRequest
-
 
 from src.db import db
 from src.master.config import DATA_SOURCE_CONNECTIONS
@@ -249,6 +251,23 @@ class DatasetListResource(Resource):
         return marshal(DatasetSchema, ds)
 
 
+def load_dataset_as_csv(session: Session, ds: Dataset, with_ids: bool = True) -> StringIO:
+    result = session.execute(ds.load_query)
+    if with_ids:
+        keys = [next(filter(lambda n: n.name == name, ds.nodes)).id for name in result.keys()]  # Enforce column order
+    else:
+        keys = [next(filter(lambda n: n.name == name, ds.nodes)).name for name in result.keys()]  # Enforce column order
+    result = result.fetchall()
+
+    f = io.StringIO()
+    wr = csv.writer(f)
+    wr.writerow(keys)
+    for line in result:
+        wr.writerow(line)
+    f.seek(0)
+    return f
+
+
 class DatasetLoadResource(Resource):
     @swagger.doc({
         'description': 'Returns a CSV formatted dataframe that contains the result of the query execution \
@@ -285,16 +304,8 @@ class DatasetLoadResource(Resource):
                 abort(400)
         else:
             session = db.session
+        f = load_dataset_as_csv(session, ds, with_ids=False)
 
-        result = session.execute(ds.load_query)
-        keys = [next(filter(lambda n:n.name == name, ds.nodes)).name for name in result.keys()]  # Enforce column order
-        result = result.fetchall()
-
-        f = io.StringIO()
-        wr = csv.writer(f)
-        wr.writerow(keys)
-        for line in result:
-            wr.writerow(line)
         resp = Response(f.getvalue(), mimetype='text/csv')
         resp.headers.add("X-Content-Length", f.tell())
         return resp
@@ -337,15 +348,8 @@ class DatasetLoadWithIdsResource(Resource):
         else:
             session = db.session
 
-        result = session.execute(ds.load_query)
-        keys = [next(filter(lambda n:n.name == name, ds.nodes)).id for name in result.keys()]  # Enforce column order
-        result = result.fetchall()
+        f = load_dataset_as_csv(session, ds, with_ids=True)
 
-        f = io.StringIO()
-        wr = csv.writer(f)
-        wr.writerow(keys)
-        for line in result:
-            wr.writerow(line)
         resp = Response(f.getvalue(), mimetype='text/csv')
         resp.headers.add("X-Content-Length", f.tell())
         return resp

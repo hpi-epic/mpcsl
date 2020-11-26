@@ -13,7 +13,7 @@ class DatasetGenerationJob(Job):
         db.ForeignKey('dataset.id'),
         nullable=True
     )
-    experiment = db.relationship(
+    dataset = db.relationship(
         'Dataset',
         backref=db.backref('job', cascade="all, delete-orphan", uselist=False)
     )

@@ -13,7 +13,9 @@ import uuid
 from pandas.io.parsers import ParserError
 from src.master.config import DB_DATABASE
 from src.master.helpers.database import add_dataset_nodes
-
+from marshmallow import fields
+from src.models import BaseSchema
+#from sqlalchemy.sql import func
 
 class DatasetGenerationJobResource(Resource):
     @swagger.doc({
@@ -33,42 +35,6 @@ class DatasetGenerationJobResource(Resource):
     def get(self, job_id):
         dataset_generation_job = DatasetGenerationJob.query.get_or_404(job_id)
         return marshal(DatasetGenerationJobSchema, dataset_generation_job)
-
-    @swagger.doc({
-      'description': 'Creates a dataset generation job',
-      'parameters': [
-        {
-          'name': 'dataset generation job input',
-          'description': 'Parameters used for dataset generation',
-          'in': 'body',
-          'schema': DatasetGenerationJobSchema.get_swagger(True)
-        }
-      ],
-      'responses': {
-        '200': {
-          'description': 'Success',
-        },
-        '400': {
-          'description': 'Invalid input data'
-        },
-        '500': {
-          'description': 'Internal server error'
-        }
-      },
-      'tags': ['Dataset']
-    })
-    def post(self):
-        input_data = load_data(DatasetGenerationJob)
-
-        try:
-            dataset_generation_job = DatasetGenerationJob(**input_data)
-
-            db.session.add(dataset_generation_job)
-            db.session.commit()
-        except DatabaseError:
-            raise BadRequest("Could not add dataset generation job to database.")
-
-        return marshal(DatasetGenerationJob, dataset_generation_job)
 
     @swagger.doc({
       'description': 'Creates a new table from the uploaded csv file',
@@ -99,7 +65,7 @@ class DatasetGenerationJobResource(Resource):
                 'description': 'Internal server error (likely due to broken query)'
             }
       },
-      'tags': ['Dataset']
+      'tags': ['DatasetGenerationJob', 'Job']
     })
     def put(self, job_id):
         if 'file' not in request.files:
@@ -109,6 +75,9 @@ class DatasetGenerationJobResource(Resource):
             abort(400, message='missing job_id')
 
         job = DatasetGenerationJob.query.get_or_404(job_id)
+
+        if job.dataset:
+            abort(400, message='Dataset generation job already mapped')
 
         file = request.files['file']
         # The char - is not allowed in sqlAlchemy
@@ -133,6 +102,14 @@ class DatasetGenerationJobResource(Resource):
         add_dataset_nodes(dataset)
 
         db.session.commit()
+
+
+class DatasetGenerationJobInputSchema(BaseSchema):
+    nodes = fields.Integer()
+    samples = fields.Integer()
+    edgeProbability = fields.Float() # todo add range 0 - 1
+    edgeValueLowerBound = fields.Float()
+    edgeValueUpperBound = fields.Float()
 
 
 class DatasetGenerationJobListResource(Resource):
@@ -161,3 +138,39 @@ class DatasetGenerationJobListResource(Resource):
             else DatasetGenerationJob.query.filter(DatasetGenerationJob.status != JobStatus.hidden)
 
         return marshal(DatasetGenerationJobSchema, jobs, many=True)
+    
+    @swagger.doc({
+        'description': 'Creates a dataset generation job',
+        'parameters': [
+            {
+                'name': 'dataset generation job input',
+                'description': 'Parameters used for dataset generation',
+                'in': 'body',
+                'schema': DatasetGenerationJobInputSchema.get_swagger()
+            }
+        ],
+        'responses': {
+            '200': {
+                'description': 'Success',
+            },
+            '400': {
+                'description': 'Invalid input data'
+            },
+            '500': {
+                'description': 'Internal server error'
+            }
+        },
+        'tags': ['DatasetGenerationJob', 'Job']
+    })
+    def post(self):
+        input_data = load_data(DatasetGenerationJobSchema)
+
+        try:
+            dataset_generation_job = DatasetGenerationJob(**input_data)
+
+            db.session.add(dataset_generation_job)
+            db.session.commit()
+        except DatabaseError:
+            raise BadRequest("Could not add dataset generation job to database.")
+
+        return marshal(DatasetGenerationJobSchema, dataset_generation_job)

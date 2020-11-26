@@ -18,6 +18,8 @@ from .results import ResultListResource, ResultResource, GraphExportResource, Re
     ResultCompareGTResource
 from .sepsets import SepsetResource, ResultSepsetListResource
 from .kubernetes import K8SNodeListResource
+from .dataset_generation_job import DatasetGenerationJobResource, DatasetGenerationJobListResource
+
 
 __all__ = [
     'AlgorithmListResource',
@@ -39,6 +41,8 @@ __all__ = [
     'JobResource',
     'JobLogsResource',
     'JobResultResource',
+    'DatasetGenerationJobResource',
+    'DatasetGenerationJobListResource',
     'ExperimentJobListResource',
     'ResultResource',
     'NodeResource',

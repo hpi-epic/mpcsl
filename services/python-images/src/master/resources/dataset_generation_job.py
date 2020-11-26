@@ -13,6 +13,8 @@ import uuid
 from pandas.io.parsers import ParserError
 from src.master.config import DB_DATABASE
 from src.master.helpers.database import add_dataset_nodes
+
+
 class DatasetGenerationJobResource(Resource):
     @swagger.doc({
         'description': 'Get a data generation job with all parameters used for data set generation.',

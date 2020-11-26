@@ -6,6 +6,7 @@ from src.master.helpers.swagger import get_default_response
 from flask_restful_swagger_2 import swagger
 from flask_restful import Resource, reqparse
 from src.db import db
+from src.models.job import JobStatus
 
 
 class DatasetGenerationJobResource(Resource):
@@ -24,8 +25,8 @@ class DatasetGenerationJobResource(Resource):
         'tags': ['DatasetGenerationJob', 'Job']
     })
     def get(self, job_id):
-        dataset_generation_job = DatasetGenerationJob.get_or_404(job_id)
-        return marshal(DatasetGenerationJob, dataset_generation_job)
+        dataset_generation_job = DatasetGenerationJob.query.get_or_404(job_id)
+        return marshal(DatasetGenerationJobSchema, dataset_generation_job)
 
     @swagger.doc({
         'description': 'Creates a dataset generation job',
@@ -87,6 +88,15 @@ class DatasetGenerationJobListResource(Resource):
 
         jobs = DatasetGenerationJob.query.all() \
             if show_hidden \
-            else DatasetGenerationJob.query.filter(DatasetGenerationJob.status != DatasetGenerationJob.hidden)
+            else DatasetGenerationJob.query.filter(DatasetGenerationJob.status != JobStatus.hidden)
 
         return marshal(DatasetGenerationJobSchema, jobs, many=True)
+
+
+
+
+
+
+
+
+

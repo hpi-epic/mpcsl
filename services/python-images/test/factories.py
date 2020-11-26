@@ -89,7 +89,11 @@ class DatasetGenerationJobFactory(JobFactory):
         model = DatasetGenerationJob
         sqlalchemy_session = db.session
 
-    # TODO does this require a sub factory?
+    nodes = random.random()
+    samples = random.random()
+    edgeProbability = random.random()
+    edgeValueLowerBound = random.random()
+    edgeValueUpperBound = random.random()
 
 
 class ResultFactory(BaseFactory):

@@ -5,18 +5,17 @@ from src.master.resources.dataset_generation_job import DatasetGenerationJobReso
 
 class DatasetGenerationJobTest(BaseResourceTest):
     def test_returns_all_dataset_generation_jobs(self):
-        number_jobs = 5
+        # Given
+        job = DatasetGenerationJobFactory()
+        job2 = DatasetGenerationJobFactory()
 
-        groundtruth_jobs = []
-
-        for index in range(0, number_jobs):
-            groundtruth_jobs.append(DatasetGenerationJobFactory())
-
+        # When
         result = self.get(self.url_for(DatasetGenerationJobListResource))
-
-        assert (len(result) == number_jobs)
-        for (index, job) in enumerate(result):
-            assert(job == groundtruth_jobs[index])
+        print(result)
+        # Then
+        assert len(result) == 2
+        assert result[0]['id'] == job.id
+        assert result[1]['id'] == job2.id
 
     def test_returns_my_dataset_generation_job(self):
         # Given
@@ -27,9 +26,6 @@ class DatasetGenerationJobTest(BaseResourceTest):
 
         # Then
         assert result['id'] == job.id
-
-        # TODO where does this come from?
-        assert result['container_id'] == job.container_id
 
         # TODO add test for type
 

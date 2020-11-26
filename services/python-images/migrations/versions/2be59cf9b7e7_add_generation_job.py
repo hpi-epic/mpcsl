@@ -19,15 +19,15 @@ depends_on = None
 def upgrade():
     op.create_table('dataset_generation_job',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('dataset_id', sa.Integer(), nullable=False),
+        sa.Column('dataset_id', sa.Integer(), nullable=True),
         sa.Column('nodes', sa.Integer(), nullable=False),
         sa.Column('samples', sa.Integer(), nullable=False),
         sa.Column('edgeProbability', sa.Float(), nullable=False),
         sa.Column('edgeValueLowerBound', sa.Float(), nullable=False),
         sa.Column('edgeValueUpperBound', sa.Float(), nullable=False),
 
-        sa.ForeignKeyConstraint(['dataset_id'], ['dataset.id'], ),
-        sa.ForeignKeyConstraint(['id'], ['job.id'], ),
+        sa.ForeignKeyConstraint(['dataset_id'], ['dataset.id']),
+        sa.ForeignKeyConstraint(['id'], ['job.id']),
         sa.PrimaryKeyConstraint('id')
     )
 

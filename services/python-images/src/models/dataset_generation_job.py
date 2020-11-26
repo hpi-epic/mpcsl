@@ -11,7 +11,7 @@ class DatasetGenerationJob(Job):
     dataset_id = db.Column(
         db.Integer,
         db.ForeignKey('dataset.id'),
-        nullable=False
+        nullable=True
     )
     experiment = db.relationship(
         'Dataset',

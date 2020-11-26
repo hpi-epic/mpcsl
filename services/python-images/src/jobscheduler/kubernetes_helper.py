@@ -5,7 +5,7 @@ import yaml
 from kubernetes import config, client
 from kubernetes.client.rest import ApiException
 from src.master.config import API_HOST, LOAD_SEPARATION_SET, RELEASE_NAME, K8S_NAMESPACE, EXECUTION_IMAGE_NAMESPACE
-from src.models import Job, Experiment, Algorithm, JobStatus, JobErrorCode
+from src.models import Job, ExperimentJob, Experiment, Algorithm, JobStatus, JobErrorCode
 from src.jobscheduler.backend_requests import post_job_change
 
 if os.environ.get("IN_CLUSTER") == "false":

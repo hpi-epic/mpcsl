@@ -7,6 +7,7 @@ from src.db import db
 from src.models.base import BaseModel, BaseSchema
 from sqlalchemy.sql import func
 
+
 class JobStatus(str, enum.Enum):
     waiting = "waiting"
     running = "running"

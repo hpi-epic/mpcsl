@@ -15,7 +15,7 @@ from src.master.config import DB_DATABASE
 from src.master.helpers.database import add_dataset_nodes
 from marshmallow import fields
 from src.models import BaseSchema
-#from sqlalchemy.sql import func
+
 
 class DatasetGenerationJobResource(Resource):
     @swagger.doc({
@@ -107,7 +107,7 @@ class DatasetGenerationJobResource(Resource):
 class DatasetGenerationJobInputSchema(BaseSchema):
     nodes = fields.Integer()
     samples = fields.Integer()
-    edgeProbability = fields.Float() # todo add range 0 - 1
+    edgeProbability = fields.Float()  # TODO add range 0 - 1
     edgeValueLowerBound = fields.Float()
     edgeValueUpperBound = fields.Float()
 
@@ -138,7 +138,7 @@ class DatasetGenerationJobListResource(Resource):
             else DatasetGenerationJob.query.filter(DatasetGenerationJob.status != JobStatus.hidden)
 
         return marshal(DatasetGenerationJobSchema, jobs, many=True)
-    
+
     @swagger.doc({
         'description': 'Creates a dataset generation job',
         'parameters': [

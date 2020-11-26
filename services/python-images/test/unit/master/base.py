@@ -1,11 +1,5 @@
 from unittest import TestCase
 
-from flask import Flask
-from flask.ctx import AppContext
-from flask.testing import FlaskClient
-from flask_restful import Api
-from flask_sqlalchemy import SQLAlchemy
-
 from src.master.appfactory import AppFactory
 from src.db import db
 
@@ -13,13 +7,13 @@ from src.db import db
 class BaseTest(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.factory: AppFactory = AppFactory()
-        cls.app: Flask = cls.factory.up()[0]
-        cls.api: Api = cls.factory.api
-        cls.app_context: AppContext = cls.app.app_context()
+        cls.factory = AppFactory()
+        [cls.app, _] = cls.factory.up()
+        cls.api = cls.factory.api
+        cls.app_context = cls.app.app_context()
         cls.app_context.push()
-        cls.test_client: FlaskClient = cls.app.test_client()
-        cls.db: SQLAlchemy = db
+        cls.test_client = cls.app.test_client()
+        cls.db = db
         cls.original_tables = cls.db.metadata.sorted_tables
 
     @classmethod

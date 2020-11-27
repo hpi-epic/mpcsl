@@ -4,6 +4,7 @@ from .dataset import Dataset, DatasetSchema
 from .experiment import Experiment, ExperimentSchema
 from .job import Job, JobSchema, JobStatus, JobErrorCode
 from .experiment_job import ExperimentJob, ExperimentJobSchema
+from .dataset_generation_job import DatasetGenerationJob, DatasetGenerationJobSchema
 from .result import Result, ResultSchema
 from .node import Node, NodeSchema
 from .edge import Edge, EdgeSchema
@@ -19,6 +20,8 @@ __all__ = [
     'NodeSchema',
     'DatasetSchema',
     'Dataset',
+    'DatasetGenerationJob',
+    'DatasetGenerationJobSchema',
     'Edge',
     'EdgeSchema',
     'Experiment',

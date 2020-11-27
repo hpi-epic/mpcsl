@@ -3,7 +3,6 @@ from .algorithms import AlgorithmResource, AlgorithmListResource
 from .datasets import DatasetLoadResource, DatasetLoadWithIdsResource, DatasetListResource, DatasetResource, \
     DatasetAvailableSourcesResource, DatasetExperimentResource, DatasetGroundTruthUpload, \
     DatasetMetadataResource
-from .dataset_csv import DatasetCsvUploadResource
 from .distributions import MarginalDistributionResource, ConditionalDistributionResource, \
     InterventionalDistributionResource
 from .edge_information import EdgeInformationResource, EdgeInformationListResource
@@ -18,11 +17,12 @@ from .results import ResultListResource, ResultResource, GraphExportResource, Re
     ResultCompareGTResource
 from .sepsets import SepsetResource, ResultSepsetListResource
 from .kubernetes import K8SNodeListResource
+from .dataset_generation_job import DatasetGenerationJobResource, DatasetGenerationJobListResource
+
 
 __all__ = [
     'AlgorithmListResource',
     'AlgorithmResource',
-    'DatasetCsvUploadResource',
     'DatasetExperimentResource',
     'DatasetLoadResource',
     'DatasetLoadWithIdsResource',
@@ -39,6 +39,8 @@ __all__ = [
     'JobResource',
     'JobLogsResource',
     'JobResultResource',
+    'DatasetGenerationJobResource',
+    'DatasetGenerationJobListResource',
     'ExperimentJobListResource',
     'ResultResource',
     'NodeResource',

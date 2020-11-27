@@ -3,7 +3,7 @@ import random
 from factory.alchemy import SQLAlchemyModelFactory
 
 from src.models import Algorithm, BaseModel, Dataset, Edge, EdgeAnnotation, EdgeInformation, \
-    Experiment, ExperimentJob, Job, JobStatus, Node, Result, Sepset
+    Experiment, ExperimentJob, DatasetGenerationJob, Job, JobStatus, Node, Result, Sepset
 from src.db import db
 
 
@@ -82,6 +82,18 @@ class ExperimentJobFactory(JobFactory):
         sqlalchemy_session = db.session
 
     experiment = factory.SubFactory(ExperimentFactory)
+
+
+class DatasetGenerationJobFactory(JobFactory):
+    class Meta:
+        model = DatasetGenerationJob
+        sqlalchemy_session = db.session
+
+    nodes = random.random()
+    samples = random.random()
+    edgeProbability = random.random()
+    edgeValueLowerBound = random.random()
+    edgeValueUpperBound = random.random()
 
 
 class ResultFactory(BaseFactory):

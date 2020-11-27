@@ -5,7 +5,7 @@ import yaml
 from kubernetes import config, client
 from kubernetes.client.rest import ApiException
 from src.master.config import API_HOST, LOAD_SEPARATION_SET, RELEASE_NAME, K8S_NAMESPACE, EXECUTION_IMAGE_NAMESPACE
-from src.models import Job, ExperimentJob, Experiment, Algorithm, JobStatus, JobErrorCode
+from src.models import Job, ExperimentJob, DatasetGenerationJob, Experiment, Algorithm, JobStatus, JobErrorCode
 from src.jobscheduler.backend_requests import post_job_change
 
 if os.environ.get("IN_CLUSTER") == "false":
@@ -59,12 +59,14 @@ async def delete_job_and_pods(job_name):
         logging.warning(f'Could not delete pods for job {job_name}')
 
 
-async def create_experiment_job(experiment_job: ExperimentJob, experiment: Experiment):
+async def create_experiment_job(experiment_job: ExperimentJob):
+    experiment = experiment_job.experiment
+    
     params = ['-j', str(experiment_job.id),
               '-d', str(experiment.dataset_id),
               '--api_host', str(API_HOST),
               '--send_sepsets', str(int(LOAD_SEPARATION_SET))]
-    for k, v in experiment.parameters.items():
+    for k, v in experiment_job.experiment.parameters.items():
         params.append('--' + k)
         params.append(str(v))
     algorithm: Algorithm = experiment.algorithm
@@ -96,6 +98,52 @@ async def create_experiment_job(experiment_job: ExperimentJob, experiment: Exper
             container["resources"]['requests']['nvidia.com/gpu'] = str(experiment_job.gpus)
         try:
             logging.info(f'Starting Job with ID {experiment_job.id}')
+            logging.info(default_job)
+            result = api_instance.create_namespaced_job(namespace=K8S_NAMESPACE, body=default_job, pretty=True)
+            return result.metadata.name
+        except ApiException as e:
+            logging.error("Exception when calling BatchV1Api->create_namespaced_job: %s\n" % e)
+
+async def create_dataset_generation_job(job: DatasetGenerationJob):
+    params = [
+        '--uploadEndpoint', f'http://{API_HOST}/api/job/{job.id}/dataset_generation',
+        '--nSamples', str(job.samples),
+        '--nNodes', str(job.nodes),
+        '--edgeProbability', str(job.edgeProbability),
+        '--edgeValueLowerBound', str(job.edgeValueLowerBound),
+        '--edgeValueUpperBound', str(job.edgeValueUpperBound)
+    ]
+    script_name = [
+        "generator.r"
+    ]
+    subcommand =  script_name + params
+    docker_image = "umland/mpci_generator" # TODO Change this
+
+    with open(os.path.join(os.path.dirname(__file__), "executor-job.yaml")) as f:
+        default_job = yaml.safe_load(f)
+
+        job_name = f'{JOB_PREFIX}{job.id}'
+        default_job["metadata"]["labels"]["job-name"] = job_name
+        default_job["metadata"]["name"] = job_name
+        default_job["spec"]["template"]["metadata"]["labels"]["job-name"] = job_name
+        container = default_job["spec"]["template"]["spec"]["containers"][0]
+        container["args"] = subcommand
+        container["image"] = docker_image
+
+        logging.info(container["image"])
+        
+        if job.node_hostname is not None:
+            nodeSelector = {
+                "kubernetes.io/hostname": job.node_hostname
+            }
+            default_job["spec"]["template"]["spec"]["nodeSelector"] = nodeSelector
+        container["resources"] = {
+                'limits': {},
+                'requests': {}
+            }
+
+        try:
+            logging.info(f'Starting Job with ID {job.id}')
             logging.info(default_job)
             result = api_instance.create_namespaced_job(namespace=K8S_NAMESPACE, body=default_job, pretty=True)
             return result.metadata.name

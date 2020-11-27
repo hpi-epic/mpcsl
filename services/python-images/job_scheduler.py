@@ -7,10 +7,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, PORT
 from src.models import Job, JobStatus, Experiment, JobErrorCode
-from src.jobscheduler.kubernetes_helper import create_experiment_job, kube_cleanup_finished_jobs, get_node_list
+from src.jobscheduler.kubernetes_helper import create_experiment_job, create_dataset_generation_job, kube_cleanup_finished_jobs, get_node_list
 from src.jobscheduler.kubernetes_helper import check_running_job, get_pod_log, delete_job_and_pods
 from src.jobscheduler.kubernetes_helper import EMPTY_LOGS
 from src.jobscheduler.backend_requests import post_job_change
+from src.models import ExperimentJob, DatasetGenerationJob
 
 logging.basicConfig(level=logging.INFO)
 
@@ -52,22 +53,42 @@ async def start_waiting_jobs(session):
     jobs = session.query(Job).filter(Job.status == JobStatus.waiting)
     for job in jobs:
         try:
-            running_jobs = session.query(Job).filter(Job.status == JobStatus.running)
-            running_jobs_parallel = all([rj.parallel for rj in running_jobs])
-            if (not running_jobs.all()) or (running_jobs_parallel and job.parallel):
-                    experiment = session.query(Experiment).get(job.experiment_id)
-                    k8s_job_name = await create_experiment_job(job, experiment)
-                    if isinstance(k8s_job_name, str):
-                        job.container_id = k8s_job_name
-                        job.status = JobStatus.running
-                        asyncio.create_task(post_job_change(job.id, None))
-                        session.commit()
+            await execute_job(session, job)
         except Exception as e:
             logging.error(str(e))
             job.status = JobStatus.error
             job.error_code = JobErrorCode.UNKNOWN
             session.commit()
             asyncio.create_task(post_job_change(job.id, job.error_code))
+
+
+async def execute_job(session: Session, job: Job) -> str:
+    container_name = None
+    if job.type == "experiment_job":
+        # Get running jobs TODO parallel ? 
+        # --> only experiment jobs or jobs in general?
+        # runs in loop?!
+        # why do we need parallel jobs anyways?
+
+        running_jobs = session.query(Job).filter(Job.status == JobStatus.running)
+        running_jobs_parallel = all([rj.parallel for rj in running_jobs])
+        if (not running_jobs.all()) or (running_jobs_parallel and job.parallel):
+            # This is only relevant for experiment jobs
+            experiment_job = session.query(ExperimentJob).get(job.id)
+            container_name = await create_experiment_job(experiment_job)
+    elif job.type == "dataset_generation_job":
+        dataset_generation_job = session.query(DatasetGenerationJob).get(job.id)
+        container_name = await create_dataset_generation_job(dataset_generation_job)
+    else:
+        raise Exception("Unknown job type. Did you add an job type without adding it to the executor?")
+
+    assert container_name is not None
+
+    # Change Job status
+    job.container_id = container_name
+    job.status = JobStatus.running
+    asyncio.create_task(post_job_change(job.id, None))
+    session.commit()
 
 
 async def kill_errored_jobs(session):

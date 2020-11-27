@@ -16,7 +16,7 @@ spec:
       containers:
         - command: []
           image: FILL
-          imagePullPolicy: Always  # Change to 'IfNotPresent' to test local executor images
+          imagePullPolicy: IfNotPresent  # Change to 'IfNotPresent' to test local executor images
           name: execution-container
           resources: {}
       restartPolicy: Never

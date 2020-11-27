@@ -30,11 +30,7 @@ write.csv(dataset, tmpDataFile)
 
 post_dataset <- function(uploadEndpoint) {
     url <- paste0(uploadEndpoint)
-<<<<<<< HEAD
     df_request <- RETRY("PUT", url, body = list(file = upload_file(tmpDataFile)), encode = "multipart", times = 1, quiet=FALSE)
-=======
-    df_request <- RETRY("POST", url, body = list(file = upload_file(tmpDataFile)), encode = "multipart", times = 1, quiet=FALSE)
->>>>>>> master
     return(df_request)
 }
 

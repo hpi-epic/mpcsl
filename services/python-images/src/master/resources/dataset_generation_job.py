@@ -98,6 +98,7 @@ class DatasetGenerationJobResource(Resource):
         db.session.add(dataset)
 
         job.dataset = dataset
+        job.status = JobStatus.done
 
         add_dataset_nodes(dataset)
 

@@ -55,13 +55,13 @@ async def start_waiting_jobs(session):
             running_jobs = session.query(Job).filter(Job.status == JobStatus.running)
             running_jobs_parallel = all([rj.parallel for rj in running_jobs])
             if (not running_jobs.all()) or (running_jobs_parallel and job.parallel):
-                    experiment = session.query(Experiment).get(job.experiment_id)
-                    k8s_job_name = await create_experiment_job(job, experiment)
-                    if isinstance(k8s_job_name, str):
-                        job.container_id = k8s_job_name
-                        job.status = JobStatus.running
-                        asyncio.create_task(post_job_change(job.id, None))
-                        session.commit()
+                experiment = session.query(Experiment).get(job.experiment_id)
+                k8s_job_name = await create_experiment_job(job, experiment)
+                if isinstance(k8s_job_name, str):
+                    job.container_id = k8s_job_name
+                    job.status = JobStatus.running
+                    asyncio.create_task(post_job_change(job.id, None))
+                    session.commit()
         except Exception as e:
             logging.error(str(e))
             job.status = JobStatus.error

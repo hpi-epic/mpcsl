@@ -28,8 +28,8 @@ def create_database_table():
     mean = [0, 5, 10]
     cov = [[1, 0, 0], [0, 10, 0], [0, 0, 20]]
     source = np.random.multivariate_normal(mean, cov, size=50)
-    for l in source:
-        db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+    for row in source:
+        db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in row])))
     db.session.commit()
     return source
 

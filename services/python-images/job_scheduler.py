@@ -6,8 +6,9 @@ from aiohttp import web
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.master.config import DAEMON_CYCLE_TIME, SQLALCHEMY_DATABASE_URI, PORT
-from src.models import Job, JobStatus, Experiment, JobErrorCode
-from src.jobscheduler.kubernetes_helper import create_experiment_job, create_dataset_generation_job, kube_cleanup_finished_jobs, get_node_list
+from src.models import Job, JobStatus, JobErrorCode
+from src.jobscheduler.kubernetes_helper import create_experiment_job, create_dataset_generation_job, \
+    kube_cleanup_finished_jobs, get_node_list
 from src.jobscheduler.kubernetes_helper import check_running_job, get_pod_log, delete_job_and_pods
 from src.jobscheduler.kubernetes_helper import EMPTY_LOGS
 from src.jobscheduler.backend_requests import post_job_change
@@ -65,7 +66,7 @@ async def start_waiting_jobs(session):
 async def execute_job(session: Session, job: Job) -> str:
     container_name = None
     if job.type == "experiment_job":
-        # Get running jobs TODO parallel ? 
+        # Get running jobs TODO parallel ?
         # --> only experiment jobs or jobs in general?
         # runs in loop?!
         # why do we need parallel jobs anyways?

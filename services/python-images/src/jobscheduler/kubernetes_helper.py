@@ -5,7 +5,7 @@ import yaml
 from kubernetes import config, client
 from kubernetes.client.rest import ApiException
 from src.master.config import API_HOST, LOAD_SEPARATION_SET, RELEASE_NAME, K8S_NAMESPACE, EXECUTION_IMAGE_NAMESPACE
-from src.models import Job, ExperimentJob, DatasetGenerationJob, Experiment, Algorithm, JobStatus, JobErrorCode
+from src.models import Job, ExperimentJob, DatasetGenerationJob, Algorithm, JobStatus, JobErrorCode
 from src.jobscheduler.backend_requests import post_job_change
 
 if os.environ.get("IN_CLUSTER") == "false":
@@ -61,7 +61,7 @@ async def delete_job_and_pods(job_name):
 
 async def create_experiment_job(experiment_job: ExperimentJob):
     experiment = experiment_job.experiment
-    
+
     params = ['-j', str(experiment_job.id),
               '-d', str(experiment.dataset_id),
               '--api_host', str(API_HOST),
@@ -104,6 +104,7 @@ async def create_experiment_job(experiment_job: ExperimentJob):
         except ApiException as e:
             logging.error("Exception when calling BatchV1Api->create_namespaced_job: %s\n" % e)
 
+
 async def create_dataset_generation_job(job: DatasetGenerationJob):
     params = [
         '--uploadEndpoint', f'http://{API_HOST}/api/job/{job.id}/dataset_generation',
@@ -116,8 +117,8 @@ async def create_dataset_generation_job(job: DatasetGenerationJob):
     script_name = [
         "generator.r"
     ]
-    subcommand =  script_name + params
-    docker_image = "umland/mpci_generator" # TODO Change this
+    subcommand = script_name + params
+    docker_image = "umland/mpci_generator"  # TODO Change this
 
     with open(os.path.join(os.path.dirname(__file__), "executor-job.yaml")) as f:
         default_job = yaml.safe_load(f)
@@ -131,7 +132,7 @@ async def create_dataset_generation_job(job: DatasetGenerationJob):
         container["image"] = docker_image
 
         logging.info(container["image"])
-        
+
         if job.node_hostname is not None:
             nodeSelector = {
                 "kubernetes.io/hostname": job.node_hostname

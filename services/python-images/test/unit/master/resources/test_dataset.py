@@ -1,4 +1,5 @@
 import io
+import os
 from unittest.mock import patch
 
 import numpy as np
@@ -11,7 +12,7 @@ from src.db import db
 from src.master.helpers.database import add_dataset_nodes
 from src.models import Dataset, Node
 from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource, \
-    DatasetLoadWithIdsResource, DatasetAvailableSourcesResource, DatasetExperimentResource
+    DatasetLoadWithIdsResource, DatasetAvailableSourcesResource, DatasetExperimentResource, DatasetGroundTruthUploadResource
 from test.factories import DatasetFactory, ExperimentFactory
 from .base import BaseResourceTest
 
@@ -168,3 +169,46 @@ class DatasetTest(BaseResourceTest):
         ex.dataset = ds
         result = self.get(self.url_for(DatasetExperimentResource, dataset_id=ds.id))
         assert(result[0]['id'] == ex.id)
+
+    def test_dataset_ground_truth_upload(self):
+        # Given
+        ds = DatasetFactory()
+        for name in ["Burglary", "Earthquake", "Alarm", "JohnCalls", "MaryCalls"]:
+            node = Node(name=name, dataset=ds)
+            db.session.add(node)
+        db.session.commit()
+        dirname = os.path.dirname(__file__)
+        fixture = os.path.join(dirname, '../../../fixtures/earthquake_groundtruth.gml')
+        data = dict(
+            graph_file=(open(fixture, 'rb'), "earthquake_groundtruth.gml"),
+        )
+        # When
+        response = self.test_client.post(
+            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            content_type='multipart/form-data',
+            data=data
+        )
+        # Then
+        assert response.status_code == 200
+
+    def test_dataset_ground_truth_upload_igraph_generated(self):
+        # Tests that the upload works with a .gml file coming from igraph package in R
+        # Given
+        ds = DatasetFactory()
+        for name in ["1", "2", "3", "4", "5"]:
+            node = Node(name=name, dataset=ds)
+            db.session.add(node)
+        db.session.commit()
+        dirname = os.path.dirname(__file__)
+        fixture = os.path.join(dirname, '../../../fixtures/graph.gml')
+        data = dict(
+            graph_file=(open(fixture, 'rb'), "graph.gml"),
+        )
+        # When
+        response = self.test_client.post(
+            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            content_type='multipart/form-data',
+            data=data
+        )
+        # Then
+        assert response.status_code == 200

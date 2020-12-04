@@ -28,10 +28,13 @@ dataset <- rmvDAG(opt$nSamples,dag)
 write.csv(dataset, tmpDataFile)
 
 
-post_dataset <- function(uploadEndpoint) {
+put_dataset <- function(uploadEndpoint) {
     url <- paste0(uploadEndpoint)
     df_request <- RETRY("PUT", url, body = list(file = upload_file(tmpDataFile)), encode = "multipart", times = 1, quiet=FALSE)
     return(df_request)
 }
 
-post_dataset(opt$uploadEndpoint)
+put_dataset(opt$uploadEndpoint)
+#post_ground_truth()
+#igraphDAG <- igraph.from.graphNEL(dag)
+#> write_graph(igraphDAG, "graph.gml", "gml")

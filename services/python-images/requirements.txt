@@ -10,7 +10,7 @@ decorator==4.3.2
 eventlet==0.25.1
 factory-boy==2.11.1
 Faker==1.0.0
-flake8==3.6.0
+flake8==3.8.4
 Flask==1.0.2
 Flask-Migrate==2.3.1
 Flask-RESTful==0.3.6
@@ -36,7 +36,7 @@ psutil==5.4.8
 psycopg2==2.8.6
 psycopg2-binary==2.8.6
 py==1.7.0
-pycodestyle==2.4.0
+pycodestyle==2.6.0
 pyflakes==2.2.0
 pyhdb==0.3.4
 pytest==3.10.1

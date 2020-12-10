@@ -49,20 +49,20 @@ def add_ground_truth_edges(db, dataset_id):
     graph = nx.read_gml('test/fixtures/earthquake_groundtruth.gml')
     ds = Dataset.query.get(dataset_id)
     for edge in graph.edges:
-            from_node_label = edge[0]
-            to_node_label = edge[1]
-            from_node_index = None
-            to_node_index = None
+        from_node_label = edge[0]
+        to_node_label = edge[1]
+        from_node_index = None
+        to_node_index = None
 
-            for node in ds.nodes:
-                if from_node_label == node.name:
-                    from_node_index = node.id
-                if to_node_label == node.name:
-                    to_node_index = node.id
-            edge = Edge(result_id=None, from_node_id=from_node_index,
-                        to_node_id=to_node_index, weight=None, is_ground_truth=True)
-            db.session.add(edge)
-            db.session.commit()
+        for node in ds.nodes:
+            if from_node_label == node.name:
+                from_node_index = node.id
+            if to_node_label == node.name:
+                to_node_index = node.id
+        edge = Edge(result_id=None, from_node_id=from_node_index,
+                    to_node_id=to_node_index, weight=None, is_ground_truth=True)
+        db.session.add(edge)
+        db.session.commit()
 
 
 if __name__ == "__main__":

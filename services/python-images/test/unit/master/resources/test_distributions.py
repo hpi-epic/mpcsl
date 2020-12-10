@@ -26,8 +26,8 @@ class MarginalDistributionTest(BaseResourceTest):
         mean = [0, 5, 10]
         cov = [[1, 0, 0], [0, 10, 0], [0, 0, 20]]
         source = np.random.multivariate_normal(mean, cov, size=50)
-        for l in source:
-            db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+        for row in source:
+            db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in row])))
         db.session.commit()
 
         exp = ExperimentFactory(dataset=ds)
@@ -60,8 +60,8 @@ class MarginalDistributionTest(BaseResourceTest):
             );
         """)
         source = np.random.randint(5, size=(50, 3))
-        for l in source:
-            db.session.execute("INSERT INTO discrete_test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+        for row in source:
+            db.session.execute("INSERT INTO discrete_test_data VALUES ({0})".format(",".join([str(e) for e in row])))
         db.session.commit()
 
         exp = ExperimentFactory(dataset=ds)
@@ -99,8 +99,8 @@ class ConditionalDistributionTest(BaseResourceTest):
         """)
         source = np.random.randint(2, size=(50, 2))
         source = np.concatenate((source, source + 1), axis=1)
-        for l in source:
-            db.session.execute("INSERT INTO cond_test_data VALUES ({0})".format(",".join([str(e) for e in l])))
+        for row in source:
+            db.session.execute("INSERT INTO cond_test_data VALUES ({0})".format(",".join([str(e) for e in row])))
         db.session.commit()
 
         exp = ExperimentFactory(dataset=ds)
@@ -146,8 +146,8 @@ class ConditionalDistributionTest(BaseResourceTest):
             );
         """)
         source = np.concatenate((np.random.randint(2, size=(50, 2)), np.random.normal(size=(50, 1))), axis=1)
-        for l in source:
-            db.session.execute("INSERT INTO cond_test_data2 VALUES ({0})".format(",".join([str(e) for e in l])))
+        for row in source:
+            db.session.execute("INSERT INTO cond_test_data2 VALUES ({0})".format(",".join([str(e) for e in row])))
         db.session.commit()
 
         values, counts = np.unique(source[:, 1], return_counts=True)

@@ -52,6 +52,10 @@ jobs:
           name: Testing
           command: pytest --cov-report xml --cov=src test/
           working_directory: ~/project/services/python-images
+      - run:
+          name: Dependency verification
+          command: ./verify-requirements-modules.sh
+          working_directory: ~/project/services/python-images
       - when:
           condition: on_success
           steps:

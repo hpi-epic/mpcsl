@@ -27,20 +27,20 @@ jobs:
       POSTGRES_PASSWORD: postgres
       TEST: "True"
     docker:
-      - image: circleci/python:3.7.5
+      - image: python:3.7.5
       - image: postgres:12
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
     steps:
       - checkout
-      - run: 
+      - run:
           name: Installing pip packages
-          command: pip install --user -r requirements.txt
+          command: pip install -r requirements.txt
           working_directory: ~/project/services/python-images
       - run:
           name: Migrating database
-          command: flask db upgrade 
+          command: flask db upgrade
           environment:
             FLASK_APP: migration.py
           working_directory: ~/project/services/python-images
@@ -51,6 +51,10 @@ jobs:
       - run:
           name: Testing
           command: pytest --cov-report xml --cov=src test/
+          working_directory: ~/project/services/python-images
+      - run:
+          name: Dependency verification
+          command: ./verify-requirements-modules.sh
           working_directory: ~/project/services/python-images
       - when:
           condition: on_success

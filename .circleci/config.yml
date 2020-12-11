@@ -36,25 +36,25 @@ jobs:
       - checkout
       - run:
           name: Installing pip packages
-          command: python -m venv venv && source venv/bin/activate && pip install --user -r requirements.txt
+          command: python -m venv venv && . venv/bin/activate && pip install --user -r requirements.txt
           working_directory: ~/project/services/python-images
       - run:
           name: Migrating database
-          command: source venv/bin/activate && flask db upgrade
+          command: . venv/bin/activate && flask db upgrade
           environment:
             FLASK_APP: migration.py
           working_directory: ~/project/services/python-images
       - run:
           name: Linting
-          command: source venv/bin/activate && flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py
+          command: . venv/bin/activate && flake8 test/ src/ seed.py server.py setup_algorithms.py job_scheduler.py
           working_directory: ~/project/services/python-images
       - run:
           name: Testing
-          command: source venv/bin/activate && pytest --cov-report xml --cov=src test/
+          command: . venv/bin/activate && pytest --cov-report xml --cov=src test/
           working_directory: ~/project/services/python-images
       - run:
           name: Dependency verification
-          command: source venv/bin/activate && ./verify-requirements-modules.sh
+          command: . venv/bin/activate && ./verify-requirements-modules.sh
           working_directory: ~/project/services/python-images
       - when:
           condition: on_success

@@ -213,3 +213,16 @@ class DatasetTest(BaseResourceTest):
         )
         # Then
         assert response.status_code == 200
+
+    def test_dataset_ground_truth_upload_should_fail(self):
+        # Given
+        ds = DatasetFactory()
+        db.session.commit()
+        # When
+        response = self.test_client.post(
+            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            content_type='multipart/form-data',
+            data={}
+        )
+
+        assert response.status_code == 400

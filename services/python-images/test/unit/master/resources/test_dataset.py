@@ -214,7 +214,26 @@ class DatasetTest(BaseResourceTest):
         # Then
         assert response.status_code == 200
 
-    def test_dataset_ground_truth_upload_should_fail(self):
+    def test_dataset_ground_truth_upload_should_fail_on_invalid_file(self):
+        # Given
+        ds = DatasetFactory()
+        db.session.commit()
+
+        dirname = os.path.dirname(__file__)
+        fixture = os.path.join(dirname, '../../../fixtures/invalid.gml')
+        data = dict(
+            graph_file=(open(fixture, 'rb'), "invalid.gml"),
+        )
+        # When
+        response = self.test_client.post(
+            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            content_type='multipart/form-data',
+            data={}
+        )
+
+        assert response.status_code == 400
+
+    def test_dataset_ground_truth_upload_should_fail_on_missing_file(self):
         # Given
         ds = DatasetFactory()
         db.session.commit()

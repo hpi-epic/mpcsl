@@ -228,7 +228,7 @@ class DatasetTest(BaseResourceTest):
         response = self.test_client.post(
             self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
             content_type='multipart/form-data',
-            data={}
+            data=data
         )
 
         assert response.status_code == 400

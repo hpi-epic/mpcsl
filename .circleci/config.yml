@@ -36,7 +36,7 @@ jobs:
       - checkout
       - run: 
           name: Installing pip packages
-          command: pip install --user -r requirements.txt
+          command: python -m venv venv && source venv/bin/activate && pip install --user -r requirements.txt
           working_directory: ~/project/services/python-images
       - run:
           name: Migrating database

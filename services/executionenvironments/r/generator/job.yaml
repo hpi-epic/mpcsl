@@ -16,6 +16,8 @@ spec:
       containers:
         - args:
             - generator.r
+            - --apiHost
+            - mpci-default-backend
             - --uploadEndpoint
             - http://mpci-default-backend/api/dataset_csv_upload
             - --nSamples

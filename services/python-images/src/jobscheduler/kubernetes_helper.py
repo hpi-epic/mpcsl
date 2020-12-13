@@ -107,6 +107,7 @@ async def create_experiment_job(experiment_job: ExperimentJob):
 
 async def create_dataset_generation_job(job: DatasetGenerationJob):
     params = [
+        '--apiHost', API_HOST,
         '--uploadEndpoint', f'http://{API_HOST}/api/job/{job.id}/dataset_generation',
         '--nSamples', str(job.samples),
         '--nNodes', str(job.nodes),

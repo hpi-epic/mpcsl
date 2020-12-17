@@ -119,7 +119,7 @@ async def create_dataset_generation_job(job: DatasetGenerationJob):
         "generator.r"
     ]
     subcommand = script_name + params
-    docker_image = "umland/mpci_generator"  # TODO Change this
+    docker_image = EXECUTION_IMAGE_NAMESPACE + "/generator_r"  # TODO Change this
 
     with open(os.path.join(os.path.dirname(__file__), "executor-job.yaml")) as f:
         default_job = yaml.safe_load(f)

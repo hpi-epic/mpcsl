@@ -39,7 +39,7 @@ mccabe==0.6.1
 monotonic==1.5
 more-itertools==4.3.0
 multidict==4.7.6
-networkx==2.2
+networkx==2.5
 numpy==1.16.0
 oauthlib==3.1.0
 pandas==1.1.4

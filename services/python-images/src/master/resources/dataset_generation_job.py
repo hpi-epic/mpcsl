@@ -1,4 +1,4 @@
-from src.models import DatasetGenerationJob, DatasetGenerationJobSchema, Dataset
+from src.models import DatasetGenerationJob, DatasetGenerationJobSchema, Dataset, DatasetSchema
 from src.master.helpers.io import load_data, marshal
 from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import BadRequest
@@ -98,10 +98,12 @@ class DatasetGenerationJobResource(Resource):
         db.session.add(dataset)
 
         job.dataset = dataset
+        job.status = JobStatus.done
 
         add_dataset_nodes(dataset)
 
         db.session.commit()
+        return marshal(DatasetSchema, dataset)
 
 
 class DatasetGenerationJobInputSchema(BaseSchema):

@@ -51,6 +51,8 @@ class DatasetGenerationJobTest(BaseResourceTest):
 
         # Then
         assert response.status_code == 200
+        assert response.json["id"] is not None
+
         ds = self.db.session.query(Dataset).first()
         result_buffer = load_dataset_as_csv(self.db.session, ds)
         result_dataframe = pd.read_csv(result_buffer)

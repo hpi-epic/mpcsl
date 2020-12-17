@@ -11,6 +11,7 @@ from flask_restful import Resource, abort
 from marshmallow import Schema, fields
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import Session
+from werkzeug.datastructures import FileStorage
 from werkzeug.exceptions import BadRequest
 
 from src.db import db
@@ -140,7 +141,19 @@ class DatasetMetadataResource(Resource):
             return data
 
 
-class DatasetGroundTruthUpload(Resource):
+def parse_graph(file: FileStorage, is_from_igraph_r_package: bool = False) -> nx.Graph:
+    # The Igraph package in R stores in a weird version where the label is stored under a tag "name"
+    try:
+        if is_from_igraph_r_package:
+            graph = nx.parse_gml(file.stream.read().decode('utf-8'), label="name")
+        else:
+            graph = nx.parse_gml(file.stream.read().decode('utf-8'))
+    finally:
+        file.stream.seek(0)
+    return graph
+
+
+class DatasetGroundTruthUploadResource(Resource):
     @swagger.doc({
         'description': 'Add Ground-Truth to Dataset',
         'parameters': [
@@ -164,9 +177,15 @@ class DatasetGroundTruthUpload(Resource):
     def post(self, dataset_id):
         try:
             file = request.files['graph_file']
-            graph = nx.parse_gml(file.stream.read().decode('utf-8'))
         except Exception:
-            raise BadRequest(f'Could not parse file: "{file.filename}"')
+            raise BadRequest("No file graph_file attached")
+        try:
+            graph = parse_graph(file)
+        except Exception:
+            try:
+                graph = parse_graph(file, is_from_igraph_r_package=True)
+            except Exception:
+                raise BadRequest(f'Could not parse file: "{file.filename}"')
         ds = Dataset.query.get_or_404(dataset_id)
         for node in ds.nodes:
             for edge in node.edge_froms:

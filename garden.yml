@@ -17,7 +17,7 @@ environments:
         context: mpci
         deploymentRegistry:
           hostname: docker.io
-          namespace: milanpro
+          namespace: mpci
     production: true
     variables:
       postgres-user: admin
@@ -31,7 +31,7 @@ environments:
         namespace: porsche-mpci
         deploymentRegistry:
           hostname: docker.io
-          namespace: milanpro
+          namespace: mpci
     production: true
     variables:
       postgres-user: admin

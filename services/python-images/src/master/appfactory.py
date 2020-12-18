@@ -27,7 +27,7 @@ class AppFactory(object):
     def set_up_socketio(self):
         if self.app is None:
             raise Exception("Flask app not set")
-        self.socketio = SocketIO(self.app, ping_timeout=1200)
+        self.socketio = SocketIO(self.app, ping_timeout=1200, cors_allowed_origins="*")
 
         # TODO(change name of socket emit to experiment job)
         @event.listens_for(ExperimentJob, 'after_update')

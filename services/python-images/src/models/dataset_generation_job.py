@@ -23,6 +23,7 @@ class DatasetGenerationJob(Job):
     edgeProbability = db.Column(db.Float)
     edgeValueLowerBound = db.Column(db.Float)
     edgeValueUpperBound = db.Column(db.Float)
+    datasetName = db.Column(db.String)
 
     __mapper_args__ = {
         'polymorphic_identity': 'dataset_generation_job',

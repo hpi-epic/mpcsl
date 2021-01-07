@@ -94,6 +94,7 @@ class DatasetGenerationJobFactory(JobFactory):
     edgeProbability = random.random()
     edgeValueLowerBound = random.random()
     edgeValueUpperBound = random.random()
+    datasetName = factory.Faker('word')
 
 
 class ResultFactory(BaseFactory):

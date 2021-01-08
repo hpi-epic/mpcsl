@@ -1,3 +1,4 @@
+from datetime import datetime
 from src.models import DatasetGenerationJob, DatasetGenerationJobSchema, Dataset, DatasetSchema
 from src.master.helpers.io import load_data, marshal
 from sqlalchemy.exc import DatabaseError
@@ -99,6 +100,8 @@ class DatasetGenerationJobResource(Resource):
 
         job.dataset = dataset
         job.status = JobStatus.done
+
+        job.end_time = datetime.now()
 
         add_dataset_nodes(dataset)
 

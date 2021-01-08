@@ -61,9 +61,10 @@ class DatasetGenerationJobTest(BaseResourceTest):
         result_dataframe.index = expected_dataframe.index
         pd.testing.assert_frame_equal(expected_dataframe, result_dataframe)
 
-        updated_job = DatasetGenerationJob.query.get(job.id)
+        updated_job: DatasetGenerationJob = DatasetGenerationJob.query.get(job.id)
 
         assert updated_job.dataset == ds
+        assert updated_job.end_time is not None
 
     def test_abort_after_second_upload_for_same_id(self):
         # Given

@@ -223,8 +223,9 @@ class JobResultResource(Resource):
     })
     def post(self, job_id):
         job = Job.query.get_or_404(job_id)
+        end_time = datetime.now()
         result = Result(job=job, start_time=job.start_time,
-                        end_time=datetime.now(),)
+                        end_time=end_time,)
         db.session.add(result)
         db.session.flush()
 
@@ -233,6 +234,7 @@ class JobResultResource(Resource):
 
         job.status = JobStatus.done
         job.result_id = result.id
+        job.end_time = end_time
         db.session.commit()
         current_app.logger.info('Result {} created for job {}'.format(result.id, job.id))
 

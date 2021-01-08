@@ -25,6 +25,7 @@ class JobErrorCode(int, enum.Enum):
 
 class Job(BaseModel):
     start_time = db.Column(db.DateTime, nullable=False, default=func.now())
+    end_time = db.Column(db.DateTime)
     container_id = db.Column(db.String)
     node_hostname = db.Column(db.String)
     status = db.Column(db.Enum(JobStatus), nullable=False, default=JobStatus.waiting)

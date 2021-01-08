@@ -262,6 +262,5 @@ async def kube_cleanup_finished_jobs(session):
         if job_name.startswith(JOB_PREFIX) and job.status.succeeded == 1:
             logging.info("Cleaning up Job: {}. Finished at: {}".format(job_name, job.status.completion_time))
             delete_job(job_name)
-            asyncio.create_task(post_job_change(job.id, None))
     await kube_delete_empty_pods(session)
     return

@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from src.master.helpers.socketio_events import job_status_change
 from src.models import DatasetGenerationJob, DatasetGenerationJobSchema, Dataset, DatasetSchema
 from src.master.helpers.io import load_data, marshal
 from sqlalchemy.exc import DatabaseError
@@ -106,6 +108,7 @@ class DatasetGenerationJobResource(Resource):
         add_dataset_nodes(dataset)
 
         db.session.commit()
+        job_status_change(job, None)
         return marshal(DatasetSchema, dataset)
 
 

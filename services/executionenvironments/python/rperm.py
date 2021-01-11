@@ -39,7 +39,7 @@ class PermutationTest(IndependenceTest):
         self.cmi_val = self.estimator.compute_mi(x, y)
 
         sig_samples = self.iterations
-        sig_blocklength = min(1, len(x) // 20)
+        sig_blocklength = max(1, len(x) // 20)
         n_blks = int(floor(float(len(x))/sig_blocklength))
 
         block_starts = np.arange(0, len(x) - sig_blocklength + 1, sig_blocklength)

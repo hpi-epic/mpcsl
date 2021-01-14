@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from src.master.helpers.socketio_events import job_status_change
 from src.models import DatasetGenerationJob, DatasetGenerationJobSchema, Dataset, DatasetSchema
 from src.master.helpers.io import load_data, marshal
 from sqlalchemy.exc import DatabaseError
@@ -74,7 +77,7 @@ class DatasetGenerationJobResource(Resource):
         if not job_id:
             abort(400, message='missing job_id')
 
-        job = DatasetGenerationJob.query.get_or_404(job_id)
+        job: DatasetGenerationJob = DatasetGenerationJob.query.get_or_404(job_id)
 
         if job.dataset:
             abort(400, message='Dataset generation job already mapped')
@@ -82,7 +85,7 @@ class DatasetGenerationJobResource(Resource):
         file = request.files['file']
         # The char - is not allowed in sqlAlchemy
         sql_conform_id = str(uuid.uuid4()).replace('-', '_')
-        table_name = "generated" + sql_conform_id
+        table_name = job.datasetName + '_' + sql_conform_id
         try:
             data = pd.read_csv(file, index_col=0)
             data.to_sql(table_name, db.engine, index=False)
@@ -93,16 +96,19 @@ class DatasetGenerationJobResource(Resource):
             description="generated",
             load_query=f"SELECT * FROM {table_name}",
             data_source=DB_DATABASE,
-            name=table_name
+            name=job.datasetName
         )
         db.session.add(dataset)
 
         job.dataset = dataset
         job.status = JobStatus.done
 
+        job.end_time = datetime.now()
+
         add_dataset_nodes(dataset)
 
         db.session.commit()
+        job_status_change(job, None)
         return marshal(DatasetSchema, dataset)
 
 
@@ -112,6 +118,8 @@ class DatasetGenerationJobInputSchema(BaseSchema):
     edgeProbability = fields.Float()  # TODO add range 0 - 1
     edgeValueLowerBound = fields.Float()
     edgeValueUpperBound = fields.Float()
+    datasetName = fields.String()
+    kubernetesNode = fields.String()
 
 
 class DatasetGenerationJobListResource(Resource):
@@ -169,6 +177,7 @@ class DatasetGenerationJobListResource(Resource):
 
         try:
             dataset_generation_job = DatasetGenerationJob(**input_data)
+            dataset_generation_job.node_hostname = request.json.get("kubernetesNode")
 
             db.session.add(dataset_generation_job)
             db.session.commit()

@@ -61,9 +61,10 @@ class DatasetGenerationJobTest(BaseResourceTest):
         result_dataframe.index = expected_dataframe.index
         pd.testing.assert_frame_equal(expected_dataframe, result_dataframe)
 
-        updated_job = DatasetGenerationJob.query.get(job.id)
+        updated_job: DatasetGenerationJob = DatasetGenerationJob.query.get(job.id)
 
         assert updated_job.dataset == ds
+        assert updated_job.end_time is not None
 
     def test_abort_after_second_upload_for_same_id(self):
         # Given
@@ -102,10 +103,12 @@ class DatasetGenerationJobTest(BaseResourceTest):
         data['edgeProbability'] = 0.3
         data['edgeValueLowerBound'] = 0.1
         data['edgeValueUpperBound'] = 0.8
+        data['datasetName'] = 'creation_test_dataset'
+        data['kubernetesNode'] = 'test_k8s_node'
 
         # When
         self.post(self.url_for(DatasetGenerationJobListResource), json=data)
-        job = db.session.query(DatasetGenerationJob).first()
+        job: DatasetGenerationJob = db.session.query(DatasetGenerationJob).first()
 
         # Then
         assert job.dataset_id is None
@@ -114,3 +117,29 @@ class DatasetGenerationJobTest(BaseResourceTest):
         assert job.edgeProbability == data['edgeProbability']
         assert job.edgeValueLowerBound == data['edgeValueLowerBound']
         assert job.edgeValueUpperBound == data['edgeValueUpperBound']
+        assert job.datasetName == data['datasetName']
+        assert job.node_hostname == data['kubernetesNode']
+
+    def test_create_dataset_generation_job_without_kubernetes_node(self):
+        # Given
+        data = dict()
+        data['nodes'] = 30
+        data['samples'] = 20
+        data['edgeProbability'] = 0.3
+        data['edgeValueLowerBound'] = 0.1
+        data['edgeValueUpperBound'] = 0.8
+        data['datasetName'] = 'creation_test_dataset'
+
+        # When
+        self.post(self.url_for(DatasetGenerationJobListResource), json=data)
+        job: DatasetGenerationJob = db.session.query(DatasetGenerationJob).first()
+
+        # Then
+        assert job.dataset_id is None
+        assert job.nodes == data['nodes']
+        assert job.samples == data['samples']
+        assert job.edgeProbability == data['edgeProbability']
+        assert job.edgeValueLowerBound == data['edgeValueLowerBound']
+        assert job.edgeValueUpperBound == data['edgeValueUpperBound']
+        assert job.datasetName == data['datasetName']
+        assert job.node_hostname is None

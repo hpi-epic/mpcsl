@@ -248,7 +248,7 @@ async def kube_delete_empty_pods(session):
     return
 
 
-async def kube_cleanup_finished_jobs(session, state='Finished'):
+async def kube_cleanup_finished_jobs(session):
     logging.info("--- Cleanup finished jobs and pods routine ---")
     try:
         jobs = api_instance.list_namespaced_job(namespace=K8S_NAMESPACE,
@@ -257,10 +257,10 @@ async def kube_cleanup_finished_jobs(session, state='Finished'):
     except ApiException as e:
         print("Exception when calling BatchV1Api->list_namespaced_job: %s\n" % e)
     for job in jobs.items:
-        jobname = job.metadata.name
+        job_name = job.metadata.name
 
-        if jobname.startswith(JOB_PREFIX) and job.status.succeeded == 1:
-            logging.info("Cleaning up Job: {}. Finished at: {}".format(jobname, job.status.completion_time))
-            delete_job(jobname)
+        if job_name.startswith(JOB_PREFIX) and job.status.succeeded == 1:
+            logging.info("Cleaning up Job: {}. Finished at: {}".format(job_name, job.status.completion_time))
+            delete_job(job_name)
     await kube_delete_empty_pods(session)
     return

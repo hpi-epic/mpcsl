@@ -4,7 +4,7 @@ from unittest.mock import patch, MagicMock
 from src.db import db
 from src.master.resources.jobs import JobListResource, JobResource, JobResultResource
 from src.master.resources.experiment_jobs import ExperimentJobListResource
-from src.models import Result, Edge, JobStatus
+from src.models import Result, Edge, JobStatus, ExperimentJob
 from test.factories import DatasetFactory, ExperimentFactory, ExperimentJobFactory, JobFactory, NodeFactory
 from .base import BaseResourceTest
 
@@ -125,9 +125,11 @@ class JobTest(BaseResourceTest):
 
         # When
         result = self.post(self.url_for(JobResultResource, job_id=mock_job.id), json=data)
-        db_result = db.session.query(Result).first()
+        db_result: Result = db.session.query(Result).first()
+        db_job: ExperimentJob = db.session.query(ExperimentJob).first()
 
         # Then
+        assert db_job.end_time is not None
         assert db_result.meta_results == data['meta_results'] == result['meta_results']
         for edge in data['edge_list']:
             db_edge = db.session.query(Edge).filter(

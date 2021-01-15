@@ -7,7 +7,7 @@ get_host(){
 MINIKUBE_HOST_IP="$(get_host)"
 BACKEND_PORT=5000
 MPCI_NAMESPACE=mpci-default
-garden deploy scheduler --var backendApiHost="$MINIKUBE_HOST_IP:$BACKEND_PORT"
+garden deploy scheduler --env=minimal-dev-setup --var backendApiHost="$MINIKUBE_HOST_IP:$BACKEND_PORT"
 echo "Forwarding Postgres Port"
 kubectl port-forward db-postgresql-0 5432 -n $MPCI_NAMESPACE & # this is a StatefulSet so the pod should stay the same
 DB_PID=$!

@@ -69,5 +69,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-#backendApiHost: #{{ .Release.Namespace }}-backend # This value is need to be overwritten inn dev mode

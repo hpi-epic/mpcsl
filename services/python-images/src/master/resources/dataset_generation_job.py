@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from sqlalchemy import func
 
 from src.master.helpers.socketio_events import job_status_change

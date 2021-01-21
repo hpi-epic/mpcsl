@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from sqlalchemy import func
+
 from src.master.helpers.socketio_events import job_status_change
 from src.models import DatasetGenerationJob, DatasetGenerationJobSchema, Dataset, DatasetSchema
 from src.master.helpers.io import load_data, marshal
@@ -103,7 +105,7 @@ class DatasetGenerationJobResource(Resource):
         job.dataset = dataset
         job.status = JobStatus.done
 
-        job.end_time = datetime.now()
+        job.end_time = func.now()
 
         add_dataset_nodes(dataset)
 

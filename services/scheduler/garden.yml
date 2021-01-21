@@ -5,9 +5,7 @@ name: scheduler
 serviceResource:
   kind: Deployment
   containerModule: scheduler-image
-dependencies:
-  - postgres
-  - migrate-db
+dependencies: ${var.schedulerDependencies}
 values:
   image:
     repository: ${modules.scheduler-image.outputs.deployment-image-name}
@@ -15,3 +13,4 @@ values:
   postgresqlUsername: ${var.postgres-user}
   executionImageNamespace: ${var.execution-image-namespace}
   nodeName: ${var.node-name}
+  backendApiHost: ${var.backendApiHost}

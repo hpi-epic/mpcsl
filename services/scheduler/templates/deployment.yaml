@@ -29,7 +29,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: API_HOST
-              value: {{ .Release.Namespace }}-backend
+              value: {{ if empty .Values.backendApiHost }} {{ .Release.Namespace }}-backend {{ else }} {{.Values.backendApiHost}} {{ end }}
             - name: DB_HOST
               value: db-postgresql
             - name: RELEASE_NAME

@@ -1,0 +1,19 @@
+version: '3'
+services:
+  test-runner:
+    build:
+      context: .
+      dockerfile: test.Dockerfile
+    environment:
+      DB_HOST: postgres-db:5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TEST: "True"
+    depends_on:
+      - postgres-db
+
+  postgres-db:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres

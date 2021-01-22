@@ -18,11 +18,8 @@ class DatasetGenerationJob(Job):
         backref=db.backref('job', cascade="all, delete-orphan", uselist=False)
     )
 
-    nodes = db.Column(db.Integer)
-    samples = db.Column(db.Integer)
-    edgeProbability = db.Column(db.Float)
-    edgeValueLowerBound = db.Column(db.Float)
-    edgeValueUpperBound = db.Column(db.Float)
+    parameters = db.Column(db.JSON, nullable=False)
+    generator_type = db.Column(db.String, nullable=False)
     datasetName = db.Column(db.String)
 
     __mapper_args__ = {

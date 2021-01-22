@@ -98,11 +98,8 @@ class DatasetGenerationJobTest(BaseResourceTest):
     def test_create_dataset_generation_job(self):
         # Given
         data = dict()
-        data['nodes'] = 30
-        data['samples'] = 20
-        data['edgeProbability'] = 0.3
-        data['edgeValueLowerBound'] = 0.1
-        data['edgeValueUpperBound'] = 0.8
+        data['parameters'] = "{'nodes': 10, 'samples':1000}"
+        data['generator_type'] = 'MPCI'
         data['datasetName'] = 'creation_test_dataset'
         data['kubernetesNode'] = 'test_k8s_node'
 

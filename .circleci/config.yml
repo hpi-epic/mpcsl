@@ -42,6 +42,7 @@ jobs:
           name: Migrating database
           command: flask db upgrade
           environment:
+            HOST_DB: localhost:5432
             FLASK_APP: migration.py
           working_directory: ~/project/services/python-images
       - run:

@@ -9,10 +9,11 @@ K8S_NAMESPACE = os.environ.get("K8S_NAMESPACE", "default")
 EXECUTION_IMAGE_NAMESPACE = os.environ.get("EXECUTION_IMAGE_NAMESPACE")
 
 MPCI_ENVIRONMENT = os.environ.get('MPCI_ENVIRONMENT')
+USE_DEPLOYED_DB = MPCI_ENVIRONMENT == 'production' or MPCI_ENVIRONMENT == 'development'
 
 # Database
 DB_TYPE = os.environ.get('DB_TYPE', 'postgresql')
-DB_HOST = os.environ.get('DB_HOST', 'localhost:5432')
+DB_HOST = os.environ.get('DB_HOST', 'localhost:5432' if USE_DEPLOYED_DB else 'localhost:5433')
 DB_DATABASE = os.environ.get('DB_DATABASE', 'postgres')
 DB_USER = os.environ.get('POSTGRES_USER', "admin")
 DB_PASSWORD = os.environ.get('POSTGRES_PASSWORD', "admin")
@@ -32,7 +33,6 @@ SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get(
 ).lower() == 'true'
 
 DAEMON_CYCLE_TIME = 5
-
 
 RESULT_READ_BUFF_SIZE = int(os.environ.get('RESULT_READ_BUFF_SIZE', 32 * 1024))
 RESULT_WRITE_BUFF_SIZE = int(os.environ.get('RESULT_WRITE_BUFF_SIZE', 1024))

@@ -94,6 +94,7 @@ class DatasetGenerationJobFactory(JobFactory):
         "num_samples": 10000
     })
     generator_type = "mpci"
+    datasetName = factory.Faker('word')
 
 
 class ResultFactory(BaseFactory):

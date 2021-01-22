@@ -19,6 +19,17 @@ JOB_PREFIX = f'{RELEASE_NAME}-execute-'
 
 EMPTY_LOGS = " -- EMPTY LOGS -- "
 
+GENERATOR_TYPE_TO_IMAGE = {
+    "PCALG": ("generator_r", "generator.r")
+}
+
+
+def get_script_and_image_of_generation_job(job: DatasetGenerationJob) -> (str, str):
+    generator_type = job.generator_type
+    if generator_type not in GENERATOR_TYPE_TO_IMAGE:
+        raise Exception(f"Generator type {generator_type} not found")
+    return GENERATOR_TYPE_TO_IMAGE[generator_type]
+
 
 async def get_pod_log(job_id):
     try:
@@ -108,18 +119,15 @@ async def create_experiment_job(experiment_job: ExperimentJob):
 async def create_dataset_generation_job(job: DatasetGenerationJob):
     params = [
         '--apiHost', API_HOST,
-        '--uploadEndpoint', f'http://{API_HOST}/api/job/{job.id}/dataset_generation',
-        '--nSamples', str(job.samples),
-        '--nNodes', str(job.nodes),
-        '--edgeProbability', str(job.edgeProbability),
-        '--edgeValueLowerBound', str(job.edgeValueLowerBound),
-        '--edgeValueUpperBound', str(job.edgeValueUpperBound)
+        '--uploadEndpoint', f'http://{API_HOST}/api/job/{job.id}/dataset_generation'
     ]
-    script_name = [
-        "generator.r"
-    ]
-    subcommand = script_name + params
-    docker_image = EXECUTION_IMAGE_NAMESPACE + "/generator_r"  # TODO Change this
+    for k, v in job.parameters.items():
+        params.append('--' + k)
+        params.append(str(v))
+
+    image_name, script_name = get_script_and_image_of_generation_job(job)
+    subcommand = [script_name] + params
+    docker_image = f"{EXECUTION_IMAGE_NAMESPACE}/{image_name}"
 
     with open(os.path.join(os.path.dirname(__file__), "executor-job.yaml")) as f:
         default_job = yaml.safe_load(f)

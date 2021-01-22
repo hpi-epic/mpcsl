@@ -109,22 +109,16 @@ class DatasetGenerationJobTest(BaseResourceTest):
 
         # Then
         assert job.dataset_id is None
-        assert job.nodes == data['nodes']
-        assert job.samples == data['samples']
-        assert job.edgeProbability == data['edgeProbability']
-        assert job.edgeValueLowerBound == data['edgeValueLowerBound']
-        assert job.edgeValueUpperBound == data['edgeValueUpperBound']
         assert job.datasetName == data['datasetName']
+        assert job.generator_type == data['generator_type']
         assert job.node_hostname == data['kubernetesNode']
+        assert job.parameters == data['parameters']
 
     def test_create_dataset_generation_job_without_kubernetes_node(self):
         # Given
         data = dict()
-        data['nodes'] = 30
-        data['samples'] = 20
-        data['edgeProbability'] = 0.3
-        data['edgeValueLowerBound'] = 0.1
-        data['edgeValueUpperBound'] = 0.8
+        data['parameters'] = "{'nodes': 10, 'samples':1000}"
+        data['generator_type'] = 'MPCI'
         data['datasetName'] = 'creation_test_dataset'
 
         # When
@@ -133,10 +127,8 @@ class DatasetGenerationJobTest(BaseResourceTest):
 
         # Then
         assert job.dataset_id is None
-        assert job.nodes == data['nodes']
-        assert job.samples == data['samples']
-        assert job.edgeProbability == data['edgeProbability']
-        assert job.edgeValueLowerBound == data['edgeValueLowerBound']
-        assert job.edgeValueUpperBound == data['edgeValueUpperBound']
         assert job.datasetName == data['datasetName']
+        assert job.generator_type == data['generator_type']
+        assert job.parameters == data['parameters']
+
         assert job.node_hostname is None

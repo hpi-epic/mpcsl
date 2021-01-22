@@ -23,7 +23,6 @@ jobs:
 
   test:
     environment:
-      HOST_DB: localhost:5432
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       TEST: "True"
@@ -51,6 +50,8 @@ jobs:
           working_directory: ~/project/services/python-images
       - run:
           name: Testing
+          environment:
+            HOST_DB: localhost:5432
           command: pytest --cov-report xml --cov=src test/
           working_directory: ~/project/services/python-images
       - run:

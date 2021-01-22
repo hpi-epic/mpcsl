@@ -25,6 +25,7 @@ jobs:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      MPCI_ENVIRONMENT: testing
       TEST: "True"
     docker:
       - image: python:3.7.5

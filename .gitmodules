@@ -11,3 +11,6 @@
 	path = services/executionenvironments/cuda/cupc
 	url = git@github.com:LIS-Laboratory/cupc.git
 	branch = master
+[submodule "services/executionenvironments/python-generators/mpci-dag"]
+	path = services/executionenvironments/python-generators/mpci-dag
+	url = git@github.com:hpi-epic/mpci-dag.git

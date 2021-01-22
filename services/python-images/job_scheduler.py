@@ -122,9 +122,9 @@ async def loop_async_with_session(fnc):
 async def start_job_scheduler():
     logging.info("Starting Job Scheduler")
     task1: asyncio.Task = asyncio.create_task(loop_async_with_session(start_waiting_jobs))
-    # task2 = asyncio.create_task(loop_async_with_session(kill_errored_jobs))
-    # task3 = asyncio.create_task(loop_async_with_session(kube_cleanup_finished_jobs))
-    await asyncio.gather(task1)
+    task2 = asyncio.create_task(loop_async_with_session(kill_errored_jobs))
+    task3 = asyncio.create_task(loop_async_with_session(kube_cleanup_finished_jobs))
+    await asyncio.gather(task1, task2, task3)
 
 
 async def start_background_tasks(app):

@@ -23,7 +23,7 @@ jobs:
 
   test:
     environment:
-      HOST_DB: localhost:5433
+      HOST_DB: localhost:5432
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       TEST: "True"

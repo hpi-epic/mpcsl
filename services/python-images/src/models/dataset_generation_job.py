@@ -20,7 +20,7 @@ class DatasetGenerationJob(Job):
 
     parameters = db.Column(db.JSON, nullable=False)
     generator_type = db.Column(db.String, nullable=False)
-    datasetName = db.Column(db.String)
+    datasetName = db.Column(db.String, nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'dataset_generation_job',

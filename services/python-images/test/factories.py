@@ -89,11 +89,11 @@ class DatasetGenerationJobFactory(JobFactory):
         model = DatasetGenerationJob
         sqlalchemy_session = db.session
 
-    nodes = random.random()
-    samples = random.random()
-    edgeProbability = random.random()
-    edgeValueLowerBound = random.random()
-    edgeValueUpperBound = random.random()
+    parameters = factory.LazyAttribute(lambda o: {
+        "num_nodes": 10,
+        "num_samples": 10000
+    })
+    generator_type = "mpci"
     datasetName = factory.Faker('word')
 
 

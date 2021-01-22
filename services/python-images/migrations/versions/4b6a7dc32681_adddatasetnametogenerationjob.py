@@ -18,6 +18,8 @@ depends_on = None
 
 def upgrade():
     op.add_column('dataset_generation_job', sa.Column('datasetName', sa.String(), nullable=True))
+    op.execute('UPDATE dataset_generation_job SET "datasetName" = \'GENERATED\'')
+    op.alter_column('dataset_generation_job', 'datasetName', nullable=False)
 
 
 def downgrade():

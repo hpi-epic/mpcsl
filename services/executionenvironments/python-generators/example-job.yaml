@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    job-name: generator
+  name: generator
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        job-name: generator
+    spec:
+      containers:
+        - args:
+            - src/__main__.py
+            - --apiHost
+            - 192.168.49.1:5000
+            - --uploadEndpoint
+            - http://192.168.49.1:5000/api/job/7/dataset_generation
+            - --num_nodes
+            - "5"
+            - --edge_density
+            - "0.5"
+            - --discrete_node_ratio
+            - "0.3"
+            - --num_samples
+            - "30"
+            - --discrete_signal_to_noise_ratio
+            - "0.9"
+            - --min_discrete_value_classes
+            - "2"
+            - --max_discrete_value_classes
+            - "3"
+            - --continuous_noise_std
+            - "1.5"
+            - --continuous_beta_mean
+            - "2.0"
+            - --continuous_beta_std
+            - "3.0"
+          image: mpci/mpci_dag
+          imagePullPolicy: IfNotPresent # Change to 'IfNotPresent' to test local executor images
+          name: execution-container
+          resources: {}
+      restartPolicy: Never

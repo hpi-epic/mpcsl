@@ -20,7 +20,8 @@ JOB_PREFIX = f'{RELEASE_NAME}-execute-'
 EMPTY_LOGS = " -- EMPTY LOGS -- "
 
 GENERATOR_TYPE_TO_IMAGE = {
-    "PCALG": ("generator_r", "generator.r")
+    "PCALG": ("generator_r", "generator.r"),
+    "MPCI": ("mpci-dag", "src/__main__.py")
 }
 
 

@@ -35,7 +35,7 @@ spec:
             - name: API_HOST
               value: {{ .Release.Namespace }}-backend
             - name: DB_HOST
-              value: db-postgresql
+              value: {{.Values.postgresqlHost | quote}}
             - name: SCHEDULER_HOST
               value: {{ .Release.Namespace }}-scheduler
             - name: MPCI_ENVIRONMENT

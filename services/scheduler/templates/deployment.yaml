@@ -31,7 +31,7 @@ spec:
             - name: API_HOST
               value: {{ if empty .Values.backendApiHost }} {{ .Release.Namespace }}-backend {{ else }} {{.Values.backendApiHost}} {{ end }}
             - name: DB_HOST
-              value: db-postgresql
+              value: {{.Values.postgresqlHost | quote}}
             - name: RELEASE_NAME
               value: {{ .Release.Name }}
             - name: PORT

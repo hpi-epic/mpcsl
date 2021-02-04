@@ -10,6 +10,7 @@ environments:
     variables:
       postgres-user: admin
       postgres-password: admin
+      postgres-host: db-postgresql
       node-hosts: ""
       node-name: minikube
       schedulerDependencies: ['postgres','migrate-db']
@@ -19,6 +20,7 @@ environments:
     variables:
       postgres-user: admin
       postgres-password: admin
+      postgres-host: db-postgresql
       node-hosts: ""
       node-name: minikube
       schedulerDependencies: ['postgres']
@@ -33,6 +35,7 @@ environments:
     variables:
       postgres-user: admin
       postgres-password: admin
+      postgres-host: db-postgresql
       node-hosts: vm-mpws2019.eaalab.hpi.uni-potsdam.de
       node-name: vm-mpws2019
       schedulerDependencies: ['postgres','migrate-db']
@@ -48,6 +51,7 @@ environments:
     variables:
       postgres-user: admin
       postgres-password: admin
+      postgres-host: "galileo.eaalab.hpi.uni-potsdam.de:5433"
       node-hosts: vm-mpws2018-proj.eaalab.hpi.uni-potsdam.de, mpci.epic-hpi.de
-      node-name: vm-mpws2018-proj
+      node-name: galileo
       schedulerDependencies: ['postgres','migrate-db']

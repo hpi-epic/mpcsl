@@ -5,6 +5,7 @@ from src.db import db
 from src.models.base import BaseModel, BaseSchema
 import netrd
 
+
 class Result(BaseModel):
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
     job = db.relationship('Job', backref=db.backref('results', cascade="all, delete-orphan"))
@@ -33,7 +34,7 @@ class Result(BaseModel):
     @staticmethod
     def get_hamming_distance(G, H):
         distance_calculator = netrd.distance.Hamming()
-        return distance_calculator.dist(G, H) 
+        return distance_calculator.dist(G, H)
 
     @staticmethod
     def get_error_types(g1, ground_truth):

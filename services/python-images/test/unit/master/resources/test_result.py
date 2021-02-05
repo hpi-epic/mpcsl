@@ -57,6 +57,7 @@ class ResultTest(BaseResourceTest):
         assert 'mean_jaccard_coefficient' in resp
         assert 'graph_edit_distance' in resp
         assert 'error_types' in resp
+        assert 'hamming_distance' in resp
 
     def test_delete_result(self):
         result = ResultFactory()

@@ -3,7 +3,7 @@ import networkx as nx
 from marshmallow import fields
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
-
+import netrd
 
 class Result(BaseModel):
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
@@ -29,6 +29,11 @@ class Result(BaseModel):
             else:
                 jc.append(1.0)
         return jc
+
+    @staticmethod
+    def get_hamming_distance(G, H):
+        distance_calculator = netrd.distance.Hamming()
+        return distance_calculator.dist(G, H) 
 
     @staticmethod
     def get_error_types(g1, ground_truth):

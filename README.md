@@ -1,7 +1,7 @@
-# MPCSL Modular Pipeline for Causal Structure Learning
+# MPCSL: A Modular Pipeline for Causal Structure Learning
 [![Docs](https://img.shields.io/badge/docs-wiki-blue.svg)](https://github.com/hpi-epic/mpci/wiki) [![CircleCI](https://circleci.com/gh/hpi-epic/mpci/tree/master.svg?style=svg&circle-token=a927c6324dcaf0d443e633300a3aa93d240c4193)](https://circleci.com/gh/hpi-epic/mpci/tree/master) [![codecov](https://codecov.io/gh/hpi-epic/mpci/branch/master/graph/badge.svg?token=64S6naWbgu)](https://codecov.io/gh/hpi-epic/mpci)
 
-This repository contains the backend of a Modular Pipeline for Causal Structure Learning (MPCSL) build at the chair for Enterprise Platform and Integration Concepts at the Hasso Plattner Institute. The pipeline currently includes the following features, all of which are accessible via a REST API:
+This repository contains the backend of MPCSL, a Modular Pipeline for Causal Structure Learning, build at the chair for Enterprise Platform and Integration Concepts at the Hasso Plattner Institute. The pipeline currently includes the following features, all of which are accessible via a REST API:
 
 - Store causal structure learning ready datasets into our backend
 - Set up causal structure learning experiments for different causal structure learning algorithms in R, Python and CUDA with different hyperparameter settings and dataset choices

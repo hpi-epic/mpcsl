@@ -1,16 +1,15 @@
-# Master Project: Causal Inference Pipeline
+# MPCSL Modular Pipeline for Causal Structure Learning
 [![Docs](https://img.shields.io/badge/docs-wiki-blue.svg)](https://github.com/hpi-epic/mpci/wiki) [![CircleCI](https://circleci.com/gh/hpi-epic/mpci/tree/master.svg?style=svg&circle-token=a927c6324dcaf0d443e633300a3aa93d240c4193)](https://circleci.com/gh/hpi-epic/mpci/tree/master) [![codecov](https://codecov.io/gh/hpi-epic/mpci/branch/master/graph/badge.svg?token=64S6naWbgu)](https://codecov.io/gh/hpi-epic/mpci)
 
-This repository contains the backend of a Causal Inference pipeline build during the Master Project 2018/19 at the HPI chair for Enterprise Platform and Integration Concepts. The pipeline currently includes the following features, all of which are accessible via a REST API:
+This repository contains the backend of a Modular Pipeline for Causal Structure Learning (MPCSL) build at the chair for Enterprise Platform and Integration Concepts at the Hasso Plattner Institute. The pipeline currently includes the following features, all of which are accessible via a REST API:
 
-- Store causal inference ready datasets into our backend
-- Set up causal inference experiments for different causal inference algorithms in R with different hyperparameter settings and dataset choice
+- Store causal structure learning ready datasets into our backend
+- Set up causal structure learning experiments for different causal structure learning algorithms in R, Python and CUDA with different hyperparameter settings and dataset choices
 - Run the experiments as jobs directly in our backend
 - Manage all currently running jobs on the backend
 - Deliver the results and meta information of past experiments
-- Show distributions and perform interventions on results
-- Annotate results with additional infromation
-- Extend the pipeline with new algorithms in their own execution environments (e.g. C++)
+- Show distributions and perform interventions (currently limited to specific cases)
+- Extend the pipeline with new algorithms in their own execution environments
 
 <!-- The following image shows the holistic architecture as a FMC diagram:
 
@@ -27,7 +26,7 @@ Additionally, the data model can be seen as ER diagram:
 - [Garden](https://github.com/garden-io/garden)
 - [Minikube](https://github.com/kubernetes/minikube)
 
-As the user interface files are stored in a different [repository](https://github.com/hpi-epic/mpci-frontend),
+As the user interface files are stored in a different currently private [repository](https://github.com/hpi-epic/mpci-frontend),
 you have to clone the repo using:
 
 ```
@@ -53,16 +52,24 @@ The example dataset is generated from an EARTHQUAKE bayesian network on [this pa
 
 A Swagger documentation of our REST endpoints is available using `/swagger/index.html` given default host and port settings.
 
-## Contributors
+## Maintainers
 
-- [Marius Danner](https://github.com/MariusDanner)
 - [Christopher Hagedorn](https://github.com/ChristopherSchmidt89)
 - [Johannes Huegle](https://github.com/JohannesHuegle)
+
+Contact: firstname.lastname@hpi.de
+
+## Contributors
+
+- [Lukas Böhme](https://github.com/boehmchen)
+- [Marius Danner](https://github.com/MariusDanner)
 - [Alexander Kastius](https://github.com/Raandom)
 - [Victor Kuenstler](https://github.com/VictorKuenstler)
 - [Constantin Lange](https://github.com/constantin-lange)
 - [Tobias Nack](https://github.com/Dencrash)
+- [Mats Pörschke](https://github.com/mschroederi)
 - [Milan Proell](https://github.com/milanpro)
 - [Jonathan Schneider](https://github.com/jonaschn)
 - [Daniel Thevessen](https://github.com/danthe96)
+- [Jonas Umland](https://github.com/jonasumland)
 - [Theresa Zobel](https://github.com/threxx)

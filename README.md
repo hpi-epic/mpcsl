@@ -9,9 +9,16 @@ This repository contains the backend of a Modular Pipeline for Causal Structure 
 - Manage all currently running jobs on the backend
 - Deliver the results and meta information of past experiments
 - Show distributions and perform interventions (currently limited to specific cases)
+- Comparison of different experiment results using quality metrics, such as type I or type II error, or graph edit distance
 - Extend the pipeline with new algorithms in their own execution environments
 
+The following image shows the holistic architecture as a FMC diagram:
+
+<img src="https://user-images.githubusercontent.com/7238560/107003369-f2b59180-678c-11eb-97b2-cec67b0f9706.png" width="600" title="FMC Architecture Diagram">
+
 <!-- The following image shows the holistic architecture as a FMC diagram:
+
+![Alt Text](url)
 
 <img src="https://user-images.githubusercontent.com/1437509/55085207-92d90480-50a6-11e9-8f7e-e10fced882db.png" width="600" title="FMC Architecture Diagram">
 

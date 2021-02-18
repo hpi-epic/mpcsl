@@ -4,6 +4,7 @@ from marshmallow import fields
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
 import netrd
+import causaldag as cd
 
 
 class Result(BaseModel):
@@ -46,7 +47,7 @@ class Result(BaseModel):
             cpdag.add_edge(undirected_edge[0], undirected_edge[1])
             cpdag.add_edge(undirected_edge[1], undirected_edge[0])
 
-        return get_hamming_distance(G, cpdag)
+        return Result.get_hamming_distance(G, cpdag)
 
     @staticmethod
     def get_error_types(g1, ground_truth):

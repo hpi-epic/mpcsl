@@ -100,3 +100,6 @@ websocket-client==0.55.0
 Werkzeug==0.14.1
 yarl==1.6.3
 zipp==3.4.0
+causaldag==0.1a162
+graphical_models==0.1a5
+graphical_model_learning==0.1a7

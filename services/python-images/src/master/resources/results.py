@@ -111,6 +111,7 @@ class ResultCompareResource(Resource):
         g1 = load_networkx_graph(other_result)
         jaccard_coefficients = Result.get_jaccard_coefficients(g1, ground_truth)
         hamming_distance = Result.get_hamming_distance(g1, ground_truth)
+        hamming_distance_pcdag = Result.get_hamming_distance_pcdag(g1, ground_truth)
         error_types = Result.get_error_types(g1, ground_truth)
         ground_truth_statistics = {
             'graph_edit_distance':
@@ -118,7 +119,8 @@ class ResultCompareResource(Resource):
             'mean_jaccard_coefficient':
                 sum(jaccard_coefficients) / len(jaccard_coefficients) if jaccard_coefficients else 0,
             'error_types': error_types,
-            'hamming_distance': hamming_distance
+            'hamming_distance': hamming_distance,
+            'hamming_distance_pcdag': hamming_distance_pcdag
         }
         return ground_truth_statistics
 
@@ -154,6 +156,7 @@ class ResultCompareGTResource(Resource):
             g1 = load_networkx_graph(result)
             jaccard_coefficients = Result.get_jaccard_coefficients(g1, ground_truth)
             hamming_distance = Result.get_hamming_distance(g1, ground_truth)
+            hamming_distance_pcdag = Result.get_hamming_distance_pcdag(g1, ground_truth)
             error_types = Result.get_error_types(g1, ground_truth)
             return {
                 'graph_edit_distance':
@@ -161,7 +164,8 @@ class ResultCompareGTResource(Resource):
                 'mean_jaccard_coefficient':
                     sum(jaccard_coefficients) / len(jaccard_coefficients) if jaccard_coefficients else 0,
                 'error_types': error_types,
-                'hamming_distance': hamming_distance
+                'hamming_distance': hamming_distance,
+                'hamming_distance_pcdag': hamming_distance_pcdag
             }
 
 

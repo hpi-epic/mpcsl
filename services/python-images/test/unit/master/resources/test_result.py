@@ -58,6 +58,7 @@ class ResultTest(BaseResourceTest):
         assert 'graph_edit_distance' in resp
         assert 'error_types' in resp
         assert 'hamming_distance' in resp
+        assert 'hamming_distance_pcdag' in resp
 
     def test_delete_result(self):
         result = ResultFactory()

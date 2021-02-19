@@ -7,13 +7,25 @@ Flannels default CIDR is `10.244.0.0/16`.
 
 ### Cluster Deployments
 
+The setup in this section has to be done only once when a new cluster is being set up.
+
 For a valid running cluster a storage provisioner is needed.
 Run `helm install nfs-client stable/nfs-client-provisioner -f nfs-client-values.yml` to deploy the provisioner into the cluster.
 
 For the ingress routing some ingress controller is needed.
 Run `helm install nginx-ingress stable/nginx-ingress -f nfs-client-values.yml` to deploy 
 
-### Further configuration
+#### Monitoring
+A Loki/Grafana stack helps you to explore the logs of all pods in the cluster easily.
+
+To set up monitoring create a new namespace.
+`kubectl create namespace monitoring`
+Add the grafana repo to helm.
+```
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+```
+To install run `helm upgrade --install loki grafana/loki-stack -f loki-stack-values.yaml -n monitoring`
 
 ## Remove master taints
 So that pods can be scheduled on the master node `kubectl taint nodes vm-mpws2019 node-role.kubernetes.io/master:NoSchedule-` has to be executed. (Here is vm-mpws2019 our master)

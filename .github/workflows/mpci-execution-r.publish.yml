@@ -23,6 +23,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Update pcalg submodule
+        run: git submodule update services/executionenvironments/r/executor/pcalg 
 
       - name: Build image
         run: docker build services/executionenvironments/r/executor --file services/executionenvironments/r/executor/r-executor.Dockerfile --tag $IMAGE_NAME

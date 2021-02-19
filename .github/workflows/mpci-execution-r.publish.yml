@@ -25,15 +25,9 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: Update pcalg submodule
-        run: git submodule update --init -- services/executionenvironments/r/executor/pcalg 
-
-      - name: Build image
-        run: docker build services/executionenvironments/r/executor --file services/executionenvironments/r/executor/r-executor.Dockerfile --tag $IMAGE_NAME
-
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
-
-      - name: Push image
+        run: git submodule update --init -- services/executionenvironments/r/executor/pcalg
+        
+      - name: Create IMAGE_NAME
         run: |
           IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
 
@@ -48,9 +42,18 @@ jobs:
 
           # Use Docker `latest` tag convention
           [ "$VERSION" == "master" ] && VERSION=latest
-
+          
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
+          
+          export IMAGE_NAME=$IMAGE_ID:$VERSION
+          echo IMAGE_NAME=$IMAGE_NAME
+        
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+      - name: Build image
+        run: docker build services/executionenvironments/r/executor --file services/executionenvironments/r/executor/r-executor.Dockerfile --pull --tag $IMAGE_NAME
+
+      - name: Push image
+        run: docker push $IMAGE_NAME

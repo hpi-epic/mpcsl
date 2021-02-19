@@ -5,11 +5,11 @@
   update = rebase
 [submodule "pcalg"]
 	path = services/executionenvironments/r/executor/pcalg
-	url = git@github.com:ChristopherSchmidt89/pcalg.git
+	url = https://github.com/ChristopherSchmidt89/pcalg.git
 	branch = master
 [submodule "cupc"]
 	path = services/executionenvironments/cuda/cupc
-	url = git@github.com:LIS-Laboratory/cupc.git
+	url = https://github.com/LIS-Laboratory/cupc.git
 	branch = master
 [submodule "services/executionenvironments/python-generators/mpci-dag"]
 	path = services/executionenvironments/python-generators/mpci-dag

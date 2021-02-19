@@ -27,7 +27,7 @@ jobs:
       - name: Update pcalg submodule
         run: git submodule update --init -- services/executionenvironments/r/executor/pcalg
         
-      - name: Create IMAGE_NAME
+      - name: Create IMAGE_TAG
         run: |
           IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
 
@@ -46,7 +46,7 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
           
-          export IMAGE_TAG=$IMAGE_ID:$VERSION
+          echo IMAGE_TAG=$IMAGE_ID:$VERSION
           echo "IMAGE_TAG=$(echo $IMAGE_TAG)" >> $GITHUB_ENV
         
       - name: Log into registry

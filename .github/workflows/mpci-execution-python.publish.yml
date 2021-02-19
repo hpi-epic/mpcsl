@@ -11,7 +11,7 @@ on:
       - v*
 
 env:
-  IMAGE_NAME: mpci-execution-r
+  IMAGE_NAME: mpci-execution-python
 
 jobs:
   # Push image to GitHub Packages.
@@ -22,23 +22,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Update pcalg submodule
-        run: git submodule update --init -- services/executionenvironments/r/executor/pcalg
         
       - name: Create IMAGE_TAG
         run: |
           IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
-
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
           # Strip "v" prefix from tag name
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
           # Use Docker `latest` tag convention
           [ "$VERSION" == "master" ] && VERSION=latest
           
@@ -53,7 +46,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
       - name: Build image
-        run: docker build services/executionenvironments/r/executor --file services/executionenvironments/r/executor/r-executor.Dockerfile --pull --tag ${{ env.IMAGE_TAG }}
+        run: docker build services/executionenvironments/python --file services/executionenvironments/python/py-executor.Dockerfile --pull --tag ${{ env.IMAGE_TAG }}
 
       - name: Push image
         run: docker push ${{ env.IMAGE_TAG }}

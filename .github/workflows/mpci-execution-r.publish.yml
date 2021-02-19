@@ -46,14 +46,14 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
           
-          export IMAGE_NAME=$IMAGE_ID:$VERSION
-          echo IMAGE_NAME=$IMAGE_NAME
+          export IMAGE_TAG=$IMAGE_ID:$VERSION
+          echo "IMAGE_TAG=$(echo $IMAGE_TAG)" >> $GITHUB_ENV
         
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
       - name: Build image
-        run: docker build services/executionenvironments/r/executor --file services/executionenvironments/r/executor/r-executor.Dockerfile --pull --tag $IMAGE_NAME
+        run: docker build services/executionenvironments/r/executor --file services/executionenvironments/r/executor/r-executor.Dockerfile --pull --tag $IMAGE_TAG
 
       - name: Push image
-        run: docker push $IMAGE_NAME
+        run: docker push $IMAGE_TAG

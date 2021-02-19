@@ -48,6 +48,13 @@ jobs:
           
           echo IMAGE_TAG=$IMAGE_ID:$VERSION
           echo "IMAGE_TAG=$(echo $IMAGE_TAG)" >> $GITHUB_ENV
+          
+      - name: Set the value
+        run: |
+            echo "action_state=yellow" >> $GITHUB_ENV
+      - name: Use the value
+        run: |
+            echo "${{ env.action_state }}" # This will output 'yellow'
         
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin

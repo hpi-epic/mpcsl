@@ -6,7 +6,7 @@ from src.db import db
 from src.master.config import DATA_SOURCE_CONNECTIONS
 from src.master.db import data_source_connections
 from src.models.base import BaseModel, BaseSchema
-from src.master.helpers.database import create_data_hash
+from src.master.helpers.data_hashing import create_data_hash
 
 from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import BadRequest

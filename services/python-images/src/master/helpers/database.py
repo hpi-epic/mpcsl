@@ -8,6 +8,7 @@ from src.db import db
 from src.master.db import data_source_connections
 from src.models import Node, EdgeInformation
 from src.master.helpers.socketio_events import dataset_node_change
+from src.master.helpers.data_hashing import create_data_hash
 
 
 def load_networkx_graph(result):
@@ -21,17 +22,6 @@ def load_networkx_graph(result):
         edge_label = edge_info.annotation.name if edge_info else ''
         graph.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label=edge_label, weight=edge.weight)
     return graph
-
-
-def create_data_hash(session, load_query: str):
-    first_row = session.execute(f"SELECT * FROM ({load_query}) _subquery_ LIMIT 1").fetchone()
-    num_obs = session.execute(f"SELECT COUNT(*) FROM ({load_query}) _subquery_").fetchone()[0]
-
-    hash = blake2b()
-    concatenated_result = str(first_row) + str(num_obs)
-    hash.update(concatenated_result.encode())
-
-    return str(hash.hexdigest())
 
 
 def check_dataset_hash(dataset):

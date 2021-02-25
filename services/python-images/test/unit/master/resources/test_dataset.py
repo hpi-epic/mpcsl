@@ -228,7 +228,7 @@ class DatasetTest(BaseResourceTest):
 
         ground_truth = nx.read_gml(fixture)
         downloaded_graph = nx.read_gml(downloaded_graph_path)
-        assert nx.is_isomorphic(ground_truth, downloaded_graph)
+        assert nx.graph_edit_distance(ground_truth, downloaded_graph) == 0.0
 
     def test_dataset_ground_truth_upload_igraph_generated(self):
         # Tests that the upload works with a .gml file coming from igraph package in R

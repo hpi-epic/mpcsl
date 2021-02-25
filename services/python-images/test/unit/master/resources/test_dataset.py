@@ -2,19 +2,20 @@ import io
 import os
 from unittest.mock import patch
 
+import factory
+import networkx as nx
 import numpy as np
 import pandas as pd
-import factory
-from sqlalchemy import inspect
 from marshmallow.utils import from_iso
-
+from sqlalchemy import inspect
 from src.db import db
 from src.master.helpers.database import add_dataset_nodes
-from src.models import Dataset, Node
 from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource, \
     DatasetLoadWithIdsResource, DatasetAvailableSourcesResource, DatasetExperimentResource, \
     DatasetGroundTruthUploadResource
+from src.models import Dataset, Node
 from test.factories import DatasetFactory, ExperimentFactory
+
 from .base import BaseResourceTest
 
 
@@ -31,7 +32,8 @@ def create_database_table():
     cov = [[1, 0, 0], [0, 10, 0], [0, 0, 20]]
     source = np.random.multivariate_normal(mean, cov, size=50)
     for row in source:
-        db.session.execute("INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in row])))
+        db.session.execute(
+            "INSERT INTO test_data VALUES ({0})".format(",".join([str(e) for e in row])))
     db.session.commit()
     return source
 
@@ -169,7 +171,7 @@ class DatasetTest(BaseResourceTest):
         ex = ExperimentFactory()
         ex.dataset = ds
         result = self.get(self.url_for(DatasetExperimentResource, dataset_id=ds.id))
-        assert(result[0]['id'] == ex.id)
+        assert (result[0]['id'] == ex.id)
 
     def test_dataset_ground_truth_upload(self):
         # Given
@@ -191,6 +193,37 @@ class DatasetTest(BaseResourceTest):
         )
         # Then
         assert response.status_code == 200
+
+    def test_dataset_ground_truth_download(self):
+        # Given
+        ds = DatasetFactory()
+        for name in ["Burglary", "Earthquake", "Alarm", "JohnCalls", "MaryCalls"]:
+            node = Node(name=name, dataset=ds)
+            db.session.add(node)
+        db.session.commit()
+        dirname = os.path.dirname(__file__)
+        fixture = os.path.join(dirname, '../../../fixtures/earthquake_groundtruth.gml')
+        data = dict(
+            graph_file=(open(fixture, 'rb'), "earthquake_groundtruth.gml"),
+        )
+        # When
+        self.test_client.post(
+            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            content_type='multipart/form-data',
+            data=data
+        )
+        # Then
+        response = self.test_client.get(
+            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            format='GML'
+        )
+        downloaded_graph_path = '/tmp/gt-download.gml'
+        with open(downloaded_graph_path, 'wb') as f:
+            f.write(response.content)
+
+        ground_truth = nx.read_gml(fixture)
+        downloaded_graph = nx.read_gml(downloaded_graph_path)
+        assert nx.is_isomorphic(ground_truth, downloaded_graph)
 
     def test_dataset_ground_truth_upload_igraph_generated(self):
         # Tests that the upload works with a .gml file coming from igraph package in R

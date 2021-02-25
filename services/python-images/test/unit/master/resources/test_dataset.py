@@ -219,14 +219,12 @@ class DatasetTest(BaseResourceTest):
             self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
             query_string={'format': 'GML'}
         )
-        print(res)
-        print(json.dumps(res))
 
         assert res.headers['content-type'] == 'text/plain; charset=utf-8'
 
         downloaded_graph_path = os.path.join(tempfile.gettempdir(), 'mpci/gt-download.gml')
         with open(downloaded_graph_path, 'wb') as f:
-            f.write(res.text)
+            f.write(res.data.decode('utf-8'))
 
         ground_truth = nx.read_gml(fixture)
         downloaded_graph = nx.read_gml(downloaded_graph_path)

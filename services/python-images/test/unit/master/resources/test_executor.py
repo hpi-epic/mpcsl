@@ -10,10 +10,9 @@ class ExecutorTest(BaseResourceTest):
         # Given
         ex = ExperimentFactory()
         ex.dataset.load_query = 'SELECT 5 AS col1_name'
-        ex.dataset.content_hash = "cee5da8b8b5d8089f7cd7c9c85fac0e390ea2c4d6c7b" + \
-            "04edad1a09796705a832017344e04d4aab4d0adcac636466dc70a9d952ae417254a1d877fbe99eb3b750"
-        res = self.post(self.url_for(ExecutorResource, experiment_id=ex.id))
-        res.raise_for_status()
+        ex.dataset.content_hash = "88720e21d69a08672cb77a30208de76347eac2e0b4da19ab7" \
+            "eefea82259b9588e1fbc87505be5b27869b8d2b676f7276b7b0ab181b97d4e4babd56bc957f39bd"
+        self.post(self.url_for(ExecutorResource, experiment_id=ex.id))
 
         # Then
         assert ex.last_job.status == JobStatus.waiting

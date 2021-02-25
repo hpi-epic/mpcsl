@@ -12,8 +12,4 @@ values:
   master:
     nodeSelector:
       "kubernetes.io/hostname": ${var.node-name}
-  persistence:
-    size: 50Gi
-    storageClass: nfs-client
-    annotations:
-      volume.beta.kubernetes.io/storage-provisioner: cluster.local/nfs-client-nfs-client-provisioner
+  persistence: ${var.postgres-persistence}

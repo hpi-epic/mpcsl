@@ -12,3 +12,4 @@ values:
   master:
     nodeSelector:
       "kubernetes.io/hostname": ${var.node-name}
+  persistence: ${var.postgres-persistence}

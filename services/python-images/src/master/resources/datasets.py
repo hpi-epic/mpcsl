@@ -155,7 +155,7 @@ def parse_graph(file: FileStorage, is_from_igraph_r_package: bool = False) -> nx
     return graph
 
 
-class DatasetGroundTruthUploadResource(Resource):
+class DatasetGroundTruthResource(Resource):
     @swagger.doc({
         'description': 'Add Ground-Truth to Dataset',
         'parameters': [

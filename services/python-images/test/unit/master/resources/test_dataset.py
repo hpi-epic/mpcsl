@@ -13,7 +13,7 @@ from src.db import db
 from src.master.helpers.database import add_dataset_nodes
 from src.master.resources.datasets import DatasetListResource, DatasetResource, DatasetLoadResource, \
     DatasetLoadWithIdsResource, DatasetAvailableSourcesResource, DatasetExperimentResource, \
-    DatasetGroundTruthUploadResource
+    DatasetGroundTruthResource
 from src.models import Dataset, Node
 from test.factories import DatasetFactory, ExperimentFactory
 
@@ -188,7 +188,7 @@ class DatasetTest(BaseResourceTest):
         )
         # When
         response = self.test_client.post(
-            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            self.url_for(DatasetGroundTruthResource, dataset_id=ds.id),
             content_type='multipart/form-data',
             data=data
         )
@@ -209,13 +209,13 @@ class DatasetTest(BaseResourceTest):
         )
         # When
         self.test_client.post(
-            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            self.url_for(DatasetGroundTruthResource, dataset_id=ds.id),
             content_type='multipart/form-data',
             data=data
         )
         # Then
         res = self.test_client.get(
-            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            self.url_for(DatasetGroundTruthResource, dataset_id=ds.id),
             query_string={'format': 'GML'}
         )
 
@@ -244,7 +244,7 @@ class DatasetTest(BaseResourceTest):
         )
         # When
         response = self.test_client.post(
-            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            self.url_for(DatasetGroundTruthResource, dataset_id=ds.id),
             content_type='multipart/form-data',
             data=data
         )
@@ -263,7 +263,7 @@ class DatasetTest(BaseResourceTest):
         )
         # When
         response = self.test_client.post(
-            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            self.url_for(DatasetGroundTruthResource, dataset_id=ds.id),
             content_type='multipart/form-data',
             data=data
         )
@@ -276,7 +276,7 @@ class DatasetTest(BaseResourceTest):
         db.session.commit()
         # When
         response = self.test_client.post(
-            self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
+            self.url_for(DatasetGroundTruthResource, dataset_id=ds.id),
             content_type='multipart/form-data',
             data={}
         )

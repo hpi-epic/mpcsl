@@ -3,6 +3,7 @@ name: mpci
 variables:
   execution-image-namespace: mpci
   backendApiHost: "" # leave empty to use in cluster backend
+  postgres-persistence: {}
 environments:
   - name: local
     providers:
@@ -48,6 +49,11 @@ environments:
     variables:
       postgres-user: admin
       postgres-password: admin
+      postgres-persistence:
+        size: 50Gi
+        storageClass: nfs-client
+        annotations:
+          volume.beta.kubernetes.io/storage-provisioner: cluster.local/nfs-client-nfs-client-provisioner
       node-hosts: vm-mpws2018-proj.eaalab.hpi.uni-potsdam.de, mpci.epic-hpi.de
       node-name: vm-mpws2018-proj
       schedulerDependencies: ['postgres','migrate-db']

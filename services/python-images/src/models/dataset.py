@@ -1,5 +1,3 @@
-from hashlib import blake2b
-
 from marshmallow.validate import Length, OneOf
 from marshmallow_sqlalchemy import field_for
 from sqlalchemy.sql import func
@@ -8,6 +6,7 @@ from src.db import db
 from src.master.config import DATA_SOURCE_CONNECTIONS
 from src.master.db import data_source_connections
 from src.models.base import BaseModel, BaseSchema
+from src.master.helpers.data_hashing import create_data_hash
 
 from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import BadRequest
@@ -23,14 +22,8 @@ def create_dataset_hash(context):
         session = db.session
 
     load_query = context.get_current_parameters()['load_query']
-    result = session.execute(load_query).fetchone()
-    num_of_obs = session.execute(f"SELECT COUNT(*) FROM ({load_query}) _subquery_").fetchone()[0]
 
-    hash = blake2b()
-    concatenated_result = str(result) + str(num_of_obs)
-    hash.update(concatenated_result.encode())
-
-    return str(hash.hexdigest())
+    return create_data_hash(session, load_query=load_query)
 
 
 class Dataset(BaseModel):

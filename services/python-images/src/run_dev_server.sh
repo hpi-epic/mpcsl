@@ -5,7 +5,7 @@ export FLASK_APP=migration.py
 export DB_HOST=localhost:5432
 cd .. && flask db upgrade && cd src
 cd .. && python setup_algorithms.py && cd src
-#cd .. && python seed.py && cd src
+#cd .. && python seed.py && cd src #Enable this line to create a test dataset
 export FLASK_APP=app.py
 export FLASK_ENV=development
 export SCHEDULER_HOST=localhost:4000

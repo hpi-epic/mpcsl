@@ -1,6 +1,7 @@
 import csv
 import io
 from io import StringIO
+import json
 
 import networkx as nx
 import logging
@@ -21,9 +22,10 @@ from src.master.helpers.database import add_dataset_nodes
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
 from src.models import Dataset, DatasetSchema, Edge, ExperimentSchema
+from flask_restful import Resource, reqparse
 
 from src.models.swagger import SwaggerMixin
-
+from src.master.helpers.database import load_ground_truth
 
 class DatasetResource(Resource):
     @swagger.doc({
@@ -219,6 +221,51 @@ class DatasetGroundTruthUploadResource(Resource):
         # What to return?
         return marshal(DatasetSchema, ds)
 
+    supported_types = ['GEXF', 'GraphML', 'GML', 'node_link_data.json']
+    @swagger.doc({
+        'description': 'Returns the complete graph in a graph file format',
+        'parameters': [
+            {
+                'name': 'dataset_id',
+                'description': 'dataset identifier',
+                'in': 'path',
+                'type': 'integer',
+                'required': True
+            },
+            {
+                'name': 'format',
+                'description': 'Graph export format',
+                'in': 'query',
+                'type': 'string',
+                'enum': supported_types,
+                'default': 'GEXF'
+            }
+        ],
+        'responses': get_default_response(DatasetSchema.get_swagger()),
+        'tags': ['Dataset']
+    })
+    def get(self, dataset_id):
+        dataset = Dataset.query.get_or_404(dataset_id)
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('format', required=False, type=str, store_missing=False)
+        args = parser.parse_args()
+        format_type = args.get('format', 'gexf').lower()
+        if format_type not in [x.lower() for x in self.supported_types]:
+            raise BadRequest(f'Graph format `{format_type}` is not one of the supported types: {self.supported_types}')
+
+        graph = load_ground_truth(dataset)
+
+        headers = {'Content-Disposition': f'attachment;filename=Graph_{dataset_id}.{format_type}'}
+        if format_type == 'gexf':
+            return Response(nx.generate_gexf(graph), mimetype='text/xml', headers=headers)
+        elif format_type == 'graphml':
+            return Response(nx.generate_graphml(graph), mimetype='text/xml', headers=headers)
+        elif format_type == 'gml':
+            return Response(nx.generate_gml(graph), mimetype='text/plain', headers=headers)
+        elif format_type == 'node_link_data.json':
+            return Response(json.dumps(nx.readwrite.json_graph.node_link_data(graph)),
+                            mimetype='application/json', headers=headers)
 
 class DatasetListResource(Resource):
     @swagger.doc({

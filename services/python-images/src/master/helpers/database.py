@@ -23,6 +23,24 @@ def load_networkx_graph(result):
     return graph
 
 
+def load_ground_truth(dataset):
+    graph = nx.DiGraph(id=str(dataset.id), name=f'Graph_ground_truth_{dataset.id}')
+    edges = []
+    for node in dataset.nodes:
+        graph.add_node(node.id, label=node.name)
+
+        edges += [edge in nodes.edge_froms if edge.is_ground_truth == true]
+        edges += [edge in nodes.edge_tos if edge.is_ground_truth == true]
+        
+    for edge in edges:
+        edge_info = EdgeInformation.query.filter(EdgeInformation.from_node == edge.from_node,
+                                                 EdgeInformation.to_node == edge.to_node,
+                                                 EdgeInformation.result == edge.result).one_or_none()
+        edge_label = edge_info.annotation.name if edge_info else ''
+        graph.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, label=edge_label, weight=edge.weight)
+    return graph
+
+
 def check_dataset_hash(dataset):
     session = get_db_session(dataset)
 

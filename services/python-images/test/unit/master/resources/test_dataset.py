@@ -1,5 +1,7 @@
 import io
+import json
 import os
+import tempfile
 from unittest.mock import patch
 
 import factory
@@ -217,10 +219,12 @@ class DatasetTest(BaseResourceTest):
             self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
             query_string={'format': 'GML'}
         )
+        print(res)
+        print(json.dumps(res))
 
         assert res.headers['content-type'] == 'text/plain; charset=utf-8'
 
-        downloaded_graph_path = '/tmp/gt-download.gml'
+        downloaded_graph_path = os.path.join(tempfile.gettempdir(), 'mpci/gt-download.gml')
         with open(downloaded_graph_path, 'wb') as f:
             f.write(res.text)
 

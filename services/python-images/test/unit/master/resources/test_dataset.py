@@ -218,7 +218,7 @@ class DatasetTest(BaseResourceTest):
             query_string={'format': 'GML'}
         )
 
-        assert res.headers['content-type'] == 'text/plain'
+        assert res.headers['content-type'] == 'text/plain; charset=utf-8'
 
         downloaded_graph_path = '/tmp/gt-download.gml'
         with open(downloaded_graph_path, 'wb') as f:

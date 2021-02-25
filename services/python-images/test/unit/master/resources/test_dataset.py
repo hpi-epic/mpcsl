@@ -215,7 +215,7 @@ class DatasetTest(BaseResourceTest):
         # Then
         response = self.test_client.get(
             self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
-            format='GML'
+            query_string={'format': 'GML'}
         )
         downloaded_graph_path = '/tmp/gt-download.gml'
         with open(downloaded_graph_path, 'wb') as f:

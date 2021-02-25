@@ -1,5 +1,3 @@
-from hashlib import blake2b
-
 import networkx as nx
 from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import BadRequest
@@ -8,6 +6,7 @@ from src.db import db
 from src.master.db import data_source_connections
 from src.models import Node, EdgeInformation
 from src.master.helpers.socketio_events import dataset_node_change
+from src.master.helpers.data_hashing import create_data_hash
 
 
 def load_networkx_graph(result):
@@ -45,16 +44,11 @@ def check_dataset_hash(dataset):
     session = get_db_session(dataset)
 
     try:
-        result = session.execute(dataset.load_query).fetchone()
-        num_of_obs = session.execute(f"SELECT COUNT(*) FROM ({dataset.load_query}) _subquery_").fetchone()[0]
+        data_hash = create_data_hash(session, load_query=dataset.load_query)
     except DatabaseError:
         raise BadRequest(f'Could not execute query "{dataset.load_query}" on database "{dataset.data_source}"')
 
-    hash = blake2b()
-    concatenated_result = str(result) + str(num_of_obs)
-    hash.update(concatenated_result.encode())
-
-    return str(hash.hexdigest()) == dataset.content_hash
+    return data_hash == dataset.content_hash
 
 
 def add_dataset_nodes(dataset):

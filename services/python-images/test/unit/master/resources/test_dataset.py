@@ -217,9 +217,10 @@ class DatasetTest(BaseResourceTest):
             self.url_for(DatasetGroundTruthUploadResource, dataset_id=ds.id),
             query_string={'format': 'GML'}
         )
+        print(response)
         downloaded_graph_path = '/tmp/gt-download.gml'
         with open(downloaded_graph_path, 'wb') as f:
-            f.write(response.content)
+            f.write(response)
 
         ground_truth = nx.read_gml(fixture)
         downloaded_graph = nx.read_gml(downloaded_graph_path)

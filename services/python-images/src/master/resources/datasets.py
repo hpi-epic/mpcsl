@@ -8,7 +8,7 @@ import logging
 
 from flask_restful_swagger_2 import swagger
 from flask import Response, request
-from flask_restful import Resource, abort
+from flask_restful import Resource, abort, reqparse
 from marshmallow import Schema, fields
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import Session
@@ -22,10 +22,10 @@ from src.master.helpers.database import add_dataset_nodes
 from src.master.helpers.io import load_data, marshal
 from src.master.helpers.swagger import get_default_response
 from src.models import Dataset, DatasetSchema, Edge, ExperimentSchema
-from flask_restful import Resource, reqparse
 
 from src.models.swagger import SwaggerMixin
 from src.master.helpers.database import load_ground_truth
+
 
 class DatasetResource(Resource):
     @swagger.doc({
@@ -222,6 +222,7 @@ class DatasetGroundTruthUploadResource(Resource):
         return marshal(DatasetSchema, ds)
 
     supported_types = ['GEXF', 'GraphML', 'GML', 'node_link_data.json']
+
     @swagger.doc({
         'description': 'Returns the complete graph in a graph file format',
         'parameters': [
@@ -266,6 +267,7 @@ class DatasetGroundTruthUploadResource(Resource):
         elif format_type == 'node_link_data.json':
             return Response(json.dumps(nx.readwrite.json_graph.node_link_data(graph)),
                             mimetype='application/json', headers=headers)
+
 
 class DatasetListResource(Resource):
     @swagger.doc({

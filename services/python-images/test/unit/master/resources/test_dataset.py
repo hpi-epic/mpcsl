@@ -223,7 +223,6 @@ class DatasetTest(BaseResourceTest):
 
         downloaded_graph_path = os.path.join(tempfile.gettempdir(), 'gt-download.gml')
         with open(downloaded_graph_path, 'w') as f:
-            print(res.data.decode('utf-8'))
             f.write(res.data.decode('utf-8'))
 
         ground_truth = nx.read_gml(fixture)

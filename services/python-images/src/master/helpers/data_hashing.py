@@ -2,8 +2,7 @@ from hashlib import blake2b
 
 
 def create_data_hash(session, load_query: str):
-    cursor = session.execute(f"SELECT * FROM ({load_query}) _subquery_ LIMIT 0")
-    col_names = [desc[0] for desc in cursor.description]
+    col_names = session.execute(f"SELECT * FROM ({load_query}) _subquery_ LIMIT 0").keys()
     num_obs = session.execute(f"SELECT COUNT(*) FROM ({load_query}) _subquery_").fetchone()[0]
 
     hash = blake2b()

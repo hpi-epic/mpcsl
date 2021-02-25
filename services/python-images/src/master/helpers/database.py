@@ -33,7 +33,10 @@ def load_ground_truth(dataset):
         edges += filter(lambda e: e.is_ground_truth, node.edge_tos)
 
     for edge in edges:
-        graph.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, weight=edge.weight)
+        if edge.weight is None:
+            graph.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id)
+        else:
+            graph.add_edge(edge.from_node.id, edge.to_node.id, id=edge.id, weight=edge.weight)
 
     return graph
 

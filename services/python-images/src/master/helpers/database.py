@@ -23,20 +23,26 @@ def load_networkx_graph(result):
     return graph
 
 
+def create_data_hash(session, load_query: str):
+    first_row = session.execute(f"SELECT * FROM ({load_query}) _subquery_ LIMIT 1").fetchone()
+    num_obs = session.execute(f"SELECT COUNT(*) FROM ({load_query}) _subquery_").fetchone()[0]
+
+    hash = blake2b()
+    concatenated_result = str(first_row) + str(num_obs)
+    hash.update(concatenated_result.encode())
+
+    return str(hash.hexdigest())
+
+
 def check_dataset_hash(dataset):
     session = get_db_session(dataset)
 
     try:
-        result = session.execute(dataset.load_query).fetchone()
-        num_of_obs = session.execute(f"SELECT COUNT(*) FROM ({dataset.load_query}) _subquery_").fetchone()[0]
+        data_hash = create_data_hash(session, load_query=dataset.load_query)
     except DatabaseError:
         raise BadRequest(f'Could not execute query "{dataset.load_query}" on database "{dataset.data_source}"')
 
-    hash = blake2b()
-    concatenated_result = str(result) + str(num_of_obs)
-    hash.update(concatenated_result.encode())
-
-    return str(hash.hexdigest()) == dataset.content_hash
+    return data_hash == dataset.content_hash
 
 
 def add_dataset_nodes(dataset):

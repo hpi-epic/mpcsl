@@ -221,7 +221,7 @@ class DatasetTest(BaseResourceTest):
 
         assert res.headers['content-type'] == 'text/plain; charset=utf-8'
 
-        downloaded_graph_path = os.path.join(tempfile.gettempdir(), 'mpci/gt-download.gml')
+        downloaded_graph_path = os.path.join(tempfile.gettempdir(), 'gt-download.gml')
         with open(downloaded_graph_path, 'wb') as f:
             f.write(res.data.decode('utf-8'))
 

@@ -43,7 +43,7 @@ upload_dataset <- function(uploadEndpoint, apiHost) {
   }
   datasetId <- responseBody$id
 
-  groundTruthEndpoint <- paste0("http://", apiHost, "/api/dataset/", datasetId, "/upload")
+  groundTruthEndpoint <- paste0("http://", apiHost, "/api/dataset/", datasetId, "/ground-truth")
   response <- RETRY(
     "POST",
     groundTruthEndpoint,

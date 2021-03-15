@@ -39,6 +39,7 @@ discrete_node_limit <- 10
 micgCItest <- function(x, y, S, suffStat) {
   if(x %notin% colnames(suffStat$dm)){
     print(paste("notin", x))
+    print(colnames(suffStat$dm))
   }
   data_types <- sapply(suffStat$dm, class) # list of data types per columns
 
@@ -112,7 +113,7 @@ if (opt$independence_test == "gaussCI") {
       as.data.frame()
 
     # increase column names by one because R starts counting at 1
-    colnames(matrix_df) <- as.character(as.numeric(colnames(matrix_df)) + 1)
+    colnames(matrix_df) <- as.character(1:ncol(matrix_df))
     sufficient_stats <- list(dm = matrix_df)
 }else {
     stop("No valid independence test specified")
@@ -122,7 +123,7 @@ verbose <- opt$verbose > 0
 start <- Sys.time()
 result = pc(suffStat=sufficient_stats, verbose=verbose,
             indepTest=indepTestDict[[opt$independence_test]], m.max=subset_size,
-            p=ncol(matrix), alpha=opt$alpha, numCores=opt$cores, skel.method=opt$skeleton_method)
+            labels=colnames(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method=opt$skeleton_method)
 end <- Sys.time()
 taken <- as.double(difftime(end,start,unit="s"))
 colorize_log('\033[32m',taken)

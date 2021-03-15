@@ -1,5 +1,7 @@
 library(optparse, quietly = T)
 library(pcalg, quietly = T)
+library(dplyr)
+library(bnlearn)
 source("/scripts/mpci_utils.r")
 
 option_list_v <- list(
@@ -32,7 +34,43 @@ option_list_v <- list(
 
 );
 
-indepTestDict <- list(gaussCI=gaussCItest, binCI=binCItest, disCI=disCItest)
+discrete_node_limit <- 10
+'%notin%' <- function(x,y)!('%in%'(x,y))
+micgCItest <- function(x, y, S, suffStat) {
+  if(x %notin% colnames(suffStat$dm)){
+    print(paste("notin", x))
+  }
+  data_types <- sapply(suffStat$dm, class) # list of data types per columns
+
+  #Determine test
+  all_variabes <- as.character(append(list(x, y), S))
+  found_types <- list()
+  for (var in all_variabes) {
+    found_types <- append(data_types[var], found_types)
+  }
+  distinct_types <- sort(unlist(unique(found_types), use.names=FALSE))
+  types_string <- paste(distinct_types, collapse = '_')
+  ci_test <- switch(
+    types_string,
+    "numeric" = "cor", # only continuous values
+    "factor" = "x2", # only discrete values
+    "factor_numeric" = "mi-cg" # mixed values
+  )
+
+  # Execute test
+  htest <- ci.test(
+    as.character(x),
+    as.character(y),
+    as.character(S),
+    suffStat$dm,
+    ci_test
+  )
+
+  #return p-value of test
+  htest$"p.value"
+}
+
+indepTestDict <- list(gaussCI=gaussCItest, binCI=binCItest, disCI=disCItest, micg=micgCItest)
 
 option_parser <- OptionParser(option_list=option_list_v)
 opt <- parse_args(option_parser)
@@ -40,7 +78,7 @@ opt <- parse_args(option_parser)
 tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id, opt$sampling_factor)
 df <- tmp_result[[1]]
 dataset_loading_time <- tmp_result[[2]]
-
+matrix <- data.matrix(df)
 if (opt$independence_test == "gaussCI") {
     matrix_df <- data.matrix(df)
     sufficient_stats <- list(C=cor(matrix_df), n=nrow(matrix_df))
@@ -61,16 +99,30 @@ if (opt$independence_test == "gaussCI") {
     if (opt$independence_test == "binCI"){
         opt$cores <- 1
     }
-} else{
+} else if (opt$independence_test == "micg") {
+    # convert datatypes numeric (continuous) -> if exceed discrete node_limit else factor (discrete)
+    matrix_df <- df %>%
+      dplyr::mutate_all(
+        funs(
+          if(length(unique(.)) < discrete_node_limit)
+            as.factor(.)
+          else as.numeric(as.numeric(.))
+          )
+        ) %>%
+      as.data.frame()
+
+    # increase column names by one because R starts counting at 1
+    colnames(matrix_df) <- as.character(as.numeric(colnames(matrix_df)) + 1)
+    sufficient_stats <- list(dm = matrix_df)
+}else {
     stop("No valid independence test specified")
 }
-
 subset_size <- if(opt$subset_size < 0) Inf else opt$subset_size
 verbose <- opt$verbose > 0
 start <- Sys.time()
 result = pc(suffStat=sufficient_stats, verbose=verbose,
             indepTest=indepTestDict[[opt$independence_test]], m.max=subset_size,
-            p=ncol(matrix_df), alpha=opt$alpha, numCores=opt$cores, skel.method=opt$skeleton_method)
+            p=ncol(matrix), alpha=opt$alpha, numCores=opt$cores, skel.method=opt$skeleton_method)
 end <- Sys.time()
 taken <- as.double(difftime(end,start,unit="s"))
 colorize_log('\033[32m',taken)

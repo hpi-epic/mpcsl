@@ -203,7 +203,7 @@ class DatasetTest(BaseResourceTest):
             db.session.add(node)
         db.session.commit()
         dirname = os.path.dirname(__file__)
-        fixture = os.path.join(dirname, '../../../fixtures/earthquake_groundtruth.gml')
+        fixture = os.path.join(dirname, '/home/jonas/Code/mpci2/services/executionenvironments/r/generator/gt-download.gml')
         data = dict(
             graph_file=(open(fixture, 'rb'), "earthquake_groundtruth.gml"),
         )

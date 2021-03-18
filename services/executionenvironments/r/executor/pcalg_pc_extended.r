@@ -34,7 +34,7 @@ option_list_v <- list(
 
 );
 
-discrete_node_limit <- 10
+discrete_node_limit <- 50
 micgCItest <- function(x, y, S, suffStat) {
   data_types <- sapply(suffStat$dm, class) # list of data types per columns
 

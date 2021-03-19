@@ -2,7 +2,7 @@ library(optparse, quietly = T)
 library(pcalg, quietly = T)
 library(dplyr)
 library(bnlearn)
-library("Ckmeans.1d.dp")
+library(reshape2)
 source("/scripts/mpci_utils.r")
 
 option_list_v <- list(

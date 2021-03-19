@@ -85,6 +85,19 @@
         "minimum": 0.0,
         "maximum": 1.0,
         "default": 1.0
+      },
+      "discrete_node_limit": {
+        "type": "int"
+      },
+      "use_discretization": {
+        "type": "int",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0
+      },
+      "discretization_min_bins": {
+        "type": "int",
+        "minimum": 2
       }
     },
     "docker_parameters": {}

@@ -2,6 +2,7 @@ library(optparse, quietly = T)
 library(pcalg, quietly = T)
 library(dplyr)
 library(bnlearn)
+library("Ckmeans.1d.dp")
 source("/scripts/mpci_utils.r")
 
 option_list_v <- list(
@@ -26,7 +27,10 @@ option_list_v <- list(
                     make_option(c("--skeleton_method"), type="character", default="stable.fast",
                                 help="Method used within skeleton, C++ or R", metavar=""),
                     make_option(c("--sampling_factor"), type="double", default=1.0,
-                                help="Data sampling factor to select a random subset, between 0 and 1", metavar="")
+                                help="Data sampling factor to select a random subset, between 0 and 1", metavar=""),
+                    make_option(c("--discrete_node_limit"), type="integer", default=50, metavar=""),
+                    make_option(c("--use_discretization"), type="integer", default=0, metavar=""),
+                    make_option(c("--discretization_min_bins"), type="integer", default=2, metavar="")
                     #make_option(c("--fixed_gaps"), type="character", default=NULL,
                     #            help="The connections that are removed via prior knowledge", metavar=""),
                     #make_option(c("--fixed_edges"), type="character", default=NULL,
@@ -34,7 +38,8 @@ option_list_v <- list(
 
 );
 
-discrete_node_limit <- 50
+
+
 micgCItest <- function(x, y, S, suffStat) {
   data_types <- sapply(suffStat$dm, class) # list of data types per columns
 
@@ -73,6 +78,24 @@ opt <- parse_args(option_parser)
 
 tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id, opt$sampling_factor)
 df <- tmp_result[[1]]
+
+generate.category.data <- function(X){
+    max.bin <- opt$discrete_node_limit
+    min.bin <- opt$discretization_min_bins
+    X.categories <- c()
+    for (i in c(1:ncol(X))){
+      y = X[,i]
+      y.categories <- Ckmeans.1d.dp(x=y, k=c(min.bin:min(max.bin),length(unique(y))), y=1, method="quadratic", estimate.k="BIC")
+      X.categories <- cbind(X.categories,y.categories$cluster-1)
+    }
+    colnames(X.categories) <- colnames(X)
+    return(as.data.frame(X.categories))
+  }
+
+if(opt$use_discretization == 1){
+  df <- generate.category.data(df)
+}
+
 dataset_loading_time <- tmp_result[[2]]
 matrix <- data.matrix(df)
 if (opt$independence_test == "gaussCI") {
@@ -100,7 +123,7 @@ if (opt$independence_test == "gaussCI") {
     matrix_df <- df %>%
       dplyr::mutate_all(
         funs(
-          if(length(unique(.)) < discrete_node_limit)
+          if(length(unique(.)) < opt$discrete_node_limit)
             as.factor(.)
           else as.numeric(as.numeric(.))
           )

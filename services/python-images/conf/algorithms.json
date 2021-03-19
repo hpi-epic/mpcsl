@@ -94,6 +94,10 @@
         "minimum": 0,
         "maximum": 1,
         "default": 0
+      },
+      "num_discrete_clusters": {
+        "type": "int",
+        "minimum": 2
       }
     },
     "docker_parameters": {}

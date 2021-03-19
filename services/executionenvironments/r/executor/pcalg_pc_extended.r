@@ -3,6 +3,7 @@ library(pcalg, quietly = T)
 library(dplyr)
 library(bnlearn)
 library(reshape2)
+library(tidyr)
 source("/scripts/mpci_utils.r")
 
 option_list_v <- list(
@@ -29,7 +30,8 @@ option_list_v <- list(
                     make_option(c("--sampling_factor"), type="double", default=1.0,
                                 help="Data sampling factor to select a random subset, between 0 and 1", metavar=""),
                     make_option(c("--discrete_node_limit"), type="integer", default=50, metavar=""),
-                    make_option(c("--use_discretization"), type="integer", default=0, metavar="")
+                    make_option(c("--use_discretization"), type="integer", default=0, metavar=""),
+                    make_option(c("--num_discrete_clusters"), type="integer", default=10, metavar="")
                     #make_option(c("--fixed_gaps"), type="character", default=NULL,
                     #            help="The connections that are removed via prior knowledge", metavar=""),
                     #make_option(c("--fixed_edges"), type="character", default=NULL,
@@ -96,7 +98,7 @@ discretize_kmeans <- function(df, k, discrete_node_limit, iter.max=10, nstart=1)
 }
 
 if(opt$use_discretization == 1){
-  df <- discretize_kmeans(df, 10, opt$discrete_node_limit)
+  df <- discretize_kmeans(df, opt$num_discrete_clusters, opt$discrete_node_limit)
 }
 
 dataset_loading_time <- tmp_result[[2]]

@@ -29,8 +29,7 @@ option_list_v <- list(
                     make_option(c("--sampling_factor"), type="double", default=1.0,
                                 help="Data sampling factor to select a random subset, between 0 and 1", metavar=""),
                     make_option(c("--discrete_node_limit"), type="integer", default=50, metavar=""),
-                    make_option(c("--use_discretization"), type="integer", default=0, metavar=""),
-                    make_option(c("--discretization_min_bins"), type="integer", default=2, metavar="")
+                    make_option(c("--use_discretization"), type="integer", default=0, metavar="")
                     #make_option(c("--fixed_gaps"), type="character", default=NULL,
                     #            help="The connections that are removed via prior knowledge", metavar=""),
                     #make_option(c("--fixed_edges"), type="character", default=NULL,
@@ -79,21 +78,25 @@ opt <- parse_args(option_parser)
 tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id, opt$sampling_factor)
 df <- tmp_result[[1]]
 
-generate.category.data <- function(X){
-    max.bin <- opt$discrete_node_limit
-    min.bin <- opt$discretization_min_bins
-    X.categories <- c()
-    for (i in c(1:ncol(X))){
-      y = X[,i]
-      y.categories <- Ckmeans.1d.dp(x=y, k=c(min.bin:min(max.bin),length(unique(y))), y=1, method="quadratic", estimate.k="BIC")
-      X.categories <- cbind(X.categories,y.categories$cluster-1)
-    }
-    colnames(X.categories) <- colnames(X)
-    return(as.data.frame(X.categories))
-  }
+discretize_kmeans <- function(df, k, discrete_node_limit, iter.max=10, nstart=1){
+  return(
+    df %>% 
+    gather() %>%
+    rename(node = key) %>% 
+    group_by(node) %>%
+    mutate(
+      is_discrete = rep(length(unique(value)) <= discrete_node_limit, n()),
+      cluster = if (is_discrete) value else kmeans(value, k, iter.max = iter.max, nstart = nstart)$cluster,
+      index = row_number()
+    ) %>%
+    select(node, cluster, index) %>% 
+    spread(node, cluster) %>%
+    select(-index)
+  )
+}
 
 if(opt$use_discretization == 1){
-  df <- generate.category.data(df)
+  df <- discretize_kmeans(df, 10, opt$discrete_node_limit)
 }
 
 dataset_loading_time <- tmp_result[[2]]

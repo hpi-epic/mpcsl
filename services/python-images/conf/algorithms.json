@@ -94,10 +94,6 @@
         "minimum": 0,
         "maximum": 1,
         "default": 0
-      },
-      "discretization_min_bins": {
-        "type": "int",
-        "minimum": 2
       }
     },
     "docker_parameters": {}

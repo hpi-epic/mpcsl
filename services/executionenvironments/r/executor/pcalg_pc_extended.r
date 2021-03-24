@@ -59,6 +59,9 @@ micgCItest <- function(x, y, S, suffStat) {
     "factor_numeric" = "mi-cg" # mixed values
   )
 
+  # Override ci_test no matter what for quick testing
+  ci_test <- "mi-cg"
+
   # Execute test
   htest <- ci.test(
     as.character(x),

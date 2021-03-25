@@ -73,9 +73,9 @@ ci.test.character = function(x, y, z, data, test, B, debug = FALSE) {
 
   }#ELSE
   # check the test label.
-  #test = check.test(test, .data.frame.column(data, c(x, y, z)))
+  # test = check.test(test, .data.frame.column(data, c(x, y, z)))
   # check B (the number of permutation samples).
-  #B = check.B(B, test)
+  B = check.B(B, test)
 
   # create the htest object.
   htest = indep.test(x = x, y = y, sx = z, data = data, test = test, B = B,

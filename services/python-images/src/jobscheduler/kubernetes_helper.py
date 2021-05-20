@@ -21,7 +21,7 @@ EMPTY_LOGS = " -- EMPTY LOGS -- "
 
 GENERATOR_TYPE_TO_IMAGE = {
     "PCALG": ("generator_r", "generator.r"),
-    "MPCI": ("mpci-dag", "src/__main__.py")
+    "MPCI": ("manm-cs", "src/__main__.py")
 }
 
 

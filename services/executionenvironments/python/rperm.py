@@ -75,6 +75,8 @@ class RPermTest(PermutationTest):
         self.k = k
         self.use_python = use_python
         self.subsample = subsample
+        self.duplicate_warnings = 1
+        self.duplicate_warnings_output = 0
 
     def test_params(self):
         return {
@@ -115,8 +117,11 @@ class RPermTest(PermutationTest):
             duplicate_percentage = max(duplicate_percentage, 1 - len(set(restricted_permutation)) / len(x))
             null_dist[i] = self.estimator.compute_cmi(x_shuffled, y, z)
         if duplicate_percentage > 0.2:
-                logging.warn(f'Up to {round(100*duplicate_percentage, 2)}% of permutations were duplicate, '
-                             f'consider increasing k.')
+                if self.duplicate_warnings >= pow(2,self.duplicate_warnings_output):
+                    logging.warn(f'Up to {round(100*duplicate_percentage, 2)}% of permutations were duplicate, '
+                                 f'consider increasing k.')
+                    self.duplicate_warnings_output += 1
+                self.duplicate_warnings += 1
 
         self.null_distribution = null_dist
         pval = (null_dist >= self.cmi_val).mean()

@@ -110,8 +110,14 @@ class ResultCompareResource(Resource):
         ground_truth = load_networkx_graph(result)
         g1 = load_networkx_graph(other_result)
         jaccard_coefficients = Result.get_jaccard_coefficients(g1, ground_truth)
-        hamming_distance = Result.get_hamming_distance(g1, ground_truth)
-        hamming_distance_pcdag = Result.get_hamming_distance_pcdag(g1, ground_truth)
+        hamming_distance = -1
+        hamming_distance_pcdag = -1
+        try:
+            hamming_distance = Result.get_hamming_distance(g1, ground_truth)
+            hamming_distance_pcdag = Result.get_hamming_distance_pcdag(g1, ground_truth)
+        except Exception as e:
+            print("no hamming distance calculated due to error",e)
+
         error_types = Result.get_error_types(g1, ground_truth)
         ground_truth_statistics = {
             'graph_edit_distance':

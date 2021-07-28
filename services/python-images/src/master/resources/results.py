@@ -116,7 +116,7 @@ class ResultCompareResource(Resource):
             hamming_distance = Result.get_hamming_distance(g1, ground_truth)
             hamming_distance_pcdag = Result.get_hamming_distance_pcdag(g1, ground_truth)
         except Exception as e:
-            print("no hamming distance calculated due to error",e)
+            print("no hamming distance calculated due to error", e)
 
         error_types = Result.get_error_types(g1, ground_truth)
         ground_truth_statistics = {

@@ -1,0 +1,57 @@
+# YAML 1.2
+---
+abstract: |
+    "The examination of causal structures is crucial for data scientists in a variety of machine learning application scenarios.
+    In recent years, the corresponding interest in methods of causal structure learning has led to a wide spectrum of independent implementations, each having specific accuracy characteristics and introducing implementation-specific overhead in the runtime.
+    Hence, considering a selection of algorithms or different implementations in different programming languages utilizing different hardware setups becomes a tedious manual task with high setup costs.
+    Consequently, a tool that enables to plug in existing methods from different libraries into a single system to compare and evaluate the results is substantial support for data scientists in their research efforts.
+    
+    In this work, we propose an architectural blueprint of a pipeline for causal structure learning and outline our reference implementation MPCSL that addresses the requirements towards platform independence and modularity while ensuring the comparability and reproducibility of experiments.
+    Moreover, we demonstrate the capabilities of MPCSL within a case study, where we evaluate existing implementations of the well-known PC-Algorithm concerning their runtime performance characteristics."
+authors: 
+  -
+    affiliation: "Hasso Plattner Institute, University of Potsdam"
+    family-names: Huegle
+    given-names: Johannes
+  -
+    affiliation: "Hasso Plattner Institute, University of Potsdam"
+    family-names: Hagedorn
+    given-names: Christopher
+  -
+    affiliation: "Hasso Plattner Institute, University of Potsdam"
+    family-names: Perscheid
+    given-names: Michael
+  -
+    affiliation: "Hasso Plattner Institute, University of Potsdam"
+    family-names: Plattner
+    given-names: Hasso
+cff-version: "1.1.0"
+doi: "10.1145/3447548.3467082"
+message: "If you use this software, please cite the paper."
+title: "MPCSL"
+references:
+  - type: conference-paper
+    authors: 
+    -
+        affiliation: "Hasso Plattner Institute, University of Potsdam"
+        family-names: Huegle
+        given-names: Johannes
+    -
+        affiliation: "Hasso Plattner Institute, University of Potsdam"
+        family-names: Hagedorn
+        given-names: Christopher
+    -
+        affiliation: "Hasso Plattner Institute, University of Potsdam"
+        family-names: Perscheid
+        given-names: Michael
+    -
+        affiliation: "Hasso Plattner Institute, University of Potsdam"
+        family-names: Plattner
+        given-names: Hasso
+    title: "MPCSL - A Modular Pipeline for Causal Structure Learning"
+    year: 2021
+    collection-title: "Proceedings of the 27th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD '21)"
+    conference:
+      name: ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD '21)
+    doi: "10.1145/3447548.3467082"  
+...

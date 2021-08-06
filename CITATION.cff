@@ -32,20 +32,16 @@ title: "MPCSL"
 references:
   - type: conference-paper
     authors: 
-    -
-        affiliation: "Hasso Plattner Institute, University of Potsdam"
+    -   affiliation: "Hasso Plattner Institute, University of Potsdam"
         family-names: Huegle
         given-names: Johannes
-    -
-        affiliation: "Hasso Plattner Institute, University of Potsdam"
+    -   affiliation: "Hasso Plattner Institute, University of Potsdam"
         family-names: Hagedorn
         given-names: Christopher
-    -
-        affiliation: "Hasso Plattner Institute, University of Potsdam"
+    -   affiliation: "Hasso Plattner Institute, University of Potsdam"
         family-names: Perscheid
         given-names: Michael
-    -
-        affiliation: "Hasso Plattner Institute, University of Potsdam"
+    -   affiliation: "Hasso Plattner Institute, University of Potsdam"
         family-names: Plattner
         given-names: Hasso
     title: "MPCSL - A Modular Pipeline for Causal Structure Learning"

@@ -1,5 +1,5 @@
 # MPCSL: A Modular Pipeline for Causal Structure Learning
-[![Docs](https://img.shields.io/badge/docs-wiki-blue.svg)](https://github.com/hpi-epic/mpci/wiki) [![CircleCI](https://circleci.com/gh/hpi-epic/mpci/tree/master.svg?style=svg&circle-token=a927c6324dcaf0d443e633300a3aa93d240c4193)](https://circleci.com/gh/hpi-epic/mpci/tree/master) [![codecov](https://codecov.io/gh/hpi-epic/mpci/branch/master/graph/badge.svg?token=64S6naWbgu)](https://codecov.io/gh/hpi-epic/mpci)
+[![Docs](https://img.shields.io/badge/docs-wiki-blue.svg)](https://github.com/hpi-epic/mpcsl/wiki) [![CircleCI](https://circleci.com/gh/hpi-epic/mpci/tree/master.svg?style=svg&circle-token=a927c6324dcaf0d443e633300a3aa93d240c4193)](https://circleci.com/gh/hpi-epic/mpcsl/tree/master) [![codecov](https://codecov.io/gh/hpi-epic/mpcsl/branch/master/graph/badge.svg?token=64S6naWbgu)](https://codecov.io/gh/hpi-epic/mpcsl)
 
 This repository contains the backend of MPCSL, a Modular Pipeline for Causal Structure Learning, build at the chair for Enterprise Platform and Integration Concepts at the Hasso Plattner Institute. The pipeline currently includes the following features, all of which are accessible via a REST API:
 
@@ -33,11 +33,11 @@ Additionally, the data model can be seen as ER diagram:
 - [Garden](https://github.com/garden-io/garden)
 - [Minikube](https://github.com/kubernetes/minikube)
 
-As the user interface files are stored in a different currently private [repository](https://github.com/hpi-epic/mpci-frontend),
+As the user interface files are stored in a different currently private [repository](https://github.com/hpi-epic/mpcsl-frontend),
 you have to clone the repo using:
 
 ```
-git clone --recurse-submodules git@github.com:hpi-epic/mpci.git
+git clone --recurse-submodules git@github.com:hpi-epic/mpcsl.git
 ```
 ### Getting Started
 

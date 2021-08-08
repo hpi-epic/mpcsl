@@ -46,7 +46,7 @@ class PermutationTest(IndependenceTest):
 
         # Dividing the array up into n_blks of length sig_blocklength may
         # leave a tail. This tail is later randomly inserted
-        tail = x[:, n_blks*sig_blocklength:]
+        tail = x[n_blks*sig_blocklength:,]
 
         null_dist = np.zeros(sig_samples)
         for sam in range(sig_samples):
@@ -56,10 +56,10 @@ class PermutationTest(IndependenceTest):
                 x_shuffled[blk::sig_blocklength] = x[blk_starts + blk]
 
             # Insert tail randomly somewhere
-            if tail.shape[1] > 0:
+            if tail.shape[0] > 0:
                 insert_tail_at = np.random.choice(block_starts)
                 x_shuffled = np.insert(x_shuffled, insert_tail_at,
-                                       tail.T, axis=1)
+                                       tail, axis=0)
 
             null_dist[sam] = self.estimator.compute_mi(x_shuffled, y)
 
@@ -75,6 +75,8 @@ class RPermTest(PermutationTest):
         self.k = k
         self.use_python = use_python
         self.subsample = subsample
+        self.duplicate_warnings = 1
+        self.duplicate_warnings_output = 0
 
     def test_params(self):
         return {
@@ -115,8 +117,11 @@ class RPermTest(PermutationTest):
             duplicate_percentage = max(duplicate_percentage, 1 - len(set(restricted_permutation)) / len(x))
             null_dist[i] = self.estimator.compute_cmi(x_shuffled, y, z)
         if duplicate_percentage > 0.2:
-                logging.warn(f'Up to {round(100*duplicate_percentage, 2)}% of permutations were duplicate, '
-                             f'consider increasing k.')
+                if self.duplicate_warnings >= pow(2,self.duplicate_warnings_output):
+                    logging.warn(f'Up to {round(100*duplicate_percentage, 2)}% of permutations were duplicate, '
+                                 f'consider increasing k.')
+                    self.duplicate_warnings_output += 1
+                self.duplicate_warnings += 1
 
         self.null_distribution = null_dist
         pval = (null_dist >= self.cmi_val).mean()

@@ -40,13 +40,11 @@ def _test_worker(i, j, lvl):
     else:
         candidates_1 = np.arange(var_dict['vertices'])[(graph[i] == 1)]
         candidates_1 = np.delete(candidates_1, np.argwhere((candidates_1==i) | (candidates_1==j)))
-        candidates_2 = np.arange(var_dict['vertices'])[(graph[j] == 1)]
-        candidates_2 = np.delete(candidates_2, np.argwhere((candidates_2==i) | (candidates_2==j)))
 
-        if (len(candidates_1) < lvl) and (len(candidates_2) < lvl):
+        if (len(candidates_1) < lvl):
             return None
         
-        for S in [list(c) for c in {comb for comb in chain(combinations(candidates_2, lvl),combinations(candidates_1, lvl))}]:
+        for S in [list(c) for c in combinations(candidates_1, lvl)]:
             p_val = test.compute_pval(data_arr[:, [i]], data_arr[:, [j]], z=data_arr[:, list(S)])
             if (p_val > alpha):
                 return (i, j, p_val, list(S))
@@ -143,7 +141,7 @@ def parallel_stable_pc(data, estimator, alpha=0.05, processes=32, max_level=None
 
     lvls = range((len(cols) - 1) if max_level is None else min(len(cols)-1, max_level+1))
     for lvl in lvls:
-        configs = [(i, j, lvl) for i, j in product(cols_map, cols_map) if i < j and graph[i][j] == 1]
+        configs = [(i, j, lvl) for i, j in product(cols_map, cols_map) if i != j and graph[i][j] == 1]
 
         logging.info(f'Starting level {lvl} pool with {len(configs)} remaining edges at {datetime.now()}')
         with Pool(processes=processes, initializer=_init_worker,

@@ -37,11 +37,14 @@ def get_dataset(api_host, dataset_id, job_id, sampling_factor=1.0):
     df = df.sample(frac=sampling_factor)
     return df, dataset_loading_time
 
+def estimate_weight():
+    #TODO implement
+    return 0
 
 def store_graph_result(api_host, job_id, graph, exec_time, ds_load_time, args, sepsets=None):
     edge_list = []
     for a, b in graph.edges():
-        edge_list.append({'from_node': int(a), 'to_node': int(b)})
+        edge_list.append({'from_node': int(a), 'to_node': int(b), 'weight': estimate_weight()})
 
     sepset_list = []
     if sepsets is not None:

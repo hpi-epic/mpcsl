@@ -11,6 +11,3 @@
 	path = services/executionenvironments/cuda/cupc
 	url = https://github.com/LIS-Laboratory/cupc.git
 	branch = master
-[submodule "services/executionenvironments/python-generators/manm-cs"]
-	path = services/executionenvironments/python-generators/manm-cs
-	url = git@github.com:hpi-epic/manm-cs.git

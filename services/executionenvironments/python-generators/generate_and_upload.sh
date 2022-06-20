@@ -22,5 +22,5 @@ case $key in
 esac
 done
 echo "host: ${API_HOST} endpoint: ${UPLOAD_ENDPOINT}"
-python src/__main__.py ${OTHER_PARAMS[@]}
+python -m manm_cs ${OTHER_PARAMS[@]}
 python upload_results.py --apiHost $API_HOST --uploadEndpoint $UPLOAD_ENDPOINT

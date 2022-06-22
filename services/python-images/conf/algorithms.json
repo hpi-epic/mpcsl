@@ -112,7 +112,8 @@
           "mi",
           "mi-adf",
           "mi-sh",
-          "mi-cg"
+          "mi-cg",
+          "discretized-x2"
         ]
       },
       "verbose": {

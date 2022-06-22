@@ -50,6 +50,7 @@ if (opt$independence_test == "discretized-x2") {
         colnames(X.categories) <- colnames(X)
         return(as.data.frame(X.categories))
     }
+    opt$independence_test <- "x2"
     cat_df <- generate.category.data(df)
     matrix_df <- cat_df%>%dplyr::mutate_all(funs(if(length(unique(.))<10) as.factor(.)  else as.numeric(as.numeric(.))))
 } else if (opt$independence_test == "mi-cg") {

@@ -52,7 +52,7 @@ if (opt$independence_test == "discretized-x2") {
     }
     opt$independence_test <- "x2"
     cat_df <- generate.category.data(df)
-    matrix_df <- cat_df%>%dplyr::mutate_all(funs(if(length(unique(.))<10) as.factor(.)  else as.numeric(as.numeric(.))))
+    matrix_df <- cat_df%>%dplyr::mutate_all(funs(if(length(unique(.))<11) as.factor(.)  else as.numeric(as.numeric(.))))
 } else if (opt$independence_test == "mi-cg") {
 	matrix_df <- df%>%dplyr::mutate_all(funs(if(length(unique(.))<opt$discrete_limit) as.factor(.)  else as.numeric(as.numeric(.))))
 } else if ( opt$independence_test == "cor" || opt$independence_test == "zf" || 

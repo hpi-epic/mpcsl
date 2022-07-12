@@ -2,7 +2,23 @@ library(optparse, quietly = T)
 library(pcalg, quietly = T)
 source("/scripts/mpci_utils.r")
 # include for CMI-adaptive tests
-source("/scripts/CMI-adaptive-hist/source.R")
+require("parallel")
+require("SCCI")
+require(dplyr)
+library("MASS")
+Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "true")
+
+source("/scripts/CMI-adaptive-hist/algorithm/generate_candidate_cuts.R")
+source("/scripts/CMI-adaptive-hist/algorithm/refine_candidate_cuts_exclude_empty_bins.R")
+source("/scripts/CMI-adaptive-hist/algorithm/modified_log.R")
+source("/scripts/CMI-adaptive-hist/algorithm/iterative_cmi_greedy_flexible_parallel.R")
+
+source("/scripts/CMI-adaptive-hist/algorithm/multi_hist_splitting_seed_based_simple.R")
+source("/scripts/CMI-adaptive-hist/algorithm/oned_hist_iterative.R")
+source("/scripts/CMI-adaptive-hist/algorithm/CMI_estimates.R")
+source("/scripts/CMI-adaptive-hist/algorithm/CMI_pvals.R")
+source("/scripts/CMI-adaptive-hist/algorithm/utils.R")
+
 
 option_list_v <- list(
                     make_option(c("-j", "--job_id"), type="character",
@@ -26,7 +42,9 @@ option_list_v <- list(
                     make_option(c("--skeleton_method"), type="character", default="stable.fast",
                                 help="Method used within skeleton, C++ or R", metavar=""),
                     make_option(c("--sampling_factor"), type="double", default=1.0,
-                                help="Data sampling factor to select a random subset, between 0 and 1", metavar="")
+                                help="Data sampling factor to select a random subset, between 0 and 1", metavar=""),
+                    make_option(c("--discrete_limit"), type="integer", default=11,
+                                help="Maximum unique values per variable considered as discrete", metavar=""),
                     #make_option(c("--fixed_gaps"), type="character", default=NULL,
                     #            help="The connections that are removed via prior knowledge", metavar=""),
                     #make_option(c("--fixed_edges"), type="character", default=NULL,
@@ -64,7 +82,16 @@ if (opt$independence_test == "gaussCI") {
     if (opt$independence_test == "binCI"){
         opt$cores <- 1
     }
-} else{
+} else if (opt$independence_test == "CMIpqNML" || opt$independence_test == "CMIpfNML" ||
+           opt$independence_test == "CMIpChisq99" || opt$independence_test == "CMIpChisq95"){
+    type <- rep(1, ncol(df))
+    for(i in 1:ncol(df)) {
+        if(length(unique(df[ , i])) < opt$discrete_limit) {
+            type[i] = 0
+        }
+    }
+    sufficient_stats = list(dm=df, type=type, n=nrow(df))
+} else {
     stop("No valid independence test specified")
 }
 

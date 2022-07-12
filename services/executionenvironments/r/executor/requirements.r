@@ -4,7 +4,9 @@
 #
 # <-------------------------------------------------
 # CRAN dependencies
-packages <- c('optparse', 'stringi', 'httr', 'jsonlite', 'ParallelPC', 'infotheo', 'bnlearn', 'vctrs', 'dplyr', 'hash','Ckmeans.1d.dp','abind', 'igraph', 'ggm', 'corpcor', 'robustbase', 'vcd', 'bdsmatrix', 'sfsmisc', 'fastICA', 'clue', 'RcppArmadillo')
+packages <- c('optparse', 'stringi', 'httr', 'jsonlite', 'ParallelPC', 'infotheo', 'bnlearn', 'vctrs', 'dplyr',
+              'hash','Ckmeans.1d.dp','abind', 'igraph', 'ggm', 'corpcor', 'robustbase', 'vcd', 'bdsmatrix', 'sfsmisc',
+              'fastICA', 'clue', 'RcppArmadillo', 'SCCI', 'MASS')
 # non-CRAN dependencies
 bioc_packages <- c('graph', 'RBGL','bnlearn')
 # <-------------------------------------------------

@@ -15,7 +15,7 @@
       "independence_test": {
         "type": "enum",
         "required": true,
-        "values": ["gaussCI", "disCI", "binCI"]
+        "values": ["gaussCI", "disCI", "binCI", "CMIpqNML", "CMIpfNML", "CMIpChisq99", "CMIpChisq95"]
       },
       "cores": {
         "type": "int",

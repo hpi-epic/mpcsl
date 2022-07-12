@@ -1,6 +1,8 @@
 library(optparse, quietly = T)
 library(pcalg, quietly = T)
 source("/scripts/mpci_utils.r")
+# include for CMI-adaptive tests
+source("/scripts/CMI-adaptive-hist/source.R")
 
 option_list_v <- list(
                     make_option(c("-j", "--job_id"), type="character",
@@ -32,7 +34,8 @@ option_list_v <- list(
 
 );
 
-indepTestDict <- list(gaussCI=gaussCItest, binCI=binCItest, disCI=disCItest)
+indepTestDict <- list(gaussCI=gaussCItest, binCI=binCItest, disCI=disCItest,
+                    CMIpqNML=CMIp.qNML, CMIpfNML=CMIp.fNML, CMIpChisq99=CMIp.Chisq99, CMIpChisq95=CMIp.Chisq95)
 
 option_parser <- OptionParser(option_list=option_list_v)
 opt <- parse_args(option_parser)

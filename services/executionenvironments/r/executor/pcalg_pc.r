@@ -44,7 +44,7 @@ option_list_v <- list(
                     make_option(c("--sampling_factor"), type="double", default=1.0,
                                 help="Data sampling factor to select a random subset, between 0 and 1", metavar=""),
                     make_option(c("--discrete_limit"), type="integer", default=11,
-                                help="Maximum unique values per variable considered as discrete", metavar=""),
+                                help="Maximum unique values per variable considered as discrete", metavar="")
                     #make_option(c("--fixed_gaps"), type="character", default=NULL,
                     #            help="The connections that are removed via prior knowledge", metavar=""),
                     #make_option(c("--fixed_edges"), type="character", default=NULL,
@@ -84,13 +84,14 @@ if (opt$independence_test == "gaussCI") {
     }
 } else if (opt$independence_test == "CMIpqNML" || opt$independence_test == "CMIpfNML" ||
            opt$independence_test == "CMIpChisq99" || opt$independence_test == "CMIpChisq95"){
-    type <- rep(1, ncol(df))
-    for(i in 1:ncol(df)) {
-        if(length(unique(df[ , i])) < opt$discrete_limit) {
+    matrix_df <- data.matrix(df)
+    type <- rep(1, ncol(matrix_df))
+    for(i in 1:ncol(matrix_df)) {
+        if(length(unique(matrix_df[ , i])) < opt$discrete_limit) {
             type[i] = 0
         }
     }
-    sufficient_stats = list(dm=df, type=type, n=nrow(df))
+    sufficient_stats = list(dm=matrix_df, type=type, n=nrow(df))
 } else {
     stop("No valid independence test specified")
 }

@@ -87,7 +87,7 @@ class DatasetGenerationJobResource(Resource):
         sql_conform_id = str(uuid.uuid4()).replace('-', '_')
         table_name = job.datasetName + '_' + sql_conform_id
         try:
-            data = pd.read_csv(file, index_col=0)
+            data = pd.read_csv(file)
             data.to_sql(table_name, db.engine, index=False)
         except ParserError as e:
             abort(400, message=f'Invalid format: {e}')

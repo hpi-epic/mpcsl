@@ -4,9 +4,11 @@
 #
 # <-------------------------------------------------
 # CRAN dependencies
-packages <- c('optparse', 'stringi', 'httr', 'jsonlite', 'ParallelPC', 'infotheo', 'bnlearn', 'vctrs', 'dplyr', 'hash')
+packages <- c('optparse', 'stringi', 'httr', 'jsonlite', 'ParallelPC', 'infotheo', 'bnlearn', 'vctrs', 'dplyr',
+              'hash','Ckmeans.1d.dp','abind', 'igraph', 'ggm', 'corpcor', 'robustbase', 'vcd', 'bdsmatrix', 'sfsmisc',
+              'fastICA', 'clue', 'RcppArmadillo', 'SCCI', 'MASS')
 # non-CRAN dependencies
-bioc_packages <- c('graph', 'RBGL')
+bioc_packages <- c('graph', 'RBGL','bnlearn')
 # <-------------------------------------------------
 #
 #
@@ -17,10 +19,12 @@ not_installed <- function(pkg){
     return(length(new.pkg) > 0)
 }
 
-source('http://www.bioconductor.org/biocLite.R');
+#source('http://www.bioconductor.org/biocLite.R');
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
 for (pkg in bioc_packages){
     if(not_installed(pkg)){
-        biocLite(pkg);
+        BiocManager::install(pkg);
         sapply(pkg, require, character.only = TRUE)
     }
 }

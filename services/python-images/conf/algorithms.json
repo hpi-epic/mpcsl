@@ -15,7 +15,12 @@
       "independence_test": {
         "type": "enum",
         "required": true,
-        "values": ["gaussCI", "disCI", "binCI"]
+        "values": ["gaussCI", "disCI", "binCI", "CMIpqNML", "CMIpfNML", "CMIpChisq99", "CMIpChisq95"]
+      },
+      "discrete_limit": {
+        "type": "int",
+        "minimum": 3,
+        "default": 11
       },
       "cores": {
         "type": "int",
@@ -112,7 +117,8 @@
           "mi",
           "mi-adf",
           "mi-sh",
-          "mi-cg"
+          "mi-cg",
+          "discretized-x2"
         ]
       },
       "verbose": {

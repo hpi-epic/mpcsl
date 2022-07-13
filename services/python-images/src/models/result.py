@@ -70,12 +70,17 @@ class Result(BaseModel):
             false_negatives_rate = len(false_negatives)/(len(false_negatives) + len(true_positives))
         except ZeroDivisionError:
             false_negatives_rate = 0
+        try:
+            precision = len(true_positives)/(len(false_positives) + len(true_positives))
+        except ZeroDivisionError:
+            precision = 0
 
         error_types = {
             'false_positives': {'rate': false_positives_rate, 'edges': false_positives},
             'true_negatives': {'rate': 1-false_positives_rate, 'edges': true_negatives},
             'false_negatives': {'rate': false_negatives_rate, 'edges': false_negatives},
-            'true_positives': {'rate': 1-false_negatives_rate, 'edges': true_positives}
+            'true_positives': {'rate': 1-false_negatives_rate, 'edges': true_positives},
+            'precision': {'rate': precision}
         }
 
         return error_types

@@ -2,6 +2,7 @@ library(optparse, quietly = T)
 library(bnlearn, quietly = T)
 library(parallel, quietly = T)
 library(dplyr, quietly = T)
+library('Ckmeans.1d.dp')
 source("/scripts/mpci_utils.r")
 
 
@@ -38,7 +39,21 @@ tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id, opt$sampling
 df <- tmp_result[[1]]
 dataset_loading_time <- tmp_result[[2]]
 
-if (opt$independence_test == "mi-cg") {
+if (opt$independence_test == "discretized-x2") {
+    generate.category.data <- function(X){
+        X.categories <- c()
+        for (i in c(1:ncol(X))){
+            y = X[,i]
+            y.categories <- Ckmeans.1d.dp(x=y, k=c(2:min(10,length(unique(y)))), y=1, method="quadratic", estimate.k="BIC")
+            X.categories <- cbind(X.categories,y.categories$cluster-1)
+        }
+        colnames(X.categories) <- colnames(X)
+        return(as.data.frame(X.categories))
+    }
+    opt$independence_test <- "x2"
+    cat_df <- generate.category.data(df)
+    matrix_df <- cat_df%>%dplyr::mutate_all(funs(if(length(unique(.))<11) as.factor(.)  else as.numeric(as.numeric(.))))
+} else if (opt$independence_test == "mi-cg") {
 	matrix_df <- df%>%dplyr::mutate_all(funs(if(length(unique(.))<opt$discrete_limit) as.factor(.)  else as.numeric(as.numeric(.))))
 } else if ( opt$independence_test == "cor" || opt$independence_test == "zf" || 
             opt$independence_test == "mi-g" || opt$independence_test == "mi-g-sh") {

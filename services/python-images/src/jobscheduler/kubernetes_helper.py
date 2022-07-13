@@ -21,7 +21,7 @@ EMPTY_LOGS = " -- EMPTY LOGS -- "
 
 GENERATOR_TYPE_TO_IMAGE = {
     "PCALG": ("generator_r", "generator.r"),
-    "MPCI": ("manm-cs", "generate_and_upload.sh")
+    "MPCSL": ("manm-cs", "generate_and_upload.sh")
 }
 
 

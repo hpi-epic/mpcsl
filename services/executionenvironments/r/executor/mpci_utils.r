@@ -64,14 +64,14 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, independenc
     i <- 1
     for (node in names(edges)){
         for (edge in edges[[node]]){
-            edge_list[['from_node']][[i]] <- as.numeric(colnames(df)[strtoi(node)])
-            edge_list[['to_node']][[i]] <- as.numeric(colnames(df)[strtoi(edge)])
+            edge_list[['from_node']] <- c(edge_list[['from_node']],as.numeric(colnames(df)[strtoi(node)]))
+            edge_list[['to_node']] <- c(edge_list[['to_node']],as.numeric(colnames(df)[strtoi(edge)]))
 
             weight <- estimate_weight(
                 node, edge, graph, df,
                 continuous=(independence_test != 'binCI' && independence_test != 'disCI')
             )
-            edge_list[['weight']][[i]] <- weight
+            edge_list[['weight']] <- c(edge_list[['weight']],weight)
 
             i <- i + 1
         }
@@ -87,11 +87,11 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, independenc
             for(to_node in 1:length(sepsets)){
                 sepset <- sapply(sepsets[[from_node]][[to_node]], (function (x) colnames(df)[x]))
                 if(length(sepset) > 0){
-                    sepset_list[['from_node']][[i]] <- as.numeric(colnames(df)[from_node])
-                    sepset_list[['to_node']][[i]] <- as.numeric(colnames(df)[to_node])
+                    sepset_list[['from_node']] <- c(sepset_list[['from_node']],as.numeric(colnames(df)[from_node]))
+                    sepset_list[['to_node']] <- c(sepset_list[['to_node']],as.numeric(colnames(df)[to_node]))
                     ss_nodes_list[[i]] <- if(length(sepset) > 1) sepset else list(sepset)
-                    sepset_list[['statistic']][[i]] <- 0
-                    sepset_list[['level']][[i]] <- length(sepset)
+                    sepset_list[['statistic']] <- c(sepset_list[['statistic']],0)
+                    sepset_list[['level']] <- c(sepset_list[['level']],length(sepset))
                     i <- i + 1
                 }
             }
@@ -123,10 +123,10 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, independenc
 store_graph_result_bn <- function(api_host, bn_result, df, job_id, independence_test, meta_results, execution_time, dataset_loading_time) {
     edge_list <- list(from_node=c(), to_node=c())
 
-    for (i in 1:(length(bn_result$'arcs')/2) ){
-        edge_list[['from_node']][[i]] <- as.numeric(bn_result$'arcs'[i])
-        edge_list[['to_node']][[i]] <- as.numeric(bn_result$'arcs'[i+(length(bn_result$'arcs')/2)])
-        edge_list[['weight']][[i]] <- 0
+    for (i in 1:(length(result$'arcs'[,1])) ){
+        edge_list[['from_node']] <- c(edge_list[['from_node']],as.numeric(result$'arcs'[i,][1]))
+        edge_list[['to_node']] <- c(edge_list[['to_node']],as.numeric(result$'arcs'[i,][2]))
+        edge_list[['weight']] <- c(edge_list[['weight']],0)
     }
     edge_list <- data.frame(edge_list)
 
@@ -139,7 +139,7 @@ store_graph_result_bn <- function(api_host, bn_result, df, job_id, independence_
         execution_time =execution_time,
         dataset_loading_time=dataset_loading_time
     ), auto_unbox=TRUE)
-    
+
     graph_request <- RETRY("POST", paste0('http://', api_host, '/api/job/', job_id, '/result'),
                                  body=result_json, 
                                  add_headers("Content-Type" = "application/json"), times = 5, quiet=FALSE)
@@ -151,10 +151,10 @@ store_graph_result_bn <- function(api_host, bn_result, df, job_id, independence_
 store_graph_result_bnlearn_hc <- function(api_host, bn_result, df, job_id, meta_results, execution_time, dataset_loading_time){
     edge_list <- list(from_node=c(), to_node=c())
 
-    for (i in 1:(length(bn_result$'arcs')/2) ){
-        edge_list[['from_node']][[i]] <- as.numeric(bn_result$'arcs'[i])
-        edge_list[['to_node']][[i]] <- as.numeric(bn_result$'arcs'[i+(length(bn_result$'arcs')/2)])
-        edge_list[['weight']][[i]] <- 0
+    for (i in 1:(length(result$'arcs'[,1])) ){
+        edge_list[['from_node']] <- c(edge_list[['from_node']],as.numeric(result$'arcs'[i,][1]))
+        edge_list[['to_node']] <- c(edge_list[['to_node']],as.numeric(result$'arcs'[i,][2]))
+        edge_list[['weight']] <- c(edge_list[['weight']],0)
     }
     edge_list <- data.frame(edge_list)
 

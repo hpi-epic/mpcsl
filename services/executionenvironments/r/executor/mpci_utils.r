@@ -122,11 +122,13 @@ store_graph_result <- function(api_host, graph, sepsets, df, job_id, independenc
 
 store_graph_result_bn <- function(api_host, bn_result, df, job_id, independence_test, meta_results, execution_time, dataset_loading_time) {
     edge_list <- list(from_node=c(), to_node=c())
-
-    for (i in 1:(length(result$'arcs'[,1])) ){
-        edge_list[['from_node']] <- c(edge_list[['from_node']],as.numeric(result$'arcs'[i,][1]))
-        edge_list[['to_node']] <- c(edge_list[['to_node']],as.numeric(result$'arcs'[i,][2]))
-        edge_list[['weight']] <- c(edge_list[['weight']],0)
+    
+    if (length(result$'arcs'[,1]) != 0) {
+        for (i in 1:(length(result$'arcs'[,1])) ){
+            edge_list[['from_node']] <- c(edge_list[['from_node']],as.numeric(result$'arcs'[i,][1]))
+            edge_list[['to_node']] <- c(edge_list[['to_node']],as.numeric(result$'arcs'[i,][2]))
+            edge_list[['weight']] <- c(edge_list[['weight']],0)
+        }
     }
     edge_list <- data.frame(edge_list)
 
@@ -151,10 +153,12 @@ store_graph_result_bn <- function(api_host, bn_result, df, job_id, independence_
 store_graph_result_bnlearn_hc <- function(api_host, bn_result, df, job_id, meta_results, execution_time, dataset_loading_time){
     edge_list <- list(from_node=c(), to_node=c())
 
-    for (i in 1:(length(result$'arcs'[,1])) ){
-        edge_list[['from_node']] <- c(edge_list[['from_node']],as.numeric(result$'arcs'[i,][1]))
-        edge_list[['to_node']] <- c(edge_list[['to_node']],as.numeric(result$'arcs'[i,][2]))
-        edge_list[['weight']] <- c(edge_list[['weight']],0)
+    if (length(result$'arcs'[,1]) != 0) {
+        for (i in 1:(length(result$'arcs'[,1])) ){
+            edge_list[['from_node']] <- c(edge_list[['from_node']],as.numeric(result$'arcs'[i,][1]))
+            edge_list[['to_node']] <- c(edge_list[['to_node']],as.numeric(result$'arcs'[i,][2]))
+            edge_list[['weight']] <- c(edge_list[['weight']],0)
+        }
     }
     edge_list <- data.frame(edge_list)
 

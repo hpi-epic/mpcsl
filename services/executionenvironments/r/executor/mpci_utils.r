@@ -29,7 +29,7 @@ check_request <- function(api_host, request, job_id) {
     }
 }
 
-get_dataset <- function(api_host, dataset_id, job_id, sampling_factor=1) {
+get_dataset <- function(api_host, dataset_id, job_id, sampling_method='random', sampling_factor=1) {
     url <- paste0('http://', api_host, '/api/dataset/', dataset_id, '/loadwithids')
     colorize_log(ANSI_GREEN, paste0('Load dataset from ', url))
     start_time <- Sys.time()
@@ -40,7 +40,12 @@ get_dataset <- function(api_host, dataset_id, job_id, sampling_factor=1) {
                 ' bytes) in', dataset_loading_time))
 
     df <- read.csv(text=content(df_request, 'text'), header=TRUE, check.names=FALSE)
-    df <- df[sample(nrow(df), nrow(df) * sampling_factor), ]
+    if(sampling_method == 'random') {
+        df <- df[sample(nrow(df), nrow(df) * sampling_factor), ]    
+    } else {
+        df <- df[1:(nrow(df) * sampling_factor),]
+    }
+    
     return(list(df,dataset_loading_time))
 }
 

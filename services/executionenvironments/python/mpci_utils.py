@@ -37,7 +37,7 @@ def get_dataset(api_host, dataset_id, job_id, sampling_method='random', sampling
     if sampling_method == 'random':
         df = df.sample(frac=sampling_factor)
     else:
-        df = df.head(len(df) * sampling_factor)
+        df = df.head(int(len(df) * sampling_factor))
     return df, dataset_loading_time
 
 def estimate_weight():

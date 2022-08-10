@@ -49,7 +49,7 @@
       "sampling_method": {
         "type": "enum",
         "values": ["random", "top"]
-      },
+      }
     },
     "docker_parameters": {}
   },
@@ -158,7 +158,7 @@
       "sampling_method": {
         "type": "enum",
         "values": ["random", "top"]
-      },
+      }
     },
     "docker_parameters": {}
   },
@@ -301,7 +301,7 @@
       "sampling_method": {
         "type": "enum",
         "values": ["random", "top"]
-      },
+      }
     },
     "docker_parameters": {} 
   },
@@ -358,7 +358,7 @@
       "sampling_method": {
         "type": "enum",
         "values": ["random", "top"]
-      },
+      }
     },
     "docker_parameters": {} 
   },
@@ -436,7 +436,7 @@
       "sampling_method": {
         "type": "enum",
         "values": ["random", "top"]
-      },
+      }
     },
     "docker_parameters": {}
   }

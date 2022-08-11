@@ -43,6 +43,8 @@ option_list_v <- list(
                                 help="Method used within skeleton, C++ or R", metavar=""),
                     make_option(c("--sampling_factor"), type="double", default=1.0,
                                 help="Data sampling factor to select a random subset, between 0 and 1", metavar=""),
+                    make_option(c("--sampling_method"), type="character", default="random",
+                                help="Data sampling method either random or otherwise top", metavar=""),
                     make_option(c("--discrete_limit"), type="integer", default=11,
                                 help="Maximum unique values per variable considered as discrete", metavar="")
                     #make_option(c("--fixed_gaps"), type="character", default=NULL,
@@ -58,7 +60,7 @@ indepTestDict <- list(gaussCI=gaussCItest, binCI=binCItest, disCI=disCItest,
 option_parser <- OptionParser(option_list=option_list_v)
 opt <- parse_args(option_parser)
 
-tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id, opt$sampling_factor)
+tmp_result <- get_dataset(opt$api_host, opt$dataset_id, opt$job_id, opt$sampling_method, opt$sampling_factor)
 df <- tmp_result[[1]]
 dataset_loading_time <- tmp_result[[2]]
 

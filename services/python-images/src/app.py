@@ -9,3 +9,4 @@ from src.master.appfactory import AppFactory  # noqa: E402
 fact = AppFactory()
 [app, socketio] = fact.up()
 db = fact.db
+ma = fact.ma

@@ -1,7 +1,6 @@
 from marshmallow import fields
-from marshmallow_sqlalchemy import ModelSchema
 
-from src.db import db
+from src.db import db, ma
 from src.models.swagger import SwaggerMixin
 
 
@@ -15,7 +14,7 @@ class BaseModel(db.Model):
             setattr(self, key, value)
 
 
-class BaseSchema(ModelSchema, SwaggerMixin):
+class BaseSchema(ma.SQLAlchemySchema, SwaggerMixin):
     id = fields.Integer(dump_only=True)
 
     class Meta:

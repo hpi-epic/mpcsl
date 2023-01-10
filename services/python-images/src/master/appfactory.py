@@ -6,7 +6,7 @@ from flask_restful_swagger_2 import Api
 from flask_socketio import SocketIO
 from sqlalchemy import event
 
-from src.db import db
+from src.db import db, ma
 from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
 from src.models import Experiment, Dataset, ExperimentJob
@@ -19,6 +19,10 @@ class AppFactory(object):
         self.db.init_app(self.app)
 
         self.migrate = Migrate(self.app, db)
+
+    def set_up_ma(self):
+        self.ma = ma
+        self.ma.init_app(self.app)
 
     def set_up_app(self):
         self.app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'), static_url_path='/static')

@@ -41,10 +41,7 @@ spec:
             - name: POSTGRES_USER
               value: {{ .Values.postgresqlUsername | quote }}
             - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: db-postgresql
-                  key: postgresql-password
+              value: {{ .Values.postgresqlPassword | quote }}
             - name: EXECUTION_IMAGE_NAMESPACE
               value: {{ .Values.executionImageNamespace | quote }}
           ports:

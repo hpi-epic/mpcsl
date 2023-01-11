@@ -14,7 +14,7 @@ class BaseModel(db.Model):
             setattr(self, key, value)
 
 
-class BaseSchema(ma.SQLAlchemySchema, SwaggerMixin):
+class BaseSchema(ma.SQLAlchemyAutoSchema, SwaggerMixin):
     id = fields.Integer(dump_only=True)
 
     class Meta:

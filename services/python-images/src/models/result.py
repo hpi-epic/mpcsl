@@ -90,5 +90,5 @@ class ResultSchema(BaseSchema):
     ground_truth_statistics = fields.Dict()
 
     class Meta(BaseSchema.Meta):
-        exclude = ['edge_informations']
+        #exclude = ['edge_informations'] #TODO(CH) temp workaround, however is the field added to result, as we do not specify its relationship on result
         model = Result

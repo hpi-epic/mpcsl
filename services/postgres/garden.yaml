@@ -5,7 +5,6 @@ name: postgres
 repo: https://charts.bitnami.com/bitnami
 chart: postgresql
 releaseName: db
-version: 8.6.2
 values:
   postgresqlPassword: ${var.postgres-password}
   postgresqlUsername: ${var.postgres-user}

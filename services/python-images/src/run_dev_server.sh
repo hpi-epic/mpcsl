@@ -1,6 +1,6 @@
 # before running this you should set up a virtualenv and install the requirements.txt
-export POSTGRES_USER=admin
-export POSTGRES_PASSWORD=admin
+export POSTGRES_USER=postgres
+export POSTGRES_PASSWORD=mypw
 export FLASK_APP=migration.py
 export DB_HOST=localhost:5432
 cd .. && flask db upgrade && cd src

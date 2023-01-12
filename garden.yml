@@ -18,8 +18,8 @@ environments:
     providers:
       - name: local-kubernetes
     variables:
-      postgres-user: admin
-      postgres-password: admin
+      postgres-user: postgres
+      postgres-password: mypw
       node-hosts: ""
       node-name: minikube
       schedulerDependencies: ['postgres']

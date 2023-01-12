@@ -123,6 +123,7 @@ class AppFactory(object):
         self.set_up_app()
         self.set_up_api()
         self.set_up_db()
+        self.set_up_ma()
         self.set_up_error_handlers()
         self.set_up_socketio()
         return [self.app, self.socketio]
@@ -130,4 +131,5 @@ class AppFactory(object):
     def migration_up(self):
         self.set_up_app()
         self.set_up_db()
+        self.set_up_ma()
         return self.app

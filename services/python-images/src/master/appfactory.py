@@ -115,7 +115,7 @@ class AppFactory(object):
     def set_up_error_handlers(self):
         @self.app.errorhandler(InvalidInputData)
         def handle_invalid_usage(error):
-            response = jsonify(error.to_dict())
+            response = jsonify(error)
             response.status_code = error.status_code
             return response
 

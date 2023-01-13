@@ -165,7 +165,7 @@ class ExperimentListResource(Resource):
         try:
             params = schema().load(data['parameters'])
         except Exception as err:
-            raise InvalidInputData(payload=errors)
+            raise InvalidInputData(payload=err)
 
         data['parameters'] = params
 

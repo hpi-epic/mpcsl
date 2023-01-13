@@ -1,5 +1,3 @@
-import networkx as nx
-
 from marshmallow import fields
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
@@ -90,5 +88,6 @@ class ResultSchema(BaseSchema):
     ground_truth_statistics = fields.Dict()
 
     class Meta(BaseSchema.Meta):
-        #exclude = ['edge_informations'] #TODO(CH) temp workaround, however is the field added to result, as we do not specify its relationship on result
+        # TODO(CH) removed due to API changes, should we add this exclude again?
+        # exclude = ['edge_informations']
         model = Result

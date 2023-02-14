@@ -1,14 +1,16 @@
 kind: Module
 description: Helm chart for the postgresql database
 type: helm
+atomicInstall: false
 name: postgres
 repo: https://charts.bitnami.com/bitnami
 chart: postgresql
 releaseName: db
-version: 8.6.2
 values:
-  postgresqlPassword: ${var.postgres-password}
-  postgresqlUsername: ${var.postgres-user}
+  global:
+    postgresql:
+      auth:
+        postgresPassword: mypw
   master:
     nodeSelector:
       "kubernetes.io/hostname": ${var.node-name}

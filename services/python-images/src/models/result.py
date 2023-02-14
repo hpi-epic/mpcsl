@@ -1,9 +1,8 @@
-import networkx as nx
-
 from marshmallow import fields
 from src.db import db
 from src.models.base import BaseModel, BaseSchema
-import netrd
+from scipy.spatial import distance
+import networkx as nx
 import causaldag as cd
 
 
@@ -34,8 +33,7 @@ class Result(BaseModel):
 
     @staticmethod
     def get_hamming_distance(G, H):
-        distance_calculator = netrd.distance.Hamming()
-        return distance_calculator.dist(G, H)
+        return distance.hamming(nx.to_numpy_array(G), nx.to_numpy_array(H))
 
     @staticmethod
     def get_hamming_distance_pcdag(G, ground_truth):
@@ -90,5 +88,6 @@ class ResultSchema(BaseSchema):
     ground_truth_statistics = fields.Dict()
 
     class Meta(BaseSchema.Meta):
-        exclude = ['edge_informations']
+        # TODO(CH) removed due to API changes, should we add this exclude again?
+        # exclude = ['edge_informations']
         model = Result

@@ -7,7 +7,6 @@ serviceResource:
   containerModule: backend-image
 dependencies:
   - postgres
-  - migrate-db
 values:
   image:
     repository: ${modules.backend-image.outputs.deployment-image-name}
@@ -23,7 +22,8 @@ tasks:
     args: [flask, db, upgrade]
     timeout: 600
     dependencies:
-      - postgres
+    - backend
+    - postgres
   - name: db-setup-algorithms
     args: [python, setup_algorithms.py]
     dependencies:

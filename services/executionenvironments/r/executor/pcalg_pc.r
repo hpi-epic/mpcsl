@@ -19,6 +19,7 @@ source("/scripts/CMI-adaptive-hist/algorithm/CMI_estimates.R")
 source("/scripts/CMI-adaptive-hist/algorithm/CMI_pvals.R")
 source("/scripts/CMI-adaptive-hist/algorithm/utils.R")
 
+source("/scripts/kcit_wrapper.r")
 
 option_list_v <- list(
                     make_option(c("-j", "--job_id"), type="character",
@@ -55,7 +56,8 @@ option_list_v <- list(
 );
 
 indepTestDict <- list(gaussCI=gaussCItest, binCI=binCItest, disCI=disCItest,
-                    CMIpqNML=CMIp.qNML, CMIpfNML=CMIp.fNML, CMIpChisq99=CMIp.Chisq99, CMIpChisq95=CMIp.Chisq95)
+                    CMIpqNML=CMIp.qNML, CMIpfNML=CMIp.fNML, CMIpChisq99=CMIp.Chisq99, CMIpChisq95=CMIp.Chisq95,
+                    KCIT=kcitWrapper)
 
 option_parser <- OptionParser(option_list=option_list_v)
 opt <- parse_args(option_parser)
@@ -94,6 +96,8 @@ if (opt$independence_test == "gaussCI") {
         }
     }
     sufficient_stats = list(dm=matrix_df, type=type, n=nrow(df))
+} else if (opt$independence_test == "KCIT") {
+    sufficient_stats <- list(dm=df)
 } else {
     stop("No valid independence test specified")
 }

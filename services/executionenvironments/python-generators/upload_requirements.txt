@@ -1,2 +1,2 @@
-manm_cs==0.1.2
+manm_cs
 requests==2.25.1

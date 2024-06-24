@@ -18,7 +18,7 @@ def creates_collider(graph, x, fixed_parents, bi_parents, combination):
                            if not graph.has_edge(par, n)}  # No bidirectional edges
         papa = crazy_shit - {x}
         if len(papa) > 0:
-            res = any([not(graph.has_edge(x, e) or graph.has_edge(e, x)) for e in papa])
+            res = any([not (graph.has_edge(x, e) or graph.has_edge(e, x)) for e in papa])
     return res
 
 

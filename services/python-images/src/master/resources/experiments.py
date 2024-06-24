@@ -162,10 +162,10 @@ class ExperimentListResource(Resource):
 
         algorithm = Algorithm.query.get_or_404(data['algorithm_id'])
         schema = generate_schema(algorithm.valid_parameters)
-        params, errors = schema().load(data['parameters'])
-
-        if len(errors) > 0:
-            raise InvalidInputData(payload=errors)
+        try:
+            params = schema().load(data['parameters'])
+        except Exception as err:
+            raise InvalidInputData(payload=err)
 
         data['parameters'] = params
 

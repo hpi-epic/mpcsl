@@ -79,8 +79,8 @@ class SwaggerMixin(object):
                     definition = {
                         'type': 'array',
                         'items': {
-                            'type': TYPE_MAP[type(field.container)],
-                            'format': FORMAT_MAP[type(field.container)]
+                            'type': TYPE_MAP[type(field.inner)],
+                            'format': FORMAT_MAP[type(field.inner)]
                         }
                     }
                 elif type(field) == sqlaFields.RelatedList:

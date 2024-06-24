@@ -7,7 +7,7 @@ import factory
 import networkx as nx
 import numpy as np
 import pandas as pd
-from marshmallow.utils import from_iso
+from marshmallow.utils import from_iso_datetime
 from sqlalchemy import inspect
 from src.db import db
 from src.master.helpers.database import add_dataset_nodes
@@ -65,7 +65,7 @@ class DatasetTest(BaseResourceTest):
         assert result['load_query'] == ds.load_query
         assert result['name'] == ds.name
         assert result['description'] == ds.description
-        assert from_iso(result['time_created']) == ds.time_created
+        assert from_iso_datetime(result['time_created']) == ds.time_created
 
     def test_create_new_data_set(self):
         # Given

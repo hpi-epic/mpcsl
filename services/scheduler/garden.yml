@@ -1,6 +1,7 @@
 kind: Module
 description: Helm chart for the mpci scheduler
 type: helm
+atomicInstall: false
 name: scheduler
 serviceResource:
   kind: Deployment

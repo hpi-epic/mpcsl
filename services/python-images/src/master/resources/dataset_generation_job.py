@@ -13,7 +13,7 @@ from src.models.job import JobStatus
 from flask import request
 import pandas as pd
 import uuid
-from pandas.io.parsers import ParserError
+from pandas.errors import ParserError
 from src.master.config import DB_DATABASE
 from src.master.helpers.database import add_dataset_nodes
 from marshmallow import fields

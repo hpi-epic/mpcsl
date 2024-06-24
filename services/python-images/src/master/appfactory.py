@@ -6,7 +6,7 @@ from flask_restful_swagger_2 import Api
 from flask_socketio import SocketIO
 from sqlalchemy import event
 
-from src.db import db
+from src.db import db, ma
 from src.master.helpers.io import InvalidInputData
 from .routes import set_up_routes
 from src.models import Experiment, Dataset, ExperimentJob
@@ -19,6 +19,10 @@ class AppFactory(object):
         self.db.init_app(self.app)
 
         self.migrate = Migrate(self.app, db)
+
+    def set_up_ma(self):
+        self.ma = ma
+        self.ma.init_app(self.app)
 
     def set_up_app(self):
         self.app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'), static_url_path='/static')
@@ -111,7 +115,7 @@ class AppFactory(object):
     def set_up_error_handlers(self):
         @self.app.errorhandler(InvalidInputData)
         def handle_invalid_usage(error):
-            response = jsonify(error.to_dict())
+            response = jsonify(error)
             response.status_code = error.status_code
             return response
 
@@ -119,6 +123,7 @@ class AppFactory(object):
         self.set_up_app()
         self.set_up_api()
         self.set_up_db()
+        self.set_up_ma()
         self.set_up_error_handlers()
         self.set_up_socketio()
         return [self.app, self.socketio]
@@ -126,4 +131,5 @@ class AppFactory(object):
     def migration_up(self):
         self.set_up_app()
         self.set_up_db()
+        self.set_up_ma()
         return self.app
